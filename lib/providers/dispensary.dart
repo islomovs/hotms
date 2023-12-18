@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:myapp/data/DonorObjectResponse.dart';
 
 import '../constants/contants.dart';
 
@@ -60,43 +62,25 @@ class DispensaryId {
   }
 }
 
-// Main class representing each item in the JSON array
-class DonorObject {
-  final int id;
-  final Dispensary dispensary;
-  final Donor donor;
+abstract class DonorOrPatient {
+  final bool isPatient;
   final String? date;
-  final bool isActive;
+  final bool? isApproved;
 
-  DonorObject({
-    required this.id,
-    required this.dispensary,
-    required this.donor,
-    this.date,
-    required this.isActive,
-  });
-
-  factory DonorObject.fromJson(Map<String, dynamic> json) {
-    return DonorObject(
-      id: json['id'],
-      dispensary: Dispensary.fromJson(json['dispensaryId']),
-      donor: Donor.fromJson(json['donorId']),
-      date: json['date'],
-      isActive: json['isActive'],
-    );
-  }
+  DonorOrPatient({required this.isPatient, this.date, this.isApproved});
 }
+
 
 // Dispensary class to represent the 'dispensaryId' object in the JSON
 class Dispensary {
-  final int id;
-  final String name;
-  final User creator;
+  final int? id;
+  final String? name;
+  final User? creator;
 
   Dispensary({
-    required this.id,
-    required this.name,
-    required this.creator,
+    this.id,
+    this.name,
+    this.creator,
   });
 
   factory Dispensary.fromJson(Map<String, dynamic> json) {
@@ -110,19 +94,19 @@ class Dispensary {
 
 // User class to represent the 'creatorId' and 'userId' objects in the JSON
 class User {
-  final int id;
-  final String email;
-  final String password;
-  final String role;
-  final String fullName;
+  final int? id;
+  final String? email;
+  final String? password;
+  final String? role;
+  final String? fullName;
 
   // final String? imageLink;
 
   User({
-    required this.id,
-    required this.email,
-    required this.password,
-    required this.role,
+    this.id,
+    this.email,
+    this.password,
+    this.role,
     required this.fullName,
     // this.imageLink,
   });
@@ -141,9 +125,9 @@ class User {
 
 // Donor class to represent the 'donorId' object in the JSON
 class Donor {
-  final int id;
-  final User user;
-  final String phoneNumber;
+  final int? id;
+  final User? user;
+  final String? phoneNumber;
   final String? address;
 
   // ... other fields
@@ -168,10 +152,7 @@ class Donor {
 }
 
 // Function to parse the JSON data into a list of Record objects
-List<DonorObject> parseRecords(String jsonData) {
-  final data = json.decode(jsonData) as List;
-  return data.map((json) => DonorObject.fromJson(json)).toList();
-}
+
 
 class Patient {
   final int? id;
@@ -208,7 +189,7 @@ class Patient {
 }
 
 // Adjusted Record class for patients
-class PatientObject {
+class PatientObject extends DonorOrPatient {
   final int id;
   final Dispensary? dispensary;
   final Patient? patient;
@@ -221,7 +202,7 @@ class PatientObject {
     required this.patient,
     this.date,
     required this.isActive,
-  });
+  }) : super(isPatient: true, date: date, isApproved: patient?.isApproved);
 
   factory PatientObject.fromJson(Map<String, dynamic> json) {
     return PatientObject(
@@ -236,12 +217,17 @@ class PatientObject {
 
 class DispensaryOperations with ChangeNotifier {
   List<PatientObject> patientsList = [];
-  List<DonorObject> donorsList = [];
+  List<DonorObjectResponse> donorsList = [];
 
-  List<PatientObject> get getPatientsList => patientsList;
+  List<DonorOrPatient> get getPatientAndDonors =>
+      [...donorsList, ...patientsList];
 
-  List<DonorObject> get donorL {
-    return [...donorsList];
+  List<DonorOrPatient> get getPatientsList => patientsList;
+
+  List<DonorOrPatient> get getDonorList => donorsList;
+
+  List<DonorObjectResponse> get donorL {
+    return donorsList;
   }
 
   List<int> patientIds = [];
@@ -253,44 +239,43 @@ class DispensaryOperations with ChangeNotifier {
   }
 
   Future<void> fetchPatientsList(String jwtToken) async {
-    if (patientsList.isEmpty) {
-      final response = await http.get(
-        Uri.parse('$ip/api/dispensary/allDispensaryPatients'),
-        headers: {
-          'Authorization': 'Bearer $jwtToken',
-          'Content-Type': 'application/json',
-        },
-      );
+    final response = await http.get(
+      Uri.parse('$ip/api/dispensary/allDispensaryPatients'),
+      headers: {
+        'Authorization': 'Bearer $jwtToken',
+        'Content-Type': 'application/json',
+      },
+    );
 
-      if (response.statusCode == 200) {
-        print('Raw JSON response: ${response.body}');
+    if (response.statusCode == 200) {
+      print('Raw JSON response: ${response.body}');
 
-        // Decoding the JSON response as a List
-        final jsonData = json.decode(response.body) as List;
+      // Decoding the JSON response as a List
+      final jsonData = json.decode(response.body) as List;
 
-        // Assuming that PatientObject has a proper fromJson method
-        patientsList = jsonData
-            .where((item) => item != null) // Exclude null items
-            .map((item) {
-          // try {
-          return PatientObject.fromJson(item);
-          // } catch (e) {
-          //   print('Error parsing Record: $e');
-          //   return null;
-          // }
-        })
-            // Exclude items that failed to parse
-            // Cast back to a list of PatientObject
-            .toList();
+      // Assuming that PatientObject has a proper fromJson method
+      patientsList = jsonData
+          .where((item) => item != null) // Exclude null items
+          .map((item) {
+        // try {
+        return PatientObject.fromJson(item);
+        // } catch (e) {
+        //   print('Error parsing Record: $e');
+        //   return null;
+        // }
+      })
+          // Exclude items that failed to parse
+          // Cast back to a list of PatientObject
+          .toList();
 
-        patientsList[0].patient?.id;
+      patientsList[0].patient?.id;
 
-        print('HERE IS MY PATIENTS LIST: ${patientsList[0].patient?.phoneNumber}');
-        notifyListeners();
-      } else {
-        throw Exception(
-            'Failed to load data with status code: ${response.statusCode}');
-      }
+      print(
+          'HERE IS MY PATIENTS LIST: ${patientsList[0].patient?.phoneNumber}');
+      notifyListeners();
+    } else {
+      throw Exception(
+          'Failed to load data with status code: ${response.statusCode}');
     }
   }
 
@@ -313,20 +298,19 @@ class DispensaryOperations with ChangeNotifier {
     }
   }
 
-  Future<List<DonorObject>> fetchDonorsList(String jwtToken) async {
-    final response = await http.get(
-      Uri.parse('$ip/api/dispensary/allDispensaryPatients'),
-      headers: {
-        'Authorization': 'Bearer $jwtToken',
-        'Content-Type': 'application/json',
-      },
+  Future<List<DonorObjectResponse>> fetchDonorsList(String jwtToken) async {
+    final dio = Dio();
+    dio.options.headers['Authorization'] = "Bearer $jwtToken";
+    dio.options.headers['Content-Type'] = 'application/json';
+    final response = await dio.get(
+      '$ip/api/dispensary/allDispensaryDonors',
     );
 
     if (response.statusCode == 200) {
       // Print the raw response for debugging purposes
-      print('Raw JSON response: ${response.body}');
+      print('Raw JSON response donor: ${response.data}');
 
-      final List<dynamic> jsonData = json.decode(response.body);
+      final jsonData = response.data as List;
 
       // Check for and handle a `null` item in the JSON list.
       if (jsonData.contains(null)) {
@@ -336,17 +320,8 @@ class DispensaryOperations with ChangeNotifier {
       donorsList = jsonData
           .where((item) => item != null) // Exclude null items
           .map((item) {
-            // Provide error handling for each item
-            try {
-              return DonorObject.fromJson(item);
-            } catch (e) {
-              print('Error parsing Record: $e');
-              return null;
-            }
-          })
-          .where((item) => item != null) // Exclude items that failed to parse
-          .cast<DonorObject>() // Cast back to a list of Records
-          .toList();
+        return DonorObjectResponse.fromJson(item);
+      }).toList();
       print('HERE IS MY DONORS LIST: $donorsList');
       return donorsList;
     } else {

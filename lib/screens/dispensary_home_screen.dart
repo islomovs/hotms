@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:myapp/data/DonorObjectResponse.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
     as dp;
@@ -80,34 +82,55 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
     });
   }
 
-  String? _dateText;
-  TextEditingController _dateController = TextEditingController();
+  Future<void> _selectDateTime(
+      BuildContext context, DonorOrPatient model) async {
+    if (model.date == null) {
+      dp.DatePicker.showDateTimePicker(
+        context,
+        showTitleActions: true,
+        minTime: DateTime(1900, 1, 1),
+        maxTime: DateTime(2100, 12, 31),
+        onConfirm: (date) async {
+          print("date99: ${DateFormat('yyyy-MM-ddTHH:mm').format(date)}");
+          final time= DateFormat('yyyy-MM-ddTHH:mm').format(date);
+          final dio = Dio();
+          dio.options.headers['Authorization'] = "Bearer $token";
+          dio.options.headers['Content-Type'] = 'application/json';
+          if (model is PatientObject) {
+            final patientModel = model;
+            final response = await dio.post(
+                '$ip/api/dispensary/assignDateForPatientsAppointment',
+                queryParameters: {
+                  'patientId': patientModel.patient?.id,
+                  'time': time,
+                });
+            print("response setDate: ${response.data}");
+          } else {
+            final donorModel = model as DonorObjectResponse;
+            final response = await dio.post(
+                '$ip/api/dispensary/assignDateForDonorsAppointment',
+                queryParameters: {
+                  'donorId': donorModel.donorId?.id,
+                  'time': time,
+                });
+            print("response setDate: ${response.data}");
+          }
 
-  Future<void> _selectDateTime(BuildContext context) async {
-    dp.DatePicker.showDateTimePicker(
-      context,
-      showTitleActions: true,
-      minTime: DateTime(1900, 1, 1),
-      maxTime: DateTime(2100, 12, 31),
-      onConfirm: (date) {
-        setState(() {
-          _dateController.text = DateFormat('dd-MM-yyyy HH:mm').format(date);
-          patients['date'] = _dateController.text;
-        });
-      },
-      currentTime: DateTime.now(),
-      locale: dp.LocaleType.en,
-      // Change to your locale
-      theme: dp.DatePickerTheme(
-        backgroundColor: Colors.white,
-        itemStyle: TextStyle(
-          color: mainColor, // Adjust to match your theme color
-          fontWeight: FontWeight.bold,
+        },
+        currentTime: DateTime.now(),
+        locale: dp.LocaleType.en,
+        // Change to your locale
+        theme: dp.DatePickerTheme(
+          backgroundColor: Colors.white,
+          itemStyle: TextStyle(
+            color: mainColor, // Adjust to match your theme color
+            fontWeight: FontWeight.bold,
+          ),
+          doneStyle: TextStyle(color: mainColor, fontSize: 16),
+          // Other customizations can be here
         ),
-        doneStyle: TextStyle(color: mainColor, fontSize: 16),
-        // Other customizations can be here
-      ),
-    );
+      );
+    }
 
     var workingDirectory =
         '~/Desktop/myapp/home/sardorchik/Desktop/myapp/lib/screens/';
@@ -173,17 +196,18 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
 
   @override
   void didChangeDependencies() {
-    // Provider.of<DispensaryOperations>(context)
-    //     .fetchDispensaryInfo(extractedToken!);
-    // Provider.of<DispensaryOperations>(context).fetchDonorsList(extractedToken!);
-    Provider.of<DispensaryOperations>(context).fetchPatientsList("");
-
+    Provider.of<DispensaryOperations>(context, listen: false)
+        .fetchDispensaryInfo(token);
+    Provider.of<DispensaryOperations>(context, listen: false)
+        .fetchDonorsList(token);
+    Provider.of<DispensaryOperations>(context, listen: false)
+        .fetchPatientsList(token);
     super.didChangeDependencies();
   }
 
   @override
   void initState() {
-    final jsonData =
+    const jsonData =
         '{"id": 1,"dispensaryId": {"id": 1,"name": "Dispensary 1","creatorId": {"id": 3,"email": "dispensary@mail.ru","password": "dispensary","role": "DISPENSARY","fullName": "Dispensary","imageLink": null}},"patientId": {"id": null,"userId": {"id": null,"email": "patient@mail.ru","password": "patient","role": "APPROVED_PATIENT","fullName": "Patient Patientov","imageLink": null},"phoneNumber": "998946805777","address": "Registan 5","birthday": "2023-01-01","city": "Tashkent","district": "Yunusabad","lastReceived": null,"passportNumber": "AC2679449","pinfl": "1991919191","isApproved": true,"bloodType": "3 minus","rhFactor": "Minus","isSmoker": null,"isDrinker": null,"organReceives": {"id": 1, "name": "lungs"},"urgencyRate": 5,"diagnosis": "Diagnosis cancer","comments": "bla bla bla,bla bla bla"},"date": "2023-12-18 23:55","isActive": false}';
 // 2. decode the json
     var parsedJson = json.decode(jsonData);
@@ -196,8 +220,9 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<PatientObject> patientsEx =
-        Provider.of<DispensaryOperations>(context).getPatientsList;
+    final List<DonorOrPatient> rxPatients =
+        Provider.of<DispensaryOperations>(context).getPatientAndDonors;
+    // print("data: $rxPatients");
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,50 +294,22 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                  if(patientsEx.isNotEmpty)  DispenserHomeSectionList(
-                      itemsToShow: _itemsToShow1,
-                      dHSlistTile: DispenserHomeSectionListTile(
-                        isProcessing: isProcessing,
+                    if (rxPatients.isNotEmpty)
+                      DispenserHomeSectionList(
                         itemsToShow: _itemsToShow1,
-                        date: patientsEx[0].date??'',
-                        time: '21:00',
-                        fullName: patientsEx[0].dispensary?.creator.fullName??'',
-                        age: patients['age']!,
-                        phoneNumber: patientsEx[0].patient?.phoneNumber ?? '',
-                        city: patients['city']!,
-                        userType: patientsEx[0].patient?.user?.role ?? "",
-                        subUserType: patients['subUser']!,
-                        status: patientsEx[0].patient?.isApproved ?? false,
-                        column4: Container(
-                          alignment: Alignment.topLeft,
-                          width: (MediaQuery.of(context).size.width - 620) / 4,
-                          child: Container(
-                            alignment: Alignment.topLeft,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: containerBgCol,
-                                minimumSize: const Size(95, 40),
-                              ),
-                              onPressed: () {
-                                _selectDateTime(context);
-                              },
-                              child: Text(
-                                patients['date']!,
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: mainColor,
-                                ),
-                              ),
-                            ),
-                          ),
+                        dHSlistTile: DispenserHomeSectionListTile(
+                          models: rxPatients
+                              .where((element) =>
+                                  element.date == null && element.date == null)
+                              .toList(),
+                          isProcessing: isProcessing,
+                          itemsToShow: _itemsToShow1,
+                          status: rxPatients[0].isApproved ?? false,
+                          onSetDate: (DonorOrPatient value) {
+                            _selectDateTime(context, value);
+                          },
                         ),
                       ),
-                    ),
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -340,36 +337,17 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
                     DispenserHomeSectionList(
                       itemsToShow: _itemsToShow2,
                       dHSlistTile: DispenserHomeSectionListTile(
+                        models: rxPatients
+                            .where((element) =>
+                                element.isApproved == null &&
+                                element.date != null)
+                            .toList(),
                         isProcessing: isProcessing,
                         itemsToShow: _itemsToShow2,
-                        date: '21 / 10 / 2024',
-                        time: '21:00',
-                        fullName: 'Saidova Saida',
-                        age: '21 years',
-                        phoneNumber: '+998(90)999-99-99',
-                        city: 'Tashkent',
-                        userType: 'donor',
-                        subUserType: 'per annum',
                         status: true,
-                        column4: Container(
-                          alignment: Alignment.topLeft,
-                          width: (MediaQuery.of(context).size.width - 620) / 4,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '21 / 10 / 2024',
-                                style: listTileTitle,
-                                textAlign: TextAlign.left,
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                '12:30',
-                                style: listTileSubTitle,
-                              ),
-                            ],
-                          ),
-                        ),
+                        onSetDate: (DonorOrPatient value) {
+                          _selectDateTime(context, value);
+                        },
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -399,36 +377,17 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
                     DispenserHomeSectionList(
                       itemsToShow: _itemsToShow3,
                       dHSlistTile: DispenserHomeSectionListTile(
+                        models: (rxPatients)
+                            .where((element) =>
+                                element.date != null &&
+                                element.isApproved != null)
+                            .toList(),
                         isProcessing: isProcessing,
                         itemsToShow: _itemsToShow3,
-                        date: '21 / 10 / 2024',
-                        time: '21:00',
-                        fullName: 'Saidova Saida',
-                        age: '21 years',
-                        phoneNumber: '+998(90)999-99-99',
-                        city: 'Tashkent',
-                        userType: 'donor',
-                        subUserType: 'per annum',
                         status: true,
-                        column4: Container(
-                          alignment: Alignment.topLeft,
-                          width: (MediaQuery.of(context).size.width - 620) / 4,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '21 / 10 / 2024',
-                                style: listTileTitle,
-                                textAlign: TextAlign.left,
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                '12:30',
-                                style: listTileSubTitle,
-                              ),
-                            ],
-                          ),
-                        ),
+                        onSetDate: (DonorOrPatient value) {
+                          _selectDateTime(context, value);
+                        },
                       ),
                     ),
                   ],
@@ -449,9 +408,7 @@ class DispenserHomeSectionList extends StatelessWidget {
     required this.dHSlistTile,
     super.key,
     required int itemsToShow,
-  }) : _itemsToShow = itemsToShow;
-
-  final int _itemsToShow;
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -524,35 +481,20 @@ class DispenserHomeSectionList extends StatelessWidget {
 }
 
 class DispenserHomeSectionListTile extends StatelessWidget {
-  final String date;
-  final String time;
-  final String fullName;
-  final String age;
-  final String phoneNumber;
-  final String city;
-  final String userType;
-  final String subUserType;
   bool status;
   bool? isProcessing;
-  Widget column4;
+  final ValueChanged<DonorOrPatient> onSetDate;
 
   DispenserHomeSectionListTile({
     required int itemsToShow,
-    required this.date,
-    required this.time,
-    required this.fullName,
-    required this.age,
-    required this.phoneNumber,
-    required this.city,
-    required this.userType,
-    required this.subUserType,
     required this.status,
     required this.isProcessing,
-    required this.column4,
     super.key,
-  }) : _itemsToShow = itemsToShow;
+    required this.models,
+    required this.onSetDate,
+  });
 
-  final int _itemsToShow;
+  final List<DonorOrPatient> models;
 
   @override
   Widget build(BuildContext context) {
@@ -564,95 +506,292 @@ class DispenserHomeSectionListTile extends StatelessWidget {
       child: ListView.builder(
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
-        itemCount: _itemsToShow,
+        itemCount: models.length,
         itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  width: (MediaQuery.of(context).size.width - 620) / 4,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        fullName,
-                        style: listTileTitle,
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        age,
-                        style: listTileSubTitle,
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.topLeft,
-                  width: (MediaQuery.of(context).size.width - 620) / 4,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        userType,
-                        style: listTileTitle,
-                        textAlign: TextAlign.left,
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        subUserType[index],
-                        style: listTileSubTitle,
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.topLeft,
-                  width: (MediaQuery.of(context).size.width - 620) / 4,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        phoneNumber,
-                        style: listTileTitle,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        city[index],
-                        style: listTileSubTitle,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-                column4,
-                Container(
-                  alignment: Alignment.topLeft,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: containerBgCol,
-                      minimumSize: const Size(95, 40),
-                    ),
-                    onPressed: () {},
-                    child: Text(
-                      status.toString(),
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: mainColor,
-                      ),
+          if (models[index] is PatientObject) {
+            final model = models[index] as PatientObject;
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width - 620) / 4,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          model.patient?.user?.fullName ?? '',
+                          style: listTileTitle,
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          model.patient?.id.toString() ?? '',
+                          style: listTileSubTitle,
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ],
-            ),
-          );
+                  Container(
+                    alignment: Alignment.topLeft,
+                    width: (MediaQuery.of(context).size.width - 620) / 4,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          model.patient?.user?.role ?? '',
+                          style: listTileTitle,
+                          textAlign: TextAlign.left,
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          model.patient?.user?.email ?? '',
+                          style: listTileSubTitle,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.topLeft,
+                    width: (MediaQuery.of(context).size.width - 620) / 4,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          model.patient?.phoneNumber ?? '',
+                          style: listTileTitle,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          model.patient?.city ?? '',
+                          style: listTileSubTitle,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.topLeft,
+                    width: (MediaQuery.of(context).size.width - 620) / 4,
+                    child: Container(
+                      alignment: Alignment.topLeft,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: containerBgCol,
+                          minimumSize: const Size(95, 40),
+                        ),
+                        onPressed: () {
+                          onSetDate(model);
+                        },
+                        child: Text(
+                          model.date ?? 'Set',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: mainColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.topLeft,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: model.isApproved == null
+                            ? model.date == null
+                                ? Colors.yellow
+                                : null
+                            : model.isApproved == true
+                                ? Colors.blue
+                                : Colors.red,
+                        minimumSize: const Size(95, 40),
+                      ),
+                      onPressed: () {
+                        if (model.isApproved == null) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const DispenserPatientInfoScreen(),
+                              ));
+                        }
+                      },
+                      child: Text(
+                        model.isApproved == null
+                            ? model.date == null
+                                ? "Waiting"
+                                : "Edit"
+                            : model.isApproved == true
+                                ? "Accepted"
+                                : "Rejected",
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: mainColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else if (models[index] is DonorObjectResponse) {
+            final model = models[index] as DonorObjectResponse;
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width - 620) / 4,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          model.donorId?.userId?.fullName ?? '',
+                          style: listTileTitle,
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          model.donorId?.id.toString() ?? '',
+                          style: listTileSubTitle,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.topLeft,
+                    width: (MediaQuery.of(context).size.width - 620) / 4,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          model.donorId?.userId?.role ?? '',
+                          style: listTileTitle,
+                          textAlign: TextAlign.left,
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          model.donorId?.userId?.email ?? '',
+                          style: listTileSubTitle,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.topLeft,
+                    width: (MediaQuery.of(context).size.width - 620) / 4,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          model.donorId?.phoneNumber ?? '',
+                          style: listTileTitle,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          "",
+                          style: listTileSubTitle,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.topLeft,
+                    width: (MediaQuery.of(context).size.width - 620) / 4,
+                    child: Container(
+                      alignment: Alignment.topLeft,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: containerBgCol,
+                          minimumSize: const Size(95, 40),
+                        ),
+                        onPressed: () {
+                          onSetDate(model);
+                        },
+                        child: Text(
+                          model.date ?? 'Set',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: mainColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.topLeft,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: model.isApproved == null
+                            ? model.date == null
+                                ? Colors.yellow
+                                : null
+                            : model.isApproved == true
+                                ? Colors.blue
+                                : Colors.red,
+                        minimumSize: const Size(95, 40),
+                      ),
+                      onPressed: () {
+                        if (model.isApproved == null) {
+                          if (model.isPatient) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const DispenserPatientInfoScreen(),
+                                ));
+                          } else {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const DispensaryOrganInfoScreen(),
+                                ));
+                          }
+                        }
+                      },
+                      child: Text(
+                        model.isApproved == null
+                            ? model.date == null
+                                ? "Waiting"
+                                : "Edit"
+                            : model.isApproved == true
+                                ? "Accepted"
+                                : "Rejected",
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: mainColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
         },
       ),
     );
