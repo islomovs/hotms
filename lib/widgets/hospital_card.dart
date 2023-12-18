@@ -6,12 +6,14 @@ import './request_button.dart';
 class HospitalCard extends StatelessWidget {
   final String title;
   final String description;
+  final String? img;
   VoidCallback onTap;
 
   HospitalCard({
     required this.title,
     required this.description,
     required this.onTap,
+    this.img,
     super.key,
   });
 
@@ -22,12 +24,19 @@ class HospitalCard extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: Image.asset(
-            './assets/images/hospital_card.png',
-            fit: BoxFit.cover,
-            height: 80,
-            width: 320,
-          ),
+          child: img != null
+              ? Image.network(
+                  'http://161.35.75.184:1234/$img',
+                  fit: BoxFit.cover,
+                  height: 80,
+                  width: 320,
+                )
+              : Image.asset(
+                  './assets/images/hospital_card.png',
+                  fit: BoxFit.cover,
+                  height: 80,
+                  width: 320,
+                ),
         ),
         const SizedBox(height: 16),
         Text(
