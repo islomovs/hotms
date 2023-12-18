@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -150,19 +151,95 @@ class OrganDonates {
   }
 }
 
+class DonorE1 {
+  int? id;
+  DispensaryId? dispensaryId;
+  Donor? donorId;
+  String? date;
+  bool? isActive;
+  bool? isProcessing;
+
+  DonorE1({
+    this.id,
+    this.dispensaryId,
+    this.donorId,
+    this.date,
+    this.isActive,
+    this.isProcessing,
+  });
+
+  DonorE1.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    // dispensaryId = json['dispensaryId'] != null
+    //     ? DispensaryId.fromJson(json['dispensaryId'])
+    //     : null;
+    // donorId = json['donorId'] != null ? Donor.fromJson(json['donorId']) : null;
+    date = json['date'];
+    isActive = json['isActive'];
+    isProcessing = json['isProcessing'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    if (dispensaryId != null) {
+      data['dispensaryId'] = dispensaryId!.toJson();
+    }
+    if (donorId != null) {
+      data['donorId'] = donorId!.toJson();
+    }
+    data['date'] = date;
+    data['isActive'] = isActive;
+    data['isProcessing'] = isProcessing;
+    return data;
+  }
+}
+
+class DispensaryId {
+  int? id;
+  String? name;
+  UserId? creatorId;
+
+  DispensaryId({this.id, this.name, this.creatorId});
+
+  DispensaryId.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    creatorId =
+        json['creatorId'] != null ? UserId.fromJson(json['creatorId']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    if (creatorId != null) {
+      data['creatorId'] = creatorId!.toJson();
+    }
+    return data;
+  }
+}
+
 class Donors with ChangeNotifier {
-  final List<Donor> _donors = [];
   late Donor _donorOrganInfo = Donor();
 
   Donor get donorOrganInfo => _donorOrganInfo;
 
-  List<Donor> get donors {
-    return [..._donors];
-  }
+  late DonorE1 _donorE1 = DonorE1();
+
+  DonorE1 get donorE1 => _donorE1;
+
+  late DonorOperations _donorO = DonorOperations();
+
+  DonorOperations get donorO => _donorO;
 
   Future<List<String>> fetchDonorsHospitalsList() async {
     final response = await http.get(
       Uri.parse('$ip/api/donors/allHospitalsMatchingMe'),
+      headers: {
+        'Authorization': 'Bearer $donorDefaultToken',
+        'Content-Type': 'application/json',
+      },
     );
     debugPrint(response.body);
     if (response.statusCode == 200) {
@@ -197,20 +274,169 @@ class Donors with ChangeNotifier {
     }
   }
 
-  Future<List<String>> fetchDispensaryVisitsInfo() async {
+  Future<DonorE1> fetchDispensaryVisitsInfo() async {
     final response = await http.get(
       Uri.parse('$ip/api/donors/allMyDispensaryVisits'),
+      headers: {
+        'Authorization': 'Bearer $donorDefaultToken',
+        'Content-Type': 'application/json',
+      },
     );
     debugPrint(response.body);
     if (response.statusCode == 200) {
       // If the server returns a 200 OK response, parse the JSON
-      List<String> stringList = List<String>.from(json.decode(response.body));
-      debugPrint(stringList.toString());
-      return stringList;
+      _donorE1 = DonorE1.fromJson(json.decode(response.body)[0]);
+      notifyListeners();
+      return _donorE1;
     } else {
       // If the server did not return a 200 OK response,
       // throw an exception.
       throw Exception('Failed to load data');
     }
+  }
+
+  Future<DonorOperations> fetchMyOperations() async {
+    final response = await http.get(
+      Uri.parse('$ip/api/donors/allMyOperations'),
+      headers: {
+        'Authorization': 'Bearer $donorDefaultToken',
+        'Content-Type': 'application/json',
+      },
+    );
+    debugPrint(response.body);
+    if (response.statusCode == 200) {
+      // If the server returns a 200 OK response, parse the JSON
+      _donorO = DonorOperations.fromJson(json.decode(response.body)[0]);
+      notifyListeners();
+      return _donorO;
+    } else {
+      // If the server did not return a 200 OK response,
+      // throw an exception.
+      throw Exception('Failed to load data');
+    }
+  }
+}
+
+class DonorOperations {
+  int? id;
+  HospitalId? hospitalId;
+  Donor? patientId;
+  Donor? donorId;
+  OrganDonates? organId;
+  String? doctorName;
+  String? doctorSpecialization;
+  String? operationTime;
+  bool? isDonorAccepted;
+  bool? operationIsSuccessful;
+
+  DonorOperations(
+      {this.id,
+      this.hospitalId,
+      this.patientId,
+      this.donorId,
+      this.organId,
+      this.doctorName,
+      this.doctorSpecialization,
+      this.operationTime,
+      this.isDonorAccepted,
+      this.operationIsSuccessful});
+
+  DonorOperations.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    hospitalId = json['hospitalId'] != null
+        ? HospitalId.fromJson(json['hospitalId'])
+        : null;
+    patientId =
+        json['patientId'] != null ? Donor.fromJson(json['patientId']) : null;
+    donorId = json['donorId'] != null ? Donor.fromJson(json['donorId']) : null;
+    organId =
+        json['organId'] != null ? OrganDonates.fromJson(json['organId']) : null;
+    doctorName = json['doctorName'];
+    doctorSpecialization = json['doctorSpecialization'];
+    operationTime = json['operationTime'];
+    isDonorAccepted = json['isDonorAccepted'];
+    operationIsSuccessful = json['operationIsSuccessful'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    if (hospitalId != null) {
+      data['hospitalId'] = hospitalId!.toJson();
+    }
+    if (patientId != null) {
+      data['patientId'] = patientId!.toJson();
+    }
+    if (donorId != null) {
+      data['donorId'] = donorId!.toJson();
+    }
+    if (organId != null) {
+      data['organId'] = organId!.toJson();
+    }
+    data['doctorName'] = doctorName;
+    data['doctorSpecialization'] = doctorSpecialization;
+    data['operationTime'] = operationTime;
+    data['isDonorAccepted'] = isDonorAccepted;
+    data['operationIsSuccessful'] = operationIsSuccessful;
+    return data;
+  }
+}
+
+class HospitalId {
+  int? id;
+  UserId? creatorId;
+  String? name;
+  String? address;
+  OrganDonates? specializationOrgans;
+  String? description;
+  String? imageLink;
+  List<Donor>? patients;
+
+  HospitalId(
+      {this.id,
+      this.creatorId,
+      this.name,
+      this.address,
+      this.specializationOrgans,
+      this.description,
+      this.imageLink,
+      this.patients});
+
+  HospitalId.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    creatorId =
+        json['creatorId'] != null ? UserId.fromJson(json['creatorId']) : null;
+    name = json['name'];
+    address = json['address'];
+    specializationOrgans = json['specializationOrgans'] != null
+        ? OrganDonates.fromJson(json['specializationOrgans'])
+        : null;
+    description = json['description'];
+    imageLink = json['imageLink'];
+    if (json['patients'] != null) {
+      patients = <Donor>[];
+      json['patients'].forEach((v) {
+        patients!.add(Donor.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    if (creatorId != null) {
+      data['creatorId'] = creatorId!.toJson();
+    }
+    data['name'] = name;
+    data['address'] = address;
+    if (specializationOrgans != null) {
+      data['specializationOrgans'] = specializationOrgans!.toJson();
+    }
+    data['description'] = description;
+    data['imageLink'] = imageLink;
+    if (patients != null) {
+      data['patients'] = patients!.map((v) => v.toJson()).toList();
+    }
+    return data;
   }
 }
