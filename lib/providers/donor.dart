@@ -37,6 +37,7 @@ class Donor {
   final String? rhFactor;
   final String? donationPrice;
   final String? comments;
+
   Donor({
     this.id,
     this.donorId,
@@ -83,9 +84,13 @@ class Donors with ChangeNotifier {
   Future<List<String>> fetchDonorInfo() async {
     final response = await http.get(
       Uri.parse('$ip/api/donors/myDonorInfo'),
+      headers: {
+        'Authorization': 'Bearer $donorDefaultToken',
+      },
     );
-    debugPrint(response.body);
+    debugPrint("DONOR INFO body => ${response.body}");
     if (response.statusCode == 200) {
+      debugPrint("DONOR INFO 200 => ${response.body}");
       // If the server returns a 200 OK response, parse the JSON
       List<String> stringList = List<String>.from(json.decode(response.body));
       debugPrint(stringList.toString());

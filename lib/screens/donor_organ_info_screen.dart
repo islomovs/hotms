@@ -48,8 +48,21 @@ class _DonorOrganInfoScreenState extends State<DonorOrganInfoScreen> {
   }
 
   @override
-  void didChangeDependencies() {
-    Provider.of<Donors>(context).fetchDonorInfo();
+  Future<void> didChangeDependencies() async {
+    List<String> donorList = await Provider.of<Donors>(context).fetchDonorInfo();
+    _selectedOrgan = donorList[0];
+    _enteredFName = donorList[1];
+    _enteredPhoneNumber = donorList[2];
+    _enteredAddress = donorList[3];
+    _enteredCity = donorList[4];
+    _enteredDistrict = donorList[5];
+    _enteredPassportNumber = donorList[6];
+    _enteredPINFL = donorList[7];
+    _selectedTypeOfDonation = donorList[8];
+    _enteredComment = donorList[9];
+    _selectedBloodGroup = donorList[10];
+    _selectedRHFactor = donorList[11];
+    _enteredPrice = donorList[12];
     super.didChangeDependencies();
   }
 
