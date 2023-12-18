@@ -274,9 +274,9 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
                       dHSlistTile: DispenserHomeSectionListTile(
                         isProcessing: isProcessing,
                         itemsToShow: _itemsToShow1,
-                        date: patientsEx[0].date.toString(),
+                        date: patientsEx[0].date??'',
                         time: '21:00',
-                        fullName: patientsEx[0].patient?.fullName??'fullname',
+                        fullName: patientsEx[0].dispensary?.creator.fullName??'',
                         age: patients['age']!,
                         phoneNumber: patientsEx[0].patient?.phoneNumber ?? '',
                         city: patients['city']!,
@@ -595,7 +595,7 @@ class DispenserHomeSectionListTile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        userType[index],
+                        userType,
                         style: listTileTitle,
                         textAlign: TextAlign.left,
                       ),
@@ -614,7 +614,7 @@ class DispenserHomeSectionListTile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        phoneNumber[index],
+                        phoneNumber,
                         style: listTileTitle,
                         textAlign: TextAlign.center,
                       ),
