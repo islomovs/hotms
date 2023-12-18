@@ -80,9 +80,9 @@ class MyApp extends StatelessWidget {
           DonorHospitalsScreen.routeName: (ctx) => DonorHospitalsScreen(),
           DispensaryHomeScreen.routeName: (ctx) => DispensaryHomeScreen(),
           DispensaryOrganInfoScreen.routeName: (ctx) =>
-              DispensaryOrganInfoScreen(),
+              DispensaryOrganInfoScreen(id: 0),
           DispenserPatientInfoScreen.routeName: (ctx) =>
-              DispenserPatientInfoScreen(),
+              DispenserPatientInfoScreen(id: 0),
           DispensaryAppointmentScreen.routeName: (ctx) =>
               DispensaryAppointmentScreen(),
           PatientHomeScreen.routeName: (ctx) => PatientHomeScreen(),

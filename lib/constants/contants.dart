@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../screens/donor_home_screen.dart';
 import '../screens/donor_evaluation_screen.dart';
@@ -33,6 +35,17 @@ const token =
 var ip = 'http://161.35.75.184:1234';
 String? extractedRole;
 String? extractedToken;
+
+
+final dio = Dio()
+  ..interceptors.add(PrettyDioLogger(
+      requestHeader: true,
+      requestBody: true,
+      responseBody: true,
+      responseHeader: false,
+      error: true,
+      compact: true,
+      maxWidth: 90));
 
 var mainColor = const Color(0xFF235068);
 var secondaryColor = const Color(0xFF9E9E9E);

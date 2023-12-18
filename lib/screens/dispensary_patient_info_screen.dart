@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/widgets/text_fields_controller.dart';
 
 import '../constants/contants.dart';
 import '../constants/registration_constants.dart';
@@ -8,7 +9,10 @@ import '../widgets/text_fields_list.dart';
 
 class DispenserPatientInfoScreen extends StatefulWidget {
   static const routeName = '/dispenser-patient-info-screen';
-  const DispenserPatientInfoScreen({super.key});
+
+  const DispenserPatientInfoScreen({super.key, required this.id});
+
+  final int id;
 
   @override
   State<DispenserPatientInfoScreen> createState() =>
@@ -18,19 +22,19 @@ class DispenserPatientInfoScreen extends StatefulWidget {
 class _DispenserPatientInfoScreenState
     extends State<DispenserPatientInfoScreen> {
   final _formKey = GlobalKey<FormState>();
-  String? _enteredFName;
-  String? _selectedOrgan;
-  String? _enteredPhoneNumber;
-  String? _enteredAddress;
-  String? _enteredCity;
-  String? _enteredDistrict;
-  String? _enteredPassportNumber;
-  String? _enteredPINFL;
-  String? _selectedTypeOfDonation;
-  String? _enteredComment;
-  String? _selectedBloodGroup;
-  String? _selectedRHFactor;
-  String? _enteredDiagnosis;
+  final _enteredFName = TextEditingController();
+  final _selectedOrgan = TextEditingController();
+  final _enteredPhoneNumber = TextEditingController();
+  final _enteredAddress = TextEditingController();
+  final _enteredCity = TextEditingController();
+  final _enteredDistrict = TextEditingController();
+  final _enteredPassportNumber = TextEditingController();
+  final _enteredPINFL = TextEditingController();
+  final _selectedTypeOfDonation = TextEditingController();
+  final _enteredComment = TextEditingController();
+  final _selectedBloodGroup = TextEditingController();
+  final _selectedRHFactor = TextEditingController();
+  final _enteredDiagnosis = TextEditingController();
   double? _currentSliderValue = 0;
 
   @override
@@ -62,7 +66,7 @@ class _DispenserPatientInfoScreenState
                       const SizedBox(height: 20),
                       Form(
                         key: _formKey,
-                        child: TextFieldsList(
+                        child: TextFieldsListController(
                           enteredFName: _enteredFName,
                           selectedOrgan: _selectedOrgan,
                           enteredPhoneNumber: _enteredPhoneNumber,
@@ -89,7 +93,8 @@ class _DispenserPatientInfoScreenState
                                   errorBorder: errorBorderParams,
                                   focusedErrorBorder: focusedErrorBorderParams,
                                 ),
-                                onChanged: (value) => _enteredDiagnosis = value,
+                                onChanged: (value) {},
+                                controller: _enteredDiagnosis,
                                 validator: validateComment,
                               ),
                               const SizedBox(height: 20),
@@ -105,10 +110,10 @@ class _DispenserPatientInfoScreenState
                               SliderTheme(
                                 data: SliderTheme.of(context).copyWith(
                                   trackHeight:
-                                      4.0, // Adjust track height (thickness)
+                                  4.0, // Adjust track height (thickness)
                                   thumbShape: RoundSliderThumbShape(
                                       enabledThumbRadius:
-                                          10.0), // Adjust thumb radius
+                                      10.0), // Adjust thumb radius
                                   // Other properties like activeTrackColor, inactiveTrackColor, overlayColor, etc.
                                 ),
                                 child: Container(
@@ -123,8 +128,8 @@ class _DispenserPatientInfoScreenState
                                     label: _currentSliderValue == 0
                                         ? 'Non Urgent'
                                         : _currentSliderValue == 1
-                                            ? 'Urgent'
-                                            : 'Emergency',
+                                        ? 'Urgent'
+                                        : 'Emergency',
                                     onChanged: (value) {
                                       setState(() {
                                         _currentSliderValue = value;
@@ -139,7 +144,7 @@ class _DispenserPatientInfoScreenState
                                 padding: EdgeInsets.symmetric(horizontal: 0),
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
                                     const Text(
                                       'Non Urgent',
@@ -173,14 +178,19 @@ class _DispenserPatientInfoScreenState
                               ),
                             ],
                           ),
+                          dateController: TextEditingController(),
                         ),
                       ),
                       const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          RejectButton(onTapFunc: () {}),
-                          AcceptButton(title: 'Accept', onTapFunc: () {}),
+                          RejectButton(onTapFunc: () async {
+                            await rejectEvent();
+                          }),
+                          AcceptButton(title: 'Accept', onTapFunc: () async {
+                            await acceptEvent();
+                          }),
                         ],
                       ),
                     ],
@@ -192,5 +202,73 @@ class _DispenserPatientInfoScreenState
         ],
       ),
     );
+  }
+
+  Future<void> rejectEvent() async {
+    dio.options.headers['Authorization'] = "Bearer $token";
+    dio.options.headers['Content-Type'] = 'application/json';
+    print("REJECT PRESSED");
+    final response = await dio
+        .put('$ip/api/dispensary/fillInPatientMedicalCard', queryParameters: {
+      'patientId': widget.id,
+      'address': _enteredAddress.text,
+      'city': _enteredCity.text,
+      'passportNumber': _enteredPassportNumber.text,
+      'pinfl': _enteredPINFL.text,
+      'donationPrice': 120,
+      'diagnosis': _enteredDiagnosis.text,
+      'birthday': '2000-12-09',
+      'district': _enteredDistrict.text,
+      'bloodType': _selectedBloodGroup.text,
+      'rhFactor': _selectedRHFactor.text,
+      'organReceives': 1,
+      'comments': _enteredComment.text,
+      'urgencyRate': (_currentSliderValue ?? 0).toInt(),
+      'isApproved': false,
+    });
+    print("reject: ${response.data}");
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: Colors.green, content: Text("Done 🎉")));
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text("Something went wrong 😢")));
+    }
+  }
+
+  Future<void> acceptEvent() async {
+    dio.options.headers['Authorization'] = "Bearer $token";
+    dio.options.headers['Content-Type'] = 'application/json';
+    print("ACCEPT PRESSED");
+    final response = await dio
+        .put('$ip/api/dispensary/fillInPatientMedicalCard', queryParameters: {
+      'patientId': widget.id,
+      'address': _enteredAddress.text,
+      'city': _enteredCity.text,
+      'passportNumber': _enteredPassportNumber.text,
+      'pinfl': _enteredPINFL.text,
+      'donationPrice': 120,
+      'birthday': '2000-12-09',
+      'diagnosis': _enteredDiagnosis.text,
+      'district': _enteredDistrict.text,
+      'bloodType': _selectedBloodGroup.text,
+      'rhFactor': _selectedRHFactor.text,
+      'organReceives': 1,
+      'comments': _enteredComment.text,
+      'urgencyRate': (_currentSliderValue ?? 0).toInt(),
+      'isApproved': true,
+    });
+    print("reject: ${response.data}");
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: Colors.green, content: Text("Done 🎉")));
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text("Something went wrong 😢")));
+    }
   }
 }

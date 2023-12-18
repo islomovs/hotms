@@ -1,4 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:myapp/widgets/text_fields_controller.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../constants/contants.dart';
 import '../constants/registration_constants.dart';
@@ -8,7 +11,10 @@ import '../widgets/text_fields_list.dart';
 
 class DispensaryOrganInfoScreen extends StatefulWidget {
   static const routeName = '/dispenser-organ-info-screen';
-  const DispensaryOrganInfoScreen({super.key});
+
+  final int id;
+
+  const DispensaryOrganInfoScreen({super.key, required this.id});
 
   @override
   State<DispensaryOrganInfoScreen> createState() =>
@@ -17,20 +23,20 @@ class DispensaryOrganInfoScreen extends StatefulWidget {
 
 class _DispensaryOrganInfoScreenState extends State<DispensaryOrganInfoScreen> {
   final _formKey = GlobalKey<FormState>();
-  String? _enteredFName;
-  String? _selectedOrgan;
-  String? _enteredPhoneNumber;
-  String? _enteredAddress;
-  String? _enteredCity;
-  String? _enteredDistrict;
-  String? _enteredPassportNumber;
-  String? _enteredDiagnosis;
-  String? _enteredPINFL;
-  String? _selectedTypeOfDonation;
-  String? _enteredComment;
-  String? _selectedBloodGroup;
-  String? _selectedRHFactor;
-  String? _enteredPrice;
+  final _enteredFName = TextEditingController();
+  final _selectedOrgan = TextEditingController();
+  final _enteredPhoneNumber = TextEditingController();
+  final _enteredAddress = TextEditingController();
+  final _enteredCity = TextEditingController();
+  final _enteredDistrict = TextEditingController();
+  final _enteredPassportNumber = TextEditingController();
+  final _enteredPINFL = TextEditingController();
+  final _selectedTypeOfDonation = TextEditingController();
+  final _enteredComment = TextEditingController();
+  final _selectedBloodGroup = TextEditingController();
+  final _selectedRHFactor = TextEditingController();
+  final _enteredPrice = TextEditingController();
+  final _enteredBirthday = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +67,7 @@ class _DispensaryOrganInfoScreenState extends State<DispensaryOrganInfoScreen> {
                       const SizedBox(height: 20),
                       Form(
                         key: _formKey,
-                        child: TextFieldsList(
+                        child: TextFieldsListController(
                           enteredFName: _enteredFName,
                           selectedOrgan: _selectedOrgan,
                           enteredPhoneNumber: _enteredPhoneNumber,
@@ -89,12 +95,15 @@ class _DispensaryOrganInfoScreenState extends State<DispensaryOrganInfoScreen> {
                                   errorBorder: errorBorderParams,
                                   focusedErrorBorder: focusedErrorBorderParams,
                                 ),
-                                onChanged: (value) => _enteredPrice = value,
+                                onChanged: (value) {},
+                                controller: _enteredPrice,
                                 validator: validatePrice,
                               ),
                               const SizedBox(height: 30),
                               DropdownButtonFormField(
-                                value: _selectedTypeOfDonation,
+                                value: _selectedTypeOfDonation.text.isEmpty
+                                    ? null
+                                    : _selectedTypeOfDonation.text,
                                 style: originalTextStyle,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
@@ -114,9 +123,8 @@ class _DispensaryOrganInfoScreenState extends State<DispensaryOrganInfoScreen> {
                                       ));
                                 }).toList(),
                                 onChanged: (newValue) {
-                                  setState(() {
-                                    _selectedTypeOfDonation = newValue;
-                                  });
+                                  _selectedTypeOfDonation.text =
+                                      newValue.toString();
                                 },
                                 decoration: InputDecoration(
                                   labelText: 'Type of donation',
@@ -130,14 +138,98 @@ class _DispensaryOrganInfoScreenState extends State<DispensaryOrganInfoScreen> {
                               const SizedBox(height: 20),
                             ],
                           ),
+                          dateController: _enteredBirthday,
                         ),
                       ),
                       const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          RejectButton(onTapFunc: () {}),
-                          AcceptButton(title: 'Accept', onTapFunc: () {}),
+                          RejectButton(
+                            onTapFunc: () async {
+                              dio.options.headers['Authorization'] =
+                                  "Bearer $token";
+                              dio.options.headers['Content-Type'] =
+                                  'application/json';
+                              print("REJECT PRESSED");
+
+                              final response = await dio.put(
+                                  '$ip/api/dispensary/fillInDonorMedicalCard',
+                                  queryParameters: {
+                                    'donorId': widget.id,
+                                    'address': _enteredAddress.text,
+                                    'city': _enteredCity.text,
+                                    'passportNumber':
+                                        _enteredPassportNumber.text,
+                                    'pinfl': _enteredPINFL.text,
+                                    'donationPrice': _enteredPrice.text,
+                                    'birthday': '2000-12-09',
+                                    'bloodType': _selectedBloodGroup.text,
+                                    'district': _enteredDistrict.text,
+                                    'rhFactor': _selectedRHFactor.text,
+                                    'organDonates': 1,
+                                    'comments': _enteredComment.text,
+                                    'isApproved': false,
+                                  });
+                              print("reject: ${response.data}");
+                              if (response.statusCode == 200) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        backgroundColor: Colors.green,
+                                        content: Text("Done :)")));
+                                Navigator.pop(context);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        backgroundColor: Colors.red,
+                                        content:
+                                            Text("Something went wrong :(")));
+                              }
+                            },
+                          ),
+                          AcceptButton(
+                            title: 'Accept',
+                            onTapFunc: () async {
+                              dio.options.headers['Authorization'] =
+                                  "Bearer $token";
+                              dio.options.headers['Content-Type'] =
+                                  'application/json';
+                              print("ACCEPT PRESSED");
+
+                              final response = await dio.put(
+                                  '$ip/api/dispensary/fillInDonorMedicalCard',
+                                  queryParameters: {
+                                    'donorId': widget.id,
+                                    'address': _enteredAddress.text,
+                                    'city': _enteredCity.text,
+                                    'passportNumber':
+                                    _enteredPassportNumber.text,
+                                    'pinfl': _enteredPINFL.text,
+                                    'donationPrice': _enteredPrice.text,
+                                    'birthday': '2000-12-09',
+                                    'bloodType': _selectedBloodGroup.text,
+                                    'district': _enteredDistrict.text,
+                                    'rhFactor': _selectedRHFactor.text,
+                                    'organDonates': 1,
+                                    'comments': _enteredComment.text,
+                                    'isApproved': true,
+                                  });
+                              print("response $response");
+                              if (response.statusCode == 200) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        backgroundColor: Colors.green,
+                                        content: Text("Done :)")));
+                                Navigator.pop(context);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        backgroundColor: Colors.red,
+                                        content:
+                                            Text("Something went wrong :(")));
+                              }
+                            },
+                          ),
                         ],
                       ),
                     ],

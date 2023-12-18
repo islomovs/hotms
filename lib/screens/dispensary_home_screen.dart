@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/data/DonorObjectResponse.dart';
@@ -92,8 +91,7 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
         maxTime: DateTime(2100, 12, 31),
         onConfirm: (date) async {
           print("date99: ${DateFormat('yyyy-MM-ddTHH:mm').format(date)}");
-          final time= DateFormat('yyyy-MM-ddTHH:mm').format(date);
-          final dio = Dio();
+          final time = DateFormat('yyyy-MM-ddTHH:mm').format(date);
           dio.options.headers['Authorization'] = "Bearer $token";
           dio.options.headers['Content-Type'] = 'application/json';
           if (model is PatientObject) {
@@ -115,7 +113,6 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
                 });
             print("response setDate: ${response.data}");
           }
-
         },
         currentTime: DateTime.now(),
         locale: dp.LocaleType.en,
@@ -621,7 +618,9 @@ class DispenserHomeSectionListTile extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    const DispenserPatientInfoScreen(),
+                                    DispenserPatientInfoScreen(
+                                  id: model.patient?.id ?? 0,
+                                ),
                               ));
                         }
                       },
@@ -754,21 +753,13 @@ class DispenserHomeSectionListTile extends StatelessWidget {
                       ),
                       onPressed: () {
                         if (model.isApproved == null) {
-                          if (model.isPatient) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const DispenserPatientInfoScreen(),
-                                ));
-                          } else {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const DispensaryOrganInfoScreen(),
-                                ));
-                          }
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DispensaryOrganInfoScreen(
+                                  id: model.donorId?.id?.toInt() ?? 0,
+                                ),
+                              ));
                         }
                       },
                       child: Text(
