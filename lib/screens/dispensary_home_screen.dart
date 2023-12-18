@@ -191,7 +191,6 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
 // 3. print the type and value
     print('${jsonData[0]} : ${parsedJson['dispensaryId']}');
     super.initState();
-
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -199,7 +198,6 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
   Widget build(BuildContext context) {
     List<PatientObject> patientsEx =
         Provider.of<DispensaryOperations>(context).getPatientsList;
-
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -446,7 +444,6 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
 
 class DispenserHomeSectionList extends StatelessWidget {
   Widget dHSlistTile;
-
   DispenserHomeSectionList({
     required this.dHSlistTile,
     super.key,

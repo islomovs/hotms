@@ -110,6 +110,11 @@ class _DonorHospitalsScreenState extends State<DonorHospitalsScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   void didChangeDependencies() {
     Provider.of<Donors>(context).fetchAllHospitals();
     super.didChangeDependencies();
