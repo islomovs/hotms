@@ -139,6 +139,7 @@ class Donor {
   final User? user;
   final String? phoneNumber;
   final String? address;
+
   // ... other fields
 
   Donor({
@@ -176,12 +177,12 @@ class Patient {
   // ... other fields
 
   Patient({
-    required this.id,
-    required this.user,
-    required this.phoneNumber,
-    required this.city,
-    required this.fullName,
-    required this.isApproved,
+    this.id,
+    this.user,
+    this.phoneNumber,
+    this.city,
+    this.fullName,
+    this.isApproved,
 
     // ... other fields
   });
@@ -237,6 +238,7 @@ class DispensaryOperations with ChangeNotifier {
   }
 
   List<int> patientIds = [];
+
   idsofPatients() {
     for (var patient in patientsList) {
       return patientIds.add(patient.id!);
@@ -244,16 +246,17 @@ class DispensaryOperations with ChangeNotifier {
   }
 
   Future<void> fetchPatientsList(String jwtToken) async {
-    final response = await http.get(
-      Uri.parse('$ip/api/dispensary/allDispensaryPatients'),
-      headers: {
-        'Authorization': 'Bearer $jwtToken',
-        'Content-Type': 'application/json',
-      },
-    );
+    if (patientsList.isEmpty) {
+      final response = await http.get(
+        Uri.parse('$ip/api/dispensary/allDispensaryPatients'),
+        headers: {
+          'Authorization': 'Bearer $jwtToken',
+          'Content-Type': 'application/json',
+        },
+      );
 
-    if (response.statusCode == 200) {
-      print('Raw JSON response: ${response.body}');
+      if (response.statusCode == 200) {
+        print('Raw JSON response: ${response.body}');
 
       // Decoding the JSON response as a List
       final List<dynamic> jsonData = json.decode(response.body) as List;
@@ -272,11 +275,14 @@ class DispensaryOperations with ChangeNotifier {
           // Cast back to a list of PatientObject
           .toList();
 
-      print('HERE IS MY PATIENTS LIST: $patientsList');
-      notifyListeners(); // If using a state management solution like Provider
-    } else {
-      throw Exception(
-          'Failed to load data with status code: ${response.statusCode}');
+        patientsList[0].patient?.id;
+
+        print('HERE IS MY PATIENTS LIST: $patientsList');
+        notifyListeners(); // If using a state management solution like Provider
+      } else {
+        throw Exception(
+            'Failed to load data with status code: ${response.statusCode}');
+      }
     }
   }
 

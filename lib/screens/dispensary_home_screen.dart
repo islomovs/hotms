@@ -82,6 +82,7 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
 
   String? _dateText;
   TextEditingController _dateController = TextEditingController();
+
   Future<void> _selectDateTime(BuildContext context) async {
     dp.DatePicker.showDateTimePicker(
       context,
@@ -95,7 +96,8 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
         });
       },
       currentTime: DateTime.now(),
-      locale: dp.LocaleType.en, // Change to your locale
+      locale: dp.LocaleType.en,
+      // Change to your locale
       theme: dp.DatePickerTheme(
         backgroundColor: Colors.white,
         itemStyle: TextStyle(
@@ -189,6 +191,7 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
 // 3. print the type and value
     print('${jsonData[0]} : ${parsedJson['dispensaryId']}');
     super.initState();
+
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -443,6 +446,7 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
 
 class DispenserHomeSectionList extends StatelessWidget {
   Widget dHSlistTile;
+
   DispenserHomeSectionList({
     required this.dHSlistTile,
     super.key,
@@ -533,6 +537,7 @@ class DispenserHomeSectionListTile extends StatelessWidget {
   bool status;
   bool? isProcessing;
   Widget column4;
+
   DispenserHomeSectionListTile({
     required int itemsToShow,
     required this.date,
