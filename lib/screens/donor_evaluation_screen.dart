@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../constants/contants.dart';
@@ -13,6 +16,7 @@ import '../providers/donor.dart';
 
 class DonorEvaluationScreen extends StatefulWidget {
   static const routeName = '/donor-evaluation-screen';
+
   DonorEvaluationScreen({super.key});
 
   @override
@@ -28,7 +32,7 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
   String? _enteredName;
   String? _enteredPhoneNumber;
 
-  bool? isDelivered = false;
+  bool? isDelivered = true;
   bool? isInProcess = false;
   bool? finalDecision = false;
 
@@ -71,12 +75,31 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
 
   @override
   void didChangeDependencies() {
-    Provider.of<Donors>(context).fetchDispensaryVisitsInfo();
+    Provider.of<Donors>(context)
+      ..fetchMyOperations()
+      ..fetchDispensaryVisitsInfo();
     super.didChangeDependencies();
   }
 
+  List<String> months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final donor = Provider.of<Donors>(context).donorE1;
+    final donorO = Provider.of<Donors>(context).donorO;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,33 +127,37 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                       subtitle: 'Monitor and adjust your progress',
                     ),
                     const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        StatusWidget(
-                          title: 'Your appointment : October 21, 15:30',
-                          appStatusWidget: ApplicationStatusWidget(
-                            status: isDelivered!,
+                    if (donor.isProcessing ?? false)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          StatusWidget(
+                            title:
+                                'Your appointment : ${months[(int.tryParse((donor.date ?? '').split('-')[1]) ?? 1) - 1]} ${(donor.date ?? '').split('-')[2]}',
+                            appStatusWidget: ApplicationStatusWidget(
+                              status: true,
+                            ),
+                            status: true,
                           ),
-                          status: isDelivered!,
-                        ),
-                        StatusWidget(
-                          title: 'Your data is processing',
-                          appStatusWidget: ApplicationStatusWidget(
-                            status: isInProcess!,
+                          StatusWidget(
+                            title: 'Your data is processing',
+                            appStatusWidget: ApplicationStatusWidget(
+                              status: true,
+                            ),
+                            status: true,
                           ),
-                          status: isInProcess!,
-                        ),
-                        StatusWidget(
-                          title: 'Accepted/Rejected',
-                          appStatusWidget: ApplicationStatusWidget(
-                            status: finalDecision!,
+                          StatusWidget(
+                            title: (donor.donorId?.isApproved ?? false)
+                                ? 'Accepted'
+                                : 'Rejected',
+                            appStatusWidget: ApplicationStatusWidget(
+                              status: true,
+                            ),
+                            status: true,
                           ),
-                          status: finalDecision!,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 50),
+                        ],
+                      ),
+                    if (donor.isProcessing ?? false) const SizedBox(height: 50),
                     HeadingWidget(title: 'Make an appointment'),
                     const SizedBox(height: 20),
                     Form(
@@ -272,7 +299,7 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                                           420) /
                                       3,
                                   child: Text(
-                                    '11.11.2023 ',
+                                    '${(donorO.operationTime ?? '').split(' ')[0].split('-')[2]}.${(donorO.operationTime ?? '').split(' ')[0].split('-')[1]}.${(donorO.operationTime ?? '').split(' ')[0].split('-')[0]}',
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: blackCol,
@@ -284,7 +311,7 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                                           420) /
                                       3,
                                   child: Text(
-                                    '14:00',
+                                    (donorO.operationTime ?? '').split(' ')[1],
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: blackCol,
@@ -296,7 +323,7 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                                           420) /
                                       3,
                                   child: Text(
-                                    'Full name',
+                                    donorO.doctorName ?? '',
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: blackCol,
