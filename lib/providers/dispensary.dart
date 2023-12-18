@@ -277,8 +277,8 @@ class DispensaryOperations with ChangeNotifier {
 
         patientsList[0].patient?.id;
 
-        print('HERE IS MY PATIENTS LIST: $patientsList');
-        notifyListeners(); // If using a state management solution like Provider
+        print('HERE IS MY PATIENTS LIST: ${patientsList[0].patient?.phoneNumber}');
+        notifyListeners();
       } else {
         throw Exception(
             'Failed to load data with status code: ${response.statusCode}');
