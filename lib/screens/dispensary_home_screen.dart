@@ -269,7 +269,7 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    DispenserHomeSectionList(
+                  if(patientsEx.isNotEmpty)  DispenserHomeSectionList(
                       itemsToShow: _itemsToShow1,
                       dHSlistTile: DispenserHomeSectionListTile(
                         isProcessing: isProcessing,
