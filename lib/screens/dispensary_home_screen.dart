@@ -196,6 +196,7 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
   Widget build(BuildContext context) {
     List<PatientObject> patientsEx =
         Provider.of<DispensaryOperations>(context).getPatientsList;
+
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -272,15 +273,15 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
                       dHSlistTile: DispenserHomeSectionListTile(
                         isProcessing: isProcessing,
                         itemsToShow: _itemsToShow1,
-                        date: patientsEx[0].date.toString(),
+                        date: '',
                         time: '21:00',
-                        fullName: patientsEx[0].patient.fullName,
+                        fullName: patientsEx[0].patient.fullName!,
                         age: patients['age']!,
-                        phoneNumber: patientsEx[0].patient.phoneNumber,
+                        phoneNumber: patientsEx[0].patient.phoneNumber!,
                         city: patients['city']!,
-                        userType: patientsEx[0].patient.user.role,
+                        userType: patientsEx[0].patient.user!.role!,
                         subUserType: patients['subUser']!,
-                        status: patientsEx[0].patient.isApproved,
+                        status: patientsEx[0].patient.isApproved!,
                         column4: Container(
                           alignment: Alignment.topLeft,
                           width: (MediaQuery.of(context).size.width - 620) / 4,

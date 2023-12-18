@@ -6,12 +6,12 @@ import 'package:http/http.dart' as http;
 import '../constants/contants.dart';
 
 class CreatorId {
-  final int id;
-  final String email;
-  final String password;
-  final String role;
-  final String fullName;
-  final String? imageLink; // This can be null, so it should be nullable
+  final int? id;
+  final String? email;
+  final String? password;
+  final String? role;
+  final String? fullName;
+  // final String? imageLink; // This can be null, so it should be nullable
 
   CreatorId({
     required this.id,
@@ -19,7 +19,7 @@ class CreatorId {
     required this.password,
     required this.role,
     required this.fullName,
-    this.imageLink,
+    // this.imageLink,
   });
 
   factory CreatorId.fromJson(Map<String, dynamic> json) {
@@ -29,15 +29,15 @@ class CreatorId {
       password: json['password'] ?? '', // Provide default value if null
       role: json['role'] ?? '', // Provide default value if null
       fullName: json['fullName'] ?? '', // Provide default value if null
-      imageLink: json['imageLink'], // Can be null
+      // imageLink: json['imageLink'], // Can be null
     );
   }
 }
 
 class DispensaryId {
-  final int id;
-  final String name;
-  final CreatorId creatorId;
+  final int? id;
+  final String? name;
+  final CreatorId? creatorId;
 
   DispensaryId({
     required this.id,
@@ -57,11 +57,11 @@ class DispensaryId {
 
 // Main class representing each item in the JSON array
 class DonorObject {
-  final int id;
-  final Dispensary dispensary;
-  final Donor donor;
+  final int? id;
+  final Dispensary? dispensary;
+  final Donor? donor;
   final String? date;
-  final bool isActive;
+  final bool? isActive;
 
   DonorObject({
     required this.id,
@@ -84,9 +84,9 @@ class DonorObject {
 
 // Dispensary class to represent the 'dispensaryId' object in the JSON
 class Dispensary {
-  final int id;
-  final String name;
-  final User creator;
+  final int? id;
+  final String? name;
+  final User? creator;
 
   Dispensary({
     required this.id,
@@ -105,11 +105,11 @@ class Dispensary {
 
 // User class to represent the 'creatorId' and 'userId' objects in the JSON
 class User {
-  final int id;
-  final String email;
-  final String password;
-  final String role;
-  final String fullName;
+  final int? id;
+  final String? email;
+  final String? password;
+  final String? role;
+  final String? fullName;
   final String? imageLink;
 
   User({
@@ -135,9 +135,9 @@ class User {
 
 // Donor class to represent the 'donorId' object in the JSON
 class Donor {
-  final int id;
-  final User user;
-  final String phoneNumber;
+  final int? id;
+  final User? user;
+  final String? phoneNumber;
   final String? address;
   // ... other fields
 
@@ -167,12 +167,12 @@ List<DonorObject> parseRecords(String jsonData) {
 }
 
 class Patient {
-  final int id;
-  final User user;
-  final String phoneNumber;
-  final String city;
-  final String fullName;
-  final bool isApproved;
+  final int? id;
+  final User? user;
+  final String? phoneNumber;
+  final String? city;
+  final String? fullName;
+  final bool? isApproved;
   // ... other fields
 
   Patient({
@@ -201,11 +201,11 @@ class Patient {
 
 // Adjusted Record class for patients
 class PatientObject {
-  final int id;
+  final int? id;
   final Dispensary dispensary;
   final Patient patient;
   final String? date;
-  final bool isActive;
+  final bool? isActive;
 
   PatientObject({
     required this.id,
@@ -239,7 +239,7 @@ class DispensaryOperations with ChangeNotifier {
   List<int> patientIds = [];
   idsofPatients() {
     for (var patient in patientsList) {
-      return patientIds.add(patient.id);
+      return patientIds.add(patient.id!);
     }
   }
 
@@ -256,21 +256,20 @@ class DispensaryOperations with ChangeNotifier {
       print('Raw JSON response: ${response.body}');
 
       // Decoding the JSON response as a List
-      final List<dynamic> jsonData = json.decode(response.body);
+      final List<dynamic> jsonData = json.decode(response.body) as List;
 
       // Assuming that PatientObject has a proper fromJson method
       patientsList = jsonData
           .where((item) => item != null) // Exclude null items
           .map((item) {
-            try {
-              return PatientObject.fromJson(item);
-            } catch (e) {
-              print('Error parsing Record: $e');
-              return null;
-            }
-          })
-          .where((item) => item != null) // Exclude items that failed to parse
-          .cast<PatientObject>() // Cast back to a list of PatientObject
+        // try {
+        return PatientObject.fromJson(item);
+        // } catch (e) {
+        //   print('Error parsing Record: $e');
+        // return PatientObject.fromJson({});
+        // }
+      })
+          // Cast back to a list of PatientObject
           .toList();
 
       print('HERE IS MY PATIENTS LIST: $patientsList');
@@ -293,7 +292,7 @@ class DispensaryOperations with ChangeNotifier {
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
       print(
-          '${DispensaryId.fromJson(jsonData).creatorId.email}, ${DispensaryId.fromJson(jsonData).creatorId.fullName} ');
+          '${DispensaryId.fromJson(jsonData).creatorId!.email}, ${DispensaryId.fromJson(jsonData).creatorId!.fullName} ');
       return DispensaryId.fromJson(jsonData);
     } else {
       throw Exception('Failed to load data');

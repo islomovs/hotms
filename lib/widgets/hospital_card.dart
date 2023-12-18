@@ -6,10 +6,12 @@ import './request_button.dart';
 class HospitalCard extends StatelessWidget {
   final String title;
   final String description;
+  VoidCallback onTap;
 
   HospitalCard({
     required this.title,
     required this.description,
+    required this.onTap,
     super.key,
   });
 
@@ -44,7 +46,7 @@ class HospitalCard extends StatelessWidget {
             Icons.done,
             color: mainColor,
           ),
-          onTap: () {},
+          onTap: onTap,
         ),
       ],
     );
