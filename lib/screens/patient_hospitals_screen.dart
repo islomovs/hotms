@@ -11,6 +11,7 @@ import '../providers/patient.dart';
 
 class PatientHospitalsScreen extends StatefulWidget {
   static const routeName = '/patient-hospitals-screen';
+
   const PatientHospitalsScreen({super.key});
 
   @override
@@ -111,6 +112,7 @@ class _PatientHospitalsScreenState extends State<PatientHospitalsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final hospitals = Provider.of<Patients>(context).patientH;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,7 +167,7 @@ class _PatientHospitalsScreenState extends State<PatientHospitalsScreen> {
                                 ),
                                 const SizedBox(width: 10),
                                 Text(
-                                  '(144)',
+                                  '(${hospitals.length})',
                                   style: listHeadingTitleTextStyle,
                                 ),
                               ],
@@ -211,22 +213,22 @@ class _PatientHospitalsScreenState extends State<PatientHospitalsScreen> {
                               subtitle:
                                   'You can safely start treatment, which we carry out as quickly and efficiently as possible in Tashkent.',
                             ),
-                            InkWell(
-                              onTap: _showMore1,
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'Show more',
-                                    style: listTitleTextStyle,
-                                  ),
-                                  Icon(
-                                    Icons.keyboard_arrow_down,
-                                    size: 30,
-                                    color: patientListCol,
-                                  )
-                                ],
-                              ),
-                            ),
+                            // InkWell(
+                            //   onTap: _showMore1,
+                            //   child: Row(
+                            //     children: [
+                            //       Text(
+                            //         'Show more',
+                            //         style: listTitleTextStyle,
+                            //       ),
+                            //       Icon(
+                            //         Icons.keyboard_arrow_down,
+                            //         size: 30,
+                            //         color: patientListCol,
+                            //       )
+                            //     ],
+                            //   ),
+                            // ),
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -240,69 +242,70 @@ class _PatientHospitalsScreenState extends State<PatientHospitalsScreen> {
                             crossAxisSpacing: 25,
                             mainAxisSpacing: 0,
                           ),
-                          itemCount: _itemsToShow1,
-                          itemBuilder: (context, index) {
+                          itemCount: hospitals.length,
+                          itemBuilder: (_, index) {
                             return HospitalCard(
-                              title: hospitalTitles[index],
-                              description: hospitalDescriptions[index],
+                              title: hospitals[index].name ?? '',
+                              description: hospitals[index].description ?? '',
+                              img: hospitals[index].imageLink,
                               onTap: _submitData,
                             );
                           },
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            HeadingWidget(
-                              title: 'Gastroenterology',
-                              subtitle:
-                                  'You can safely start treatment, which we carry out as quickly and efficiently as possible in Tashkent.',
-                            ),
-                            InkWell(
-                              onTap: _showMore2,
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'Show more',
-                                    style: listTitleTextStyle,
-                                  ),
-                                  Icon(
-                                    Icons.keyboard_arrow_down,
-                                    size: 30,
-                                    color: patientListCol,
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            childAspectRatio: 1,
-                            crossAxisSpacing: 25,
-                            mainAxisSpacing: 0,
-                          ),
-                          itemCount: _itemsToShow2,
-                          itemBuilder: (context, index) {
-                            return HospitalCard(
-                              title: hospitalTitles[index],
-                              description: hospitalDescriptions[index],
-                              onTap: _submitData,
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                    // const SizedBox(height: 20),
+                    // Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: [
+                    //     Row(
+                    //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //       children: [
+                    //         HeadingWidget(
+                    //           title: 'Gastroenterology',
+                    //           subtitle:
+                    //               'You can safely start treatment, which we carry out as quickly and efficiently as possible in Tashkent.',
+                    //         ),
+                    //         InkWell(
+                    //           onTap: _showMore2,
+                    //           child: Row(
+                    //             children: [
+                    //               Text(
+                    //                 'Show more',
+                    //                 style: listTitleTextStyle,
+                    //               ),
+                    //               Icon(
+                    //                 Icons.keyboard_arrow_down,
+                    //                 size: 30,
+                    //                 color: patientListCol,
+                    //               )
+                    //             ],
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //     const SizedBox(height: 20),
+                    //     GridView.builder(
+                    //       shrinkWrap: true,
+                    //       physics: const NeverScrollableScrollPhysics(),
+                    //       gridDelegate:
+                    //           const SliverGridDelegateWithFixedCrossAxisCount(
+                    //         crossAxisCount: 3,
+                    //         childAspectRatio: 1,
+                    //         crossAxisSpacing: 25,
+                    //         mainAxisSpacing: 0,
+                    //       ),
+                    //       itemCount: _itemsToShow2,
+                    //       itemBuilder: (context, index) {
+                    //         return HospitalCard(
+                    //           title: hospitalTitles[index],
+                    //           description: hospitalDescriptions[index],
+                    //           onTap: _submitData,
+                    //         );
+                    //       },
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),

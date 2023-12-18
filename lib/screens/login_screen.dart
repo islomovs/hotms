@@ -247,7 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     title: 'Log in',
                     onTapFunc: () {
                       Navigator.of(context).pushNamed(
-                        DonorHomeScreen.routeName,
+                        PatientHomeScreen.routeName,
                         arguments: extractedToken,
                       );
                     },

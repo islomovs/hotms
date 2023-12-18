@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../constants/contants.dart';
 import '../constants/registration_constants.dart';
+import '../providers/patient.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
-import '../widgets/text_fields_list.dart';
 import '../widgets/status_widget.dart';
 import '../widgets/application_status_widget.dart';
+import '../widgets/text_fields_list_reader.dart';
 
 class PatientInfoScreen extends StatefulWidget {
   static const routeName = '/patient-info-screen';
@@ -32,13 +34,36 @@ class _PatientInfoScreenState extends State<PatientInfoScreen> {
   String? _selectedBloodGroup;
   String? _selectedRHFactor;
   double? _currentSliderValue = 0;
+  String? _birthday;
 
   bool? isDelivered = false;
   bool? isInProcess = false;
   bool? finalDecision = false;
 
   @override
+  void didChangeDependencies() {
+    Provider.of<Patients>(context).fetchPatientInfo();
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final patients = Provider.of<Patients>(context).patientInfo;
+    _birthday = patients.birthday;
+    _enteredFName = patients.userId?.fullName;
+    _enteredPhoneNumber = patients.phoneNumber;
+    _enteredAddress = patients.address;
+    _enteredCity = patients.city;
+    _enteredDistrict = patients.district;
+    _enteredPassportNumber = patients.passportNumber;
+    //_enteredDiagnosis = patients.;
+    _enteredPINFL = patients.pinfl;
+    //_selectedTypeOfDonation = patients.typeOfDonation;
+    _enteredComment = patients.comments;
+    _selectedBloodGroup = patients.bloodType;
+    _selectedRHFactor = patients.rhFactor;
+    _selectedOrgan = patients.organDonates?.name;
+    //isDelivered = patients.is;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,7 +123,8 @@ class _PatientInfoScreenState extends State<PatientInfoScreen> {
                       const SizedBox(height: 20),
                       Form(
                         key: _formKey,
-                        child: TextFieldsList(
+                        child: TextFieldsListReader(
+                          birthday: _birthday,
                           enteredFName: _enteredFName,
                           selectedOrgan: _selectedOrgan,
                           enteredPhoneNumber: _enteredPhoneNumber,
