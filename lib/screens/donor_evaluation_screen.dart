@@ -1,4 +1,9 @@
+import 'dart:developer';
+
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../constants/contants.dart';
@@ -13,6 +18,7 @@ import '../providers/donor.dart';
 
 class DonorEvaluationScreen extends StatefulWidget {
   static const routeName = '/donor-evaluation-screen';
+
   DonorEvaluationScreen({super.key});
 
   @override
@@ -28,9 +34,10 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
   String? _enteredName;
   String? _enteredPhoneNumber;
 
-  bool? isDelivered = false;
+  bool? isDelivered = true;
   bool? isInProcess = false;
   bool? finalDecision = false;
+  int smth = 1;
 
   void _showMore1() {
     setState(() {
@@ -41,42 +48,96 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
 
   void _submitData() async {
     if (_formKey.currentState!.validate()) {
-      // var url = Uri.parse('$ip/api/signUp');
-      // var response = await http.post(
-      //   url,
-      //   body: {
-      //     'fullName': _enteredName,
-      //     'email': _enteredEmail,
-      //     'role': _selectedRole,
-      //     'password': _password,
-      //     'rePassword': _confirmPassword,
-      //   },
-      // );
+      var workingDirectory =
+          '~/Desktop/myapp/home/sardorchik/Desktop/myapp/lib/screens/';
 
-      // // Handle the response
-      // if (response.statusCode == 200) {
-      //   // Success logic
-      //   print('Register succesfully');
-      //   print(response.body);
-      //   print(response.statusCode);
-      // } else {
-      //   // Error handling
-      //   print('Not Register succesfully');
-      //   print(response.body);
-      //   print(response.statusCode);
-      // }
-      // Navigator.of(context).pop();
+      // Change to the working directory and run the C program
+      var loginResult = await Process.run(
+        'bash',
+        [
+          '-c',
+          'cd $workingDirectory && ./client localhost applyToDispensary $extractedToken $smth $_enteredPhoneNumber'
+        ],
+      );
+
+      // After running the C program
+      if (loginResult.exitCode == 0) {
+        // Success logic
+        print('C program output: ${loginResult.stdout}');
+
+        // Extracting the JWT token
+        String output = loginResult.stdout;
+        String tokenPrefix = "server message: ";
+        int startIndex = output.indexOf(tokenPrefix);
+        if (startIndex != -1) {
+          startIndex += tokenPrefix.length;
+          String jwtToken = output.substring(startIndex).trim();
+
+          // Assign to a new variable and print
+          extractedToken = jwtToken;
+          print('Extracted JWT Token: $extractedToken');
+
+          var infoResult = await Process.run(
+            'bash',
+            [
+              '-c',
+              'cd $workingDirectory && ./client localhost getMyInfo "$extractedToken"'
+            ],
+          );
+
+          if (infoResult.exitCode == 0) {
+            print('C program output: ${infoResult.stdout}');
+
+            // Regular expression to find the role
+            RegExp regExp = RegExp(r'"role":"([^"]+)"');
+            var matches = regExp.allMatches(infoResult.stdout);
+
+            if (matches.isNotEmpty) {
+              // Extract the role
+              extractedRole = matches.first.group(1)!;
+              print('Extracted Role: $extractedRole');
+            }
+          } else {
+            print('C program error: ${infoResult.stderr}');
+          }
+        } else {
+          // Error handling
+          print('C program error: ${loginResult.stderr}');
+        }
+      } else {
+        // Error handling
+        print('C program error: ${loginResult.stderr}');
+      }
     }
   }
 
   @override
   void didChangeDependencies() {
-    Provider.of<Donors>(context).fetchDispensaryVisitsInfo();
+    Provider.of<Donors>(context)
+      ..fetchMyOperations()
+      ..fetchDispensaryVisitsInfo();
     super.didChangeDependencies();
   }
 
+  List<String> months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final donor = Provider.of<Donors>(context).donorE1;
+    final donorO = Provider.of<Donors>(context).donorO;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,77 +165,56 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                       subtitle: 'Monitor and adjust your progress',
                     ),
                     const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        StatusWidget(
-                          title: 'Your appointment : October 21, 15:30',
-                          appStatusWidget: ApplicationStatusWidget(
-                            status: isDelivered!,
+                    if (donor.isProcessing ?? false)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          StatusWidget(
+                            title:
+                                'Your appointment : ${months[(int.tryParse((donor.date ?? '').split('-')[1]) ?? 1) - 1]} ${(donor.date ?? '').split('-')[2]}',
+                            appStatusWidget: ApplicationStatusWidget(
+                              status: true,
+                            ),
+                            status: true,
                           ),
-                          status: isDelivered!,
-                        ),
-                        StatusWidget(
-                          title: 'Your data is processing',
-                          appStatusWidget: ApplicationStatusWidget(
-                            status: isInProcess!,
+                          StatusWidget(
+                            title: 'Your data is processing',
+                            appStatusWidget: ApplicationStatusWidget(
+                              status: true,
+                            ),
+                            status: true,
                           ),
-                          status: isInProcess!,
-                        ),
-                        StatusWidget(
-                          title: 'Accepted/Rejected',
-                          appStatusWidget: ApplicationStatusWidget(
-                            status: finalDecision!,
+                          StatusWidget(
+                            title: (donor.donorId?.isApproved ?? false)
+                                ? 'Accepted'
+                                : 'Rejected',
+                            appStatusWidget: ApplicationStatusWidget(
+                              status: true,
+                            ),
+                            status: true,
                           ),
-                          status: finalDecision!,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 50),
+                        ],
+                      ),
+                    if (donor.isProcessing ?? false) const SizedBox(height: 50),
                     HeadingWidget(title: 'Make an appointment'),
                     const SizedBox(height: 20),
                     Form(
                       key: _formKey,
                       child: Column(
                         children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextFormField(
-                                  style: originalTextStyle,
-                                  cursorColor: const Color(0xFF2B2B2B),
-                                  decoration: InputDecoration(
-                                    labelText: 'First Name',
-                                    labelStyle: labelTextStyle,
-                                    enabledBorder: enabledBorderParams,
-                                    focusedBorder: focusedBorderParams,
-                                    errorBorder: errorBorderParams,
-                                    focusedErrorBorder:
-                                        focusedErrorBorderParams,
-                                  ),
-                                  onChanged: (value) => _enteredName = value,
-                                  validator: validateName,
-                                ),
-                              ),
-                              const SizedBox(width: 20),
-                              Expanded(
-                                child: TextFormField(
-                                  style: originalTextStyle,
-                                  cursorColor: const Color(0xFF2B2B2B),
-                                  decoration: InputDecoration(
-                                    labelText: 'Last name',
-                                    labelStyle: labelTextStyle,
-                                    enabledBorder: enabledBorderParams,
-                                    focusedBorder: focusedBorderParams,
-                                    errorBorder: errorBorderParams,
-                                    focusedErrorBorder:
-                                        focusedErrorBorderParams,
-                                  ),
-                                  onChanged: (value) => _enteredName = value,
-                                  validator: validateName,
-                                ),
-                              ),
-                            ],
+                          TextFormField(
+                            style: originalTextStyle,
+                            cursorColor: const Color(0xFF2B2B2B),
+                            decoration: InputDecoration(
+                              labelText: 'Full name',
+                              labelStyle: labelTextStyle,
+                              enabledBorder: enabledBorderParams,
+                              focusedBorder: focusedBorderParams,
+                              errorBorder: errorBorderParams,
+                              focusedErrorBorder: focusedErrorBorderParams,
+                            ),
+                            onChanged: (value) => _enteredName = value,
+                            validator: validateName,
                           ),
                           const SizedBox(height: 16),
                           TextFormField(
@@ -197,7 +237,10 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                     ),
                     Align(
                       alignment: Alignment.centerRight,
-                      child: MediumButton(title: 'Send', onPress: () {}),
+                      child: MediumButton(
+                        title: 'Send',
+                        onPress: _submitData,
+                      ),
                     ),
                     const SizedBox(height: 40),
                     Container(
@@ -272,7 +315,7 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                                           420) /
                                       3,
                                   child: Text(
-                                    '11.11.2023 ',
+                                    '${(donorO.operationTime ?? '').split(' ')[0].split('-')[2]}.${(donorO.operationTime ?? '').split(' ')[0].split('-')[1]}.${(donorO.operationTime ?? '').split(' ')[0].split('-')[0]}',
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: blackCol,
@@ -284,7 +327,7 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                                           420) /
                                       3,
                                   child: Text(
-                                    '14:00',
+                                    (donorO.operationTime ?? '').split(' ')[1],
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: blackCol,
@@ -296,7 +339,7 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                                           420) /
                                       3,
                                   child: Text(
-                                    'Full name',
+                                    donorO.doctorName ?? '',
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: blackCol,

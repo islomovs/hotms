@@ -4,75 +4,33 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../constants/contants.dart';
-
-class PatientId {
-  final String id;
-  final String fullName;
-  final String email;
-  final String password;
-  final String role;
-
-  PatientId({
-    required this.id,
-    required this.fullName,
-    required this.email,
-    required this.password,
-    required this.role,
-  });
-}
-
-class Patient {
-  final String id;
-  final PatientId patientId;
-  final String phoneNumber;
-  final String address;
-  final String birthday;
-  final String city;
-  final String district;
-  final String organDonates;
-  final String passportNumber;
-  final String pinfl;
-  final String isApproved;
-  final String bloodType;
-  final String rhFactor;
-  final String donationPrice;
-  final String comments;
-  Patient({
-    required this.id,
-    required this.patientId,
-    required this.phoneNumber,
-    required this.address,
-    required this.birthday,
-    required this.city,
-    required this.district,
-    required this.organDonates,
-    required this.passportNumber,
-    required this.pinfl,
-    required this.isApproved,
-    required this.bloodType,
-    required this.rhFactor,
-    required this.donationPrice,
-    required this.comments,
-  });
-}
+import 'donor.dart';
 
 class Patients with ChangeNotifier {
-  List<Patients> _patients = [];
+  late final List<OrganAllHospitals> _patientH = [];
 
-  List<Patients> get patients {
-    return [..._patients];
-  }
+  List<OrganAllHospitals> get patientH => _patientH;
 
-  Future<List<String>> fetchPatientInfo() async {
+  late Donor _patientInfo = Donor();
+
+  Donor get patientInfo => _patientInfo;
+
+  Future<Donor> fetchPatientInfo() async {
     final response = await http.get(
       Uri.parse('$ip/api/patients/myInfo'),
+      headers: {
+        'Authorization':
+        'Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6MiwiZW1haWwiOiJwYXRpZW50QG1haWwucnUiLCJyb2xlIjoiQVBQUk9WRURfUEFUSUVOVCIsInVzZXIiOnsiaWQiOjIsImVtYWlsIjoicGF0aWVudEBtYWlsLnJ1IiwicGFzc3dvcmQiOiJwYXRpZW50Iiwicm9sZSI6IkFQUFJPVkVEX1BBVElFTlQiLCJmdWxsTmFtZSI6IlBhdGllbnQgUGF0aWVudG92IiwiaW1hZ2VMaW5rIjpudWxsfSwiZXhwIjoxNzAzNTM2MjAzfQ.WhePbl22Z8g0LoCx_QO_vWrijwaG3ZbVwEJsgwC8t1riwryrEBvrgaeSvNsWP207xex_rVrshdrMSHmBZSVQsg',
+        'Content-Type': 'application/json',
+
+      }
     );
     print(response.body);
     if (response.statusCode == 200) {
       // If the server returns a 200 OK response, parse the JSON
-      List<String> stringList = List<String>.from(json.decode(response.body));
-      print(stringList);
-      return stringList;
+      _patientInfo = Donor.fromJson(jsonDecode(response.body));
+      notifyListeners();
+      return _patientInfo;
     } else {
       // If the server did not return a 200 OK response,
       // throw an exception.
@@ -97,16 +55,23 @@ class Patients with ChangeNotifier {
     }
   }
 
-  Future<List<String>> fetchHospitalsList() async {
-    final response = await http.get(
-      Uri.parse('$ip/api/patients/allHospitalsMatchingMe'),
-    );
-    print(response.body);
+  Future<List<dynamic>> fetchHospitalsList() async {
+    final response = await http
+        .get(Uri.parse('$ip/api/patients/allHospitalsMatchingMe'), headers: {
+      'Authorization':
+          'Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6MiwiZW1haWwiOiJwYXRpZW50QG1haWwucnUiLCJyb2xlIjoiQVBQUk9WRURfUEFUSUVOVCIsInVzZXIiOnsiaWQiOjIsImVtYWlsIjoicGF0aWVudEBtYWlsLnJ1IiwicGFzc3dvcmQiOiJwYXRpZW50Iiwicm9sZSI6IkFQUFJPVkVEX1BBVElFTlQiLCJmdWxsTmFtZSI6IlBhdGllbnQgUGF0aWVudG92IiwiaW1hZ2VMaW5rIjpudWxsfSwiZXhwIjoxNzAzNTM2MjAzfQ.WhePbl22Z8g0LoCx_QO_vWrijwaG3ZbVwEJsgwC8t1riwryrEBvrgaeSvNsWP207xex_rVrshdrMSHmBZSVQsg',
+      'Content-Type': 'application/json',
+    });
     if (response.statusCode == 200) {
       // If the server returns a 200 OK response, parse the JSON
-      List<String> stringList = List<String>.from(json.decode(response.body));
-      print(stringList);
-      return stringList;
+      _patientH.clear();
+      // If the server returns a 200 OK response, parse the JSON
+      for (int i = 0; i < json.decode(response.body).length; i++) {
+        _patientH
+            .add(OrganAllHospitals.fromJson(json.decode(response.body)[i]));
+      }
+      notifyListeners();
+      return _patientH;
     } else {
       // If the server did not return a 200 OK response,
       // throw an exception.

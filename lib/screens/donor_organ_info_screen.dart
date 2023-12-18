@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:myapp/widgets/text_fields_list_reader.dart';
 import 'package:provider/provider.dart';
 
 import '../constants/contants.dart';
@@ -10,6 +13,7 @@ import '../providers/donor.dart';
 
 class DonorOrganInfoScreen extends StatefulWidget {
   static const routeName = '/donor-organ-info-screen';
+
   const DonorOrganInfoScreen({super.key});
 
   @override
@@ -31,6 +35,7 @@ class _DonorOrganInfoScreenState extends State<DonorOrganInfoScreen> {
   String? _selectedBloodGroup;
   String? _selectedRHFactor;
   String? _enteredPrice;
+  String? _birthday;
 
   final TextEditingController _priceController = TextEditingController();
 
@@ -48,13 +53,29 @@ class _DonorOrganInfoScreenState extends State<DonorOrganInfoScreen> {
   }
 
   @override
-  void didChangeDependencies() {
-    Provider.of<Donors>(context).fetchDonorInfo();
+  Future<void> didChangeDependencies() async {
+    await Provider.of<Donors>(context).fetchDonorInfo();
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    final donor = Provider.of<Donors>(context).donorOrganInfo;
+    _enteredFName = donor.userId?.fullName;
+    _selectedOrgan = donor.organDonates?.name;
+    _enteredPhoneNumber = donor.phoneNumber;
+    _enteredAddress = donor.address;
+    _enteredCity = donor.city;
+    _enteredDistrict = donor.district;
+    _enteredPassportNumber = donor.passportNumber;
+    _enteredPINFL = donor.pinfl;
+    //_selectedTypeOfDonation = donor.organDonates;
+    _enteredComment = donor.comments;
+    _selectedBloodGroup = donor.bloodType;
+    _selectedRHFactor = donor.rhFactor;
+    _enteredPrice = donor.donationPrice.toString();
+    _birthday = donor.birthday;
+    _updateTextField(_selectedTypeOfDonation);
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,7 +103,8 @@ class _DonorOrganInfoScreenState extends State<DonorOrganInfoScreen> {
                       const SizedBox(height: 20),
                       Form(
                         key: _formKey,
-                        child: TextFieldsList(
+                        child: TextFieldsListReader(
+                          birthday: _birthday,
                           enteredFName: _enteredFName,
                           selectedOrgan: _selectedOrgan,
                           enteredPhoneNumber: _enteredPhoneNumber,
@@ -100,71 +122,33 @@ class _DonorOrganInfoScreenState extends State<DonorOrganInfoScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               TextFormField(
-                                controller: _priceController,
+                                controller: TextEditingController(
+                                  text: _enteredPrice,
+                                ),
                                 style: originalTextStyle,
                                 cursorColor: const Color(0xFF2B2B2B),
-                                enabled: _selectedTypeOfDonation == 'Free'
-                                    ? false
-                                    : true,
+                                readOnly: true,
                                 decoration: InputDecoration(
                                   disabledBorder: enabledBorderParams,
-                                  labelText: _selectedTypeOfDonation == 'Free'
-                                      ? '0.0'
-                                      : 'Price',
+                                  labelText: 'Price',
                                   labelStyle: labelTextStyle,
                                   enabledBorder: enabledBorderParams,
-                                  focusedBorder: focusedBorderParams,
-                                  errorBorder: errorBorderParams,
-                                  focusedErrorBorder: focusedErrorBorderParams,
-                                  suffixIcon: const Icon(Icons.attach_money),
-                                  suffixIconColor: patientListCol,
+                                  focusedBorder: enabledBorderParams,
+                                  errorBorder: enabledBorderParams,
+                                  focusedErrorBorder: enabledBorderParams,
                                 ),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _enteredPrice = value;
-                                  });
-                                },
-                                validator: validatePrice,
                               ),
                               const SizedBox(height: 30),
-                              DropdownButtonFormField(
-                                value: _selectedTypeOfDonation,
+                              TextFormField(
                                 style: originalTextStyle,
-                                icon: const Icon(
-                                  Icons.keyboard_arrow_down,
-                                  color: Color(0xFFD7D7D7),
-                                ),
-                                // focusColor: Color(0x802B2B2B),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Choose type of donation';
-                                  }
-                                  return null;
-                                },
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(8)),
-                                items: ['Free', 'Sell'].map((String category) {
-                                  return DropdownMenuItem(
-                                      value: category,
-                                      child: Row(
-                                        children: <Widget>[
-                                          Text(category),
-                                        ],
-                                      ));
-                                }).toList(),
-                                onChanged: (newValue) {
-                                  setState(() {
-                                    _selectedTypeOfDonation = newValue;
-                                  });
-                                  _updateTextField('Free');
-                                },
+                                readOnly: true,
                                 decoration: InputDecoration(
                                   labelText: 'Type of donation',
                                   labelStyle: labelTextStyle,
                                   enabledBorder: enabledBorderParams,
-                                  focusedBorder: focusedBorderParams,
-                                  errorBorder: errorBorderParams,
-                                  focusedErrorBorder: focusedErrorBorderParams,
+                                  focusedBorder: enabledBorderParams,
+                                  errorBorder: enabledBorderParams,
+                                  focusedErrorBorder: enabledBorderParams,
                                 ),
                               ),
                               const SizedBox(height: 20),

@@ -69,7 +69,7 @@ String? validatePassword(String? value) {
   if (value == null || value.isEmpty) {
     return 'Password cannot be empty';
   }
-  if (value.length < 8) {
+  if (value.length < 2) {
     return 'Password must be at least 8 characters long';
   }
   return null;

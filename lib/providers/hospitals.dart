@@ -31,7 +31,7 @@ class Hospital {
   final String specializationOrgan;
   final String description;
   final String imageLink;
-  List<Patient> patients;
+  List<Donor> patients;
   List<Donors> donors;
   Hospital({
     required this.id,

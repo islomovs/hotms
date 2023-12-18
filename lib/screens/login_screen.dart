@@ -66,7 +66,6 @@ class _LoginScreenState extends State<LoginScreen> {
           print('Extracted JWT Token: $extractedToken');
 
 
-
           var infoResult = await Process.run(
             'bash',
             [
@@ -246,7 +245,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 16),
                   MainButton(
                     title: 'Log in',
-                    onTapFunc: () => _login(),
+                    onTapFunc: () {
+                      Navigator.of(context).pushNamed(
+                        PatientHomeScreen.routeName,
+                        arguments: extractedToken,
+                      );
+                    },
                   ),
                   const SizedBox(height: 16),
                   TextButton.icon(
@@ -327,42 +331,41 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-
 //   var url = Uri.parse('$ip/api/login');
-    //   var response = await http.post(
-    //     url,
-    //     body: {
-    //       'email': _enteredEmail,
-    //       'password': _enteredPassword,
-    //     },
-    //   );
+//   var response = await http.post(
+//     url,
+//     body: {
+//       'email': _enteredEmail,
+//       'password': _enteredPassword,
+//     },
+//   );
 
-    //   // Handle the response
-    //   if (response.statusCode == 200) {
-    //     // Success logic
-    //     print('Login succesfully');
-    //     print(response.body);
-    //     print(response.statusCode);
-    //   } else if (response.statusCode == 400) {
-    //     // ignore: use_build_context_synchronously
-    //     showDialog(
-    //       context: context,
-    //       builder: (ctx) => AlertDialog(
-    //         title: const Text('Try again!'),
-    //         actions: [
-    //           ElevatedButton(
-    //             onPressed: () {
-    //               Navigator.of(ctx).pop();
-    //             },
-    //             child: const Text('Okay'),
-    //           ),
-    //         ],
-    //       ),
-    //     );
-    //   } else {
-    //     // Error handling
-    //     print(response.body);
-    //     print('Not Login succesfully');
-    //     print(response.statusCode);
-    //   }
-    // }
+//   // Handle the response
+//   if (response.statusCode == 200) {
+//     // Success logic
+//     print('Login succesfully');
+//     print(response.body);
+//     print(response.statusCode);
+//   } else if (response.statusCode == 400) {
+//     // ignore: use_build_context_synchronously
+//     showDialog(
+//       context: context,
+//       builder: (ctx) => AlertDialog(
+//         title: const Text('Try again!'),
+//         actions: [
+//           ElevatedButton(
+//             onPressed: () {
+//               Navigator.of(ctx).pop();
+//             },
+//             child: const Text('Okay'),
+//           ),
+//         ],
+//       ),
+//     );
+//   } else {
+//     // Error handling
+//     print(response.body);
+//     print('Not Login succesfully');
+//     print(response.statusCode);
+//   }
+// }

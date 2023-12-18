@@ -68,6 +68,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Donor Aid Login',
+        debugShowCheckedModeBanner: false,
         routes: {
           '/': (ctx) => const LoginScreen(),
           RegistrationScreen.routeName: (ctx) => const RegistrationScreen(),
@@ -126,4 +127,3 @@ class MyApp extends StatelessWidget {
 }
 
 // ignore: must_be_immutable
-

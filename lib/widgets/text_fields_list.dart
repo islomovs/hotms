@@ -35,6 +35,7 @@ class TextFieldsList extends StatefulWidget {
     required this.selectedRHFactor,
     required this.lastField,
     super.key,
+    this.lastBtn,
   });
 
   @override
@@ -42,7 +43,7 @@ class TextFieldsList extends StatefulWidget {
 }
 
 class _TextFieldsListState extends State<TextFieldsList> {
-  TextEditingController _dateController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
