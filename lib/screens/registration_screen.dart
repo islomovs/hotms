@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../constants/contants.dart';
 import '../constants/registration_constants.dart';
+import './login_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -24,31 +27,55 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   void _submitData() async {
     if (_formKey.currentState!.validate()) {
-      var url = Uri.parse('$ip/api/signUp');
-      var response = await http.post(
-        url,
-        body: {
-          'fullName': _enteredName,
-          'email': _enteredEmail,
-          'role': _selectedRole,
-          'password': _password,
-          'rePassword': _confirmPassword,
-        },
+      var workingDirectory =
+          '~/Desktop/myapp/home/sardorchik/Desktop/myapp/lib/screens/';
+
+      // Change to the working directory and list its contents
+      var listResult = await Process.run(
+        'bash',
+        ['-c', 'cd $workingDirectory && ls'],
       );
 
-      // Handle the response
-      if (response.statusCode == 200) {
+      if (listResult.exitCode == 0) {
+        print('Listing contents of $workingDirectory:');
+        print(listResult.stdout);
+      } else {
+        print('Error listing directory: ${listResult.stderr}');
+      }
+
+      // Change to the working directory and run the C program
+      var loginResult = await Process.run(
+        'bash',
+        [
+          '-c',
+          'cd $workingDirectory && ./client localhost signup $_enteredName $_enteredEmail $_confirmPassword $_confirmPassword $_selectedRole'
+        ],
+      );
+
+      // After running the C program
+      if (loginResult.exitCode == 0) {
         // Success logic
-        print('Register succesfully');
-        print(response.body);
-        print(response.statusCode);
+        print('C program output: ${loginResult.stdout}');
+
+        // Extracting the JWT token
+        String output = loginResult.stdout;
+        String tokenPrefix = "server message: ";
+        int startIndex = output.indexOf(tokenPrefix);
+        if (startIndex != -1) {
+          startIndex += tokenPrefix.length;
+          String response = output.substring(startIndex).trim();
+
+          if (response == "You Successfully Signed Up!") {
+            Navigator.of(context).pushNamed('/');
+          }
+        } else {
+          // Error handling
+          print('C program error: ${loginResult.stderr}');
+        }
       } else {
         // Error handling
-        print('Not Register succesfully');
-        print(response.body);
-        print(response.statusCode);
+        print('C program error: ${loginResult.stderr}');
       }
-      Navigator.of(context).pop();
     }
   }
 
@@ -118,8 +145,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             },
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(8)),
-                            items: ['Donor', 'Patient', 'Hospital']
-                                .map((String category) {
+                            items: [
+                              'Donor',
+                              'Patient',
+                              'Hospital',
+                              'Dispensary'
+                            ].map((String category) {
                               return DropdownMenuItem(
                                   value: category,
                                   child: Row(

@@ -1,9 +1,48 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide DatePickerTheme;
+import 'package:provider/provider.dart';
 
+import './providers/donor.dart';
+import './providers/patient.dart';
+import './providers/dispensary.dart';
+import './providers/hospitals.dart';
 import './screens/login_screen.dart';
 import './screens/registration_screen.dart';
 import './screens/forgot_password_screen.dart';
+import './screens/verification_code_screen.dart';
 import './screens/reset_password_screen.dart';
+import './screens/donor_home_screen.dart';
+import './screens/donor_evaluation_screen.dart';
+import './screens/donor_organ_info_screen.dart';
+import './screens/donor_hospitals_screen.dart';
+import './screens/dispensary_home_screen.dart';
+import './screens/dispensary_donor_info_screen.dart';
+import './screens/dispensary_patient_info_screen.dart';
+import './screens/dispensary_appointment_screen.dart';
+import './screens/patient_home_screen.dart';
+import './screens/patient_appointment_screen.dart';
+import './screens/patient_info_screen.dart';
+import './screens/patient_hospitals_screen.dart';
+import './screens/hospital_patients_donors_screen.dart';
+import './screens/hospital_operations_screen.dart';
+import './screens/hospital_patient_screen.dart';
+import './screens/hospital_donor_screen.dart';
+import './screens/hospital_assign_operation_screen.dart';
+import './screens/hospital_info_screen.dart';
+import './screens/admin_patients_list_screen.dart';
+import './screens/admin_donors_list_screen.dart';
+import './screens/admin_dispenser_list_screen.dart';
+import './screens/admin_add_dispenser_screen.dart';
+import './screens/admin_hospitals_list_screen.dart';
+import './screens/admin_organs_list_screen.dart';
+import './screens/admin_add_patient_screen.dart';
+import './screens/admin_add_hospital_screen.dart';
+import './screens/admin_add_donor_screen.dart';
+import './screens/admin_add_organ_screen.dart';
+import './screens/admin_edit_dispenser_screen.dart';
+import './screens/admin_edit_donor_screen.dart';
+import './screens/admin_edit_hospital_screen.dart';
+import './screens/admin_edit_organ_screen.dart';
+import './screens/admin_edit_patient_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -12,14 +51,76 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Donor Aid Login',
-      routes: {
-        '/': (ctx) => const LoginScreen(),
-        RegistrationScreen.routeName: (ctx) => const RegistrationScreen(),
-        ForgotPasswordScreen.routeName: (ctx) => ForgotPasswordScreen(),
-        ResetPasswordScreen.routeName: (ctx) => ResetPasswordScreen(),
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (ctx) => Donors(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => Patients(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => Hospitals(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => DispensaryOperations(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Donor Aid Login',
+        routes: {
+          '/': (ctx) => const LoginScreen(),
+          RegistrationScreen.routeName: (ctx) => const RegistrationScreen(),
+          ForgotPasswordScreen.routeName: (ctx) => ForgotPasswordScreen(),
+          VerificationCodeScreen.routeName: (ctx) => VerificationCodeScreen(),
+          ResetPasswordScreen.routeName: (ctx) => ResetPasswordScreen(),
+          DonorHomeScreen.routeName: (ctx) => DonorHomeScreen(),
+          DonorEvaluationScreen.routeName: (ctx) => DonorEvaluationScreen(),
+          DonorOrganInfoScreen.routeName: (ctx) => DonorOrganInfoScreen(),
+          DonorHospitalsScreen.routeName: (ctx) => DonorHospitalsScreen(),
+          DispensaryHomeScreen.routeName: (ctx) => DispensaryHomeScreen(),
+          DispensaryOrganInfoScreen.routeName: (ctx) =>
+              DispensaryOrganInfoScreen(),
+          DispenserPatientInfoScreen.routeName: (ctx) =>
+              DispenserPatientInfoScreen(),
+          DispensaryAppointmentScreen.routeName: (ctx) =>
+              DispensaryAppointmentScreen(),
+          PatientHomeScreen.routeName: (ctx) => PatientHomeScreen(),
+          PatientAppointmentScreen.routeName: (ctx) =>
+              PatientAppointmentScreen(),
+          PatientInfoScreen.routeName: (ctx) => PatientInfoScreen(),
+          PatientHospitalsScreen.routeName: (ctx) => PatientHospitalsScreen(),
+          HospitalPatientsDonorsScreen.routeName: (ctx) =>
+              HospitalPatientsDonorsScreen(),
+          HospitalOperationsScreen.routeName: (ctx) =>
+              HospitalOperationsScreen(),
+          HospitalPatientScreen.routeName: (ctx) => HospitalPatientScreen(),
+          HospitalDonorScreen.routeName: (ctx) => HospitalDonorScreen(),
+          HospitalAssignOperationScreen.routeName: (ctx) =>
+              HospitalAssignOperationScreen(),
+          // HospitalOrgansScreen.routeName: (ctx) => HospitalOrgansScreen(),
+          HospitalInfoScreen.routeName: (ctx) => HospitalInfoScreen(),
+          AdminPatientsListScreen.routeName: (ctx) => AdminPatientsListScreen(),
+          AdminDonorsListScreen.routeName: (ctx) => AdminDonorsListScreen(),
+          AdminHospitalsListScreen.routeName: (ctx) =>
+              AdminHospitalsListScreen(),
+          AdminOrgansListScreen.routeName: (ctx) => AdminOrgansListScreen(),
+          AdminAddPatientScreen.routeName: (ctx) => AdminAddPatientScreen(),
+          AdminAddHospitalScreen.routeName: (ctx) => AdminAddHospitalScreen(),
+          AdminAddDonorScreen.routeName: (ctx) => AdminAddDonorScreen(),
+          AdminDispensersListScreen.routeName: (ctx) =>
+              AdminDispensersListScreen(),
+          AdminAddDispensersScreen.routeName: (ctx) =>
+              AdminAddDispensersScreen(),
+          AdminAddOrganScreen.routeName: (ctx) => AdminAddOrganScreen(),
+          AdminEditHospitalScreen.routeName: (ctx) => AdminEditHospitalScreen(),
+          AdminEditDonorScreen.routeName: (ctx) => AdminEditDonorScreen(),
+          AdminEditDispenserScreen.routeName: (ctx) =>
+              AdminEditDispenserScreen(),
+          AdminEditOrganScreen.routeName: (ctx) => AdminEditOrganScreen(),
+          AdminEditPatientScreen.routeName: (ctx) => AdminEditPatientScreen(),
+        },
+      ),
     );
   }
 }

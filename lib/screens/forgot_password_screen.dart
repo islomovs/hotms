@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import './verification_code_screen.dart';
 import '../constants/registration_constants.dart';
-import './reset_password_screen.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   ForgotPasswordScreen({super.key});
@@ -12,7 +12,7 @@ class ForgotPasswordScreen extends StatelessWidget {
 
   void _submitData(BuildContext ctx) {
     if (_formKey.currentState!.validate()) {
-      Navigator.of(ctx).pushNamed(ResetPasswordScreen.routeName);
+      Navigator.of(ctx).pushNamed(VerificationCodeScreen.routeName);
     }
   }
 
@@ -25,7 +25,7 @@ class ForgotPasswordScreen extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: 118,
+                horizontal: 120,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -33,11 +33,12 @@ class ForgotPasswordScreen extends StatelessWidget {
                   MainTitle(
                       title: 'Forgot Password?',
                       subtitle:
-                          'Enter your account email address and reset link will drop out'),
+                          'Enter you account email address and receive verification code '),
+                  const SizedBox(height: 60),
                   Form(
                     key: _formKey,
                     child: SizedBox(
-                      width: 400,
+                      width: 390,
                       child: TextFormField(
                         style: originalTextStyle,
                         cursorColor: const Color(0xFF2B2B2B),
@@ -53,12 +54,12 @@ class ForgotPasswordScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 40),
                   MainButton(
                     title: 'Get Link',
                     onTapFunc: () => _submitData(context),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

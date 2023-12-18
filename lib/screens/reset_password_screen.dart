@@ -27,7 +27,7 @@ class ResetPasswordScreen extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: 80,
+                horizontal: 120,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -36,6 +36,7 @@ class ResetPasswordScreen extends StatelessWidget {
                   MainTitle(
                       title: 'Reset your password',
                       subtitle: 'Enter a new password for your account'),
+                  const SizedBox(height: 60),
                   Form(
                     key: _formKey,
                     child: SizedBox(
@@ -78,7 +79,7 @@ class ResetPasswordScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 40),
                   MainButton(
                     title: 'Reset Password',
                     onTapFunc: () => _submitData(context),

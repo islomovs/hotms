@@ -1,10 +1,21 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'dart:io';
 
+import 'package:flutter/material.dart';
+
+import './donor_organ_info_screen.dart';
+import './hospital_donor_screen.dart';
+import './hospital_info_screen.dart';
 import './registration_screen.dart';
 import './forgot_password_screen.dart';
+import './donor_home_screen.dart';
+import './patient_home_screen.dart';
+import './patient_hospitals_screen.dart';
+import './admin_patients_list_screen.dart';
 import '../constants/contants.dart';
 import '../constants/registration_constants.dart';
+import './hospital_patients_donors_screen.dart';
+import './dispensary_home_screen.dart';
+import './hospital_operations_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,45 +30,98 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _enteredEmail;
   String? _enteredPassword;
 
-  void _submitData() async {
+  void _loginwithgoogle() {
+    Navigator.of(context).pushNamed(DispensaryHomeScreen.routeName);
+  }
+
+  void _login() async {
     if (_formKey.currentState!.validate()) {
-      var url = Uri.parse('$ip/api/login');
-      var response = await http.post(
-        url,
-        body: {
-          'email': _enteredEmail,
-          'password': _enteredPassword,
-        },
+      var workingDirectory =
+          '~/Desktop/myapp/home/sardorchik/Desktop/myapp/lib/screens/';
+
+      // Change to the working directory and run the C program
+      var loginResult = await Process.run(
+        'bash',
+        [
+          '-c',
+          'cd $workingDirectory && ./client localhost login $_enteredEmail $_enteredPassword'
+        ],
       );
 
-      // Handle the response
-      if (response.statusCode == 200) {
+      // After running the C program
+      if (loginResult.exitCode == 0) {
         // Success logic
-        print('Login succesfully');
-        print(response.body);
-        print(response.statusCode);
-      } else if (response.statusCode == 400) {
-        // ignore: use_build_context_synchronously
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Text('Try again!'),
-            actions: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-                child: const Text('Okay'),
-              ),
+        print('C program output: ${loginResult.stdout}');
+
+        // Extracting the JWT token
+        String output = loginResult.stdout;
+        String tokenPrefix = "server message: ";
+        int startIndex = output.indexOf(tokenPrefix);
+        if (startIndex != -1) {
+          startIndex += tokenPrefix.length;
+          String jwtToken = output.substring(startIndex).trim();
+
+          // Assign to a new variable and print
+          extractedToken = jwtToken;
+          print('Extracted JWT Token: $extractedToken');
+
+          var infoResult = await Process.run(
+            'bash',
+            [
+              '-c',
+              'cd $workingDirectory && ./client localhost getMyInfo "$extractedToken"'
             ],
-          ),
-        );
+          );
+
+          if (infoResult.exitCode == 0) {
+            print('C program output: ${infoResult.stdout}');
+
+            // Regular expression to find the role
+            RegExp regExp = RegExp(r'"role":"([^"]+)"');
+            var matches = regExp.allMatches(infoResult.stdout);
+
+            if (matches.isNotEmpty) {
+              // Extract the role
+              extractedRole = matches.first.group(1)!;
+              print('Extracted Role: $extractedRole');
+            }
+          } else {
+            print('C program error: ${infoResult.stderr}');
+          }
+        } else {
+          // Error handling
+          print('C program error: ${loginResult.stderr}');
+        }
       } else {
         // Error handling
-        print(response.body);
-        print('Not Login succesfully');
-        print(response.statusCode);
+        print('C program error: ${loginResult.stderr}');
       }
+    }
+
+    if (extractedRole == 'DISPENSARY') {
+      Navigator.of(context).pushNamed(
+        DispensaryHomeScreen.routeName,
+      );
+    } else if (extractedRole == 'PATIENT') {
+      Navigator.of(context).pushNamed(
+        PatientHomeScreen.routeName,
+        arguments: extractedToken,
+      );
+    } else if (extractedRole == 'DONOR') {
+      Navigator.of(context).pushNamed(
+        DonorHomeScreen.routeName,
+        arguments: extractedToken,
+      );
+    } else if (extractedRole == 'HOSPITAL') {
+      Navigator.of(context).pushNamed(
+        HospitalPatientsDonorsScreen.routeName,
+        arguments: extractedToken,
+      );
+    } else if (extractedRole == 'ADMIN') {
+      Navigator.of(context).pushNamed(
+        AdminPatientsListScreen.routeName,
+        arguments: extractedToken,
+      );
     }
   }
 
@@ -180,7 +244,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 16),
                   MainButton(
                     title: 'Log in',
-                    onTapFunc: () => _submitData(),
+                    onTapFunc: () => _login(),
                   ),
                   const SizedBox(height: 16),
                   TextButton.icon(
@@ -207,7 +271,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: _loginwithgoogle,
                   ),
                   const SizedBox(height: 16),
                   Center(
@@ -243,7 +307,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             onPressed: () {
                               Navigator.of(context)
-                                  .pushNamed(RegistrationScreen.routeName);
+                                  .pushNamed(DispensaryHomeScreen.routeName);
                             },
                           ),
                         ),
@@ -260,3 +324,43 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+
+//   var url = Uri.parse('$ip/api/login');
+    //   var response = await http.post(
+    //     url,
+    //     body: {
+    //       'email': _enteredEmail,
+    //       'password': _enteredPassword,
+    //     },
+    //   );
+
+    //   // Handle the response
+    //   if (response.statusCode == 200) {
+    //     // Success logic
+    //     print('Login succesfully');
+    //     print(response.body);
+    //     print(response.statusCode);
+    //   } else if (response.statusCode == 400) {
+    //     // ignore: use_build_context_synchronously
+    //     showDialog(
+    //       context: context,
+    //       builder: (ctx) => AlertDialog(
+    //         title: const Text('Try again!'),
+    //         actions: [
+    //           ElevatedButton(
+    //             onPressed: () {
+    //               Navigator.of(ctx).pop();
+    //             },
+    //             child: const Text('Okay'),
+    //           ),
+    //         ],
+    //       ),
+    //     );
+    //   } else {
+    //     // Error handling
+    //     print(response.body);
+    //     print('Not Login succesfully');
+    //     print(response.statusCode);
+    //   }
+    // }
