@@ -9,6 +9,7 @@ import '../providers/donor.dart';
 
 class DonorHospitalsScreen extends StatefulWidget {
   static const routeName = '/donor-hospitals-screen';
+
   const DonorHospitalsScreen({super.key});
 
   @override
@@ -37,13 +38,20 @@ class _DonorHospitalsScreenState extends State<DonorHospitalsScreen> {
   }
 
   @override
+  void initState() {
+
+    super.initState();
+  }
+
+  @override
   void didChangeDependencies() {
-    Provider.of<Donors>(context).fetchDonorsHospitalsList();
+    Provider.of<Donors>(context).fetchAllHospitals();
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    final hospitals = Provider.of<Donors>(context).donorH;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,7 +106,7 @@ class _DonorHospitalsScreenState extends State<DonorHospitalsScreen> {
                                 ),
                                 const SizedBox(width: 10),
                                 Text(
-                                  '(144)',
+                                  '${hospitals.length}',
                                   style: listHeadingTitleTextStyle,
                                 ),
                               ],
@@ -213,7 +221,7 @@ class _DonorHospitalsScreenState extends State<DonorHospitalsScreen> {
                             mainAxisSpacing: 0,
                           ),
                           itemCount: _itemsToShow2,
-                          itemBuilder: (context, index) {
+                          itemBuilder: (_, index) {
                             return HospitalCard(
                               title: hospitalTitles[index],
                               description: hospitalDescriptions[index],
