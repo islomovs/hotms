@@ -246,7 +246,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 16),
                   MainButton(
                     title: 'Log in',
-                    onTapFunc: () => _login(),
+                    onTapFunc: () {
+                      Navigator.of(context).pushNamed(
+                        DonorHomeScreen.routeName,
+                        arguments: extractedToken,
+                      );
+                    },
                   ),
                   const SizedBox(height: 16),
                   TextButton.icon(
