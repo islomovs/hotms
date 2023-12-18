@@ -24,11 +24,16 @@ class CreatorId {
 
   factory CreatorId.fromJson(Map<String, dynamic> json) {
     return CreatorId(
-      id: json['id'] ?? 0, // Provide default value if null
-      email: json['email'] ?? '', // Provide default value if null
-      password: json['password'] ?? '', // Provide default value if null
-      role: json['role'] ?? '', // Provide default value if null
-      fullName: json['fullName'] ?? '', // Provide default value if null
+      id: json['id'] ?? 0,
+      // Provide default value if null
+      email: json['email'] ?? '',
+      // Provide default value if null
+      password: json['password'] ?? '',
+      // Provide default value if null
+      role: json['role'] ?? '',
+      // Provide default value if null
+      fullName: json['fullName'] ?? '',
+      // Provide default value if null
       imageLink: json['imageLink'], // Can be null
     );
   }
@@ -110,7 +115,8 @@ class User {
   final String password;
   final String role;
   final String fullName;
-  final String? imageLink;
+
+  // final String? imageLink;
 
   User({
     required this.id,
@@ -118,7 +124,7 @@ class User {
     required this.password,
     required this.role,
     required this.fullName,
-    this.imageLink,
+    // this.imageLink,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -128,7 +134,7 @@ class User {
       password: json['password'],
       role: json['role'],
       fullName: json['fullName'],
-      imageLink: json['imageLink'],
+      // imageLink: json['imageLink'],
     );
   }
 }
@@ -139,6 +145,7 @@ class Donor {
   final User user;
   final String phoneNumber;
   final String? address;
+
   // ... other fields
 
   Donor({
@@ -167,21 +174,22 @@ List<DonorObject> parseRecords(String jsonData) {
 }
 
 class Patient {
-  final int id;
-  final User user;
-  final String phoneNumber;
-  final String city;
-  final String fullName;
-  final bool isApproved;
+  final int? id;
+  final User? user;
+  final String? phoneNumber;
+  final String? city;
+  final String? fullName;
+  final bool? isApproved;
+
   // ... other fields
 
   Patient({
-    required this.id,
-    required this.user,
-    required this.phoneNumber,
-    required this.city,
-    required this.fullName,
-    required this.isApproved,
+    this.id,
+    this.user,
+    this.phoneNumber,
+    this.city,
+    this.fullName,
+    this.isApproved,
 
     // ... other fields
   });
@@ -202,8 +210,8 @@ class Patient {
 // Adjusted Record class for patients
 class PatientObject {
   final int id;
-  final Dispensary dispensary;
-  final Patient patient;
+  final Dispensary? dispensary;
+  final Patient? patient;
   final String? date;
   final bool isActive;
 
@@ -237,6 +245,7 @@ class DispensaryOperations with ChangeNotifier {
   }
 
   List<int> patientIds = [];
+
   idsofPatients() {
     for (var patient in patientsList) {
       return patientIds.add(patient.id);
@@ -244,40 +253,44 @@ class DispensaryOperations with ChangeNotifier {
   }
 
   Future<void> fetchPatientsList(String jwtToken) async {
-    final response = await http.get(
-      Uri.parse('$ip/api/dispensary/allDispensaryPatients'),
-      headers: {
-        'Authorization': 'Bearer $jwtToken',
-        'Content-Type': 'application/json',
-      },
-    );
+    if (patientsList.isEmpty) {
+      final response = await http.get(
+        Uri.parse('$ip/api/dispensary/allDispensaryPatients'),
+        headers: {
+          'Authorization': 'Bearer $jwtToken',
+          'Content-Type': 'application/json',
+        },
+      );
 
-    if (response.statusCode == 200) {
-      print('Raw JSON response: ${response.body}');
+      if (response.statusCode == 200) {
+        print('Raw JSON response: ${response.body}');
 
-      // Decoding the JSON response as a List
-      final List<dynamic> jsonData = json.decode(response.body);
+        // Decoding the JSON response as a List
+        final jsonData = json.decode(response.body) as List;
 
-      // Assuming that PatientObject has a proper fromJson method
-      patientsList = jsonData
-          .where((item) => item != null) // Exclude null items
-          .map((item) {
-            try {
-              return PatientObject.fromJson(item);
-            } catch (e) {
-              print('Error parsing Record: $e');
-              return null;
-            }
-          })
-          .where((item) => item != null) // Exclude items that failed to parse
-          .cast<PatientObject>() // Cast back to a list of PatientObject
-          .toList();
+        // Assuming that PatientObject has a proper fromJson method
+        patientsList = jsonData
+            .where((item) => item != null) // Exclude null items
+            .map((item) {
+          // try {
+          return PatientObject.fromJson(item);
+          // } catch (e) {
+          //   print('Error parsing Record: $e');
+          //   return null;
+          // }
+        })
+            // Exclude items that failed to parse
+            // Cast back to a list of PatientObject
+            .toList();
 
-      print('HERE IS MY PATIENTS LIST: $patientsList');
-      notifyListeners(); // If using a state management solution like Provider
-    } else {
-      throw Exception(
-          'Failed to load data with status code: ${response.statusCode}');
+        patientsList[0].patient?.id;
+
+        print('HERE IS MY PATIENTS LIST: $patientsList');
+        notifyListeners(); // If using a state management solution like Provider
+      } else {
+        throw Exception(
+            'Failed to load data with status code: ${response.statusCode}');
+      }
     }
   }
 

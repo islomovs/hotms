@@ -65,6 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
           extractedToken = jwtToken;
           print('Extracted JWT Token: $extractedToken');
 
+
+
           var infoResult = await Process.run(
             'bash',
             [

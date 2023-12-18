@@ -82,6 +82,7 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
 
   String? _dateText;
   TextEditingController _dateController = TextEditingController();
+
   Future<void> _selectDateTime(BuildContext context) async {
     dp.DatePicker.showDateTimePicker(
       context,
@@ -95,7 +96,8 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
         });
       },
       currentTime: DateTime.now(),
-      locale: dp.LocaleType.en, // Change to your locale
+      locale: dp.LocaleType.en,
+      // Change to your locale
       theme: dp.DatePickerTheme(
         backgroundColor: Colors.white,
         itemStyle: TextStyle(
@@ -174,8 +176,7 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
     // Provider.of<DispensaryOperations>(context)
     //     .fetchDispensaryInfo(extractedToken!);
     // Provider.of<DispensaryOperations>(context).fetchDonorsList(extractedToken!);
-    // Provider.of<DispensaryOperations>(context)
-    // .fetchPatientsList(extractedToken!);
+    Provider.of<DispensaryOperations>(context).fetchPatientsList("");
 
     super.didChangeDependencies();
   }
@@ -189,6 +190,7 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
 // 3. print the type and value
     print('${jsonData[0]} : ${parsedJson['dispensaryId']}');
     super.initState();
+
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -274,13 +276,13 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
                         itemsToShow: _itemsToShow1,
                         date: patientsEx[0].date.toString(),
                         time: '21:00',
-                        fullName: patientsEx[0].patient.fullName,
+                        fullName: patientsEx[0].patient?.fullName??'fullname',
                         age: patients['age']!,
-                        phoneNumber: patientsEx[0].patient.phoneNumber,
+                        phoneNumber: patientsEx[0].patient?.phoneNumber ?? '',
                         city: patients['city']!,
-                        userType: patientsEx[0].patient.user.role,
+                        userType: patientsEx[0].patient?.user?.role ?? "",
                         subUserType: patients['subUser']!,
-                        status: patientsEx[0].patient.isApproved,
+                        status: patientsEx[0].patient?.isApproved ?? false,
                         column4: Container(
                           alignment: Alignment.topLeft,
                           width: (MediaQuery.of(context).size.width - 620) / 4,
@@ -442,6 +444,7 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
 
 class DispenserHomeSectionList extends StatelessWidget {
   Widget dHSlistTile;
+
   DispenserHomeSectionList({
     required this.dHSlistTile,
     super.key,
@@ -532,6 +535,7 @@ class DispenserHomeSectionListTile extends StatelessWidget {
   bool status;
   bool? isProcessing;
   Widget column4;
+
   DispenserHomeSectionListTile({
     required int itemsToShow,
     required this.date,
@@ -591,13 +595,13 @@ class DispenserHomeSectionListTile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        userType,
+                        userType[index],
                         style: listTileTitle,
                         textAlign: TextAlign.left,
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        subUserType,
+                        subUserType[index],
                         style: listTileSubTitle,
                       ),
                     ],
@@ -610,13 +614,13 @@ class DispenserHomeSectionListTile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        phoneNumber,
+                        phoneNumber[index],
                         style: listTileTitle,
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        city,
+                        city[index],
                         style: listTileSubTitle,
                         textAlign: TextAlign.center,
                       ),

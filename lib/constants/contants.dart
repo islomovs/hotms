@@ -28,6 +28,8 @@ import '../screens/admin_add_hospital_screen.dart';
 import '../screens/admin_add_donor_screen.dart';
 import '../screens/admin_dispenser_list_screen.dart';
 
+const token =
+    "eyJhbGciOiJIUzUxMiJ9.eyJpZCI6MywiZW1haWwiOiJkaXNwZW5zYXJ5QG1haWwucnUiLCJyb2xlIjoiRElTUEVOU0FSWSIsInVzZXIiOnsiaWQiOjMsImVtYWlsIjoiZGlzcGVuc2FyeUBtYWlsLnJ1IiwicGFzc3dvcmQiOiJkaXNwZW5zYXJ5Iiwicm9sZSI6IkRJU1BFTlNBUlkiLCJmdWxsTmFtZSI6IkRpc3BlbnNhcnkiLCJpbWFnZUxpbmsiOm51bGx9LCJleHAiOjE3MDM0OTc3OTl9.1Zc_3XO5a8LdGwfaigOdLZffrx0NlaLU90PzqMHQoDqBPMOvEYGZ2JOP_HNuN2FdxKzrnx8oNuDRNhKl7uJGKw";
 var ip = 'http://161.35.75.184:1234';
 String? extractedRole;
 String? extractedToken;
