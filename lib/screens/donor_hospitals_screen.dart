@@ -39,7 +39,6 @@ class _DonorHospitalsScreenState extends State<DonorHospitalsScreen> {
 
   @override
   void initState() {
-
     super.initState();
   }
 
