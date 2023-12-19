@@ -98,27 +98,33 @@ class _LoginScreenState extends State<LoginScreen> {
         print('C program error: ${loginResult.stderr}');
       }
     }
+    
+    print("role1213: $extractedRole");
 
     if (extractedRole == 'DISPENSARY') {
+      debugPrint('nav: dispensary');
       Navigator.of(context).pushNamed(
         DispensaryHomeScreen.routeName,
       );
     } else if (extractedRole == 'PATIENT') {
+      debugPrint('nav: patient');
       Navigator.of(context).pushNamed(
         PatientHomeScreen.routeName,
         arguments: extractedToken,
       );
     } else if (extractedRole == 'DONOR') {
+      debugPrint('nav: donor');
       Navigator.of(context).pushNamed(
         DonorHomeScreen.routeName,
         arguments: extractedToken,
       );
     } else if (extractedRole == 'HOSPITAL') {
-      Navigator.of(context).pushNamed(
-        HospitalPatientsDonorsScreen.routeName,
-        arguments: extractedToken,
+      debugPrint('nav: hospital');
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => const HospitalPatientsDonorsScreen(),),
       );
     } else if (extractedRole == 'ADMIN') {
+      debugPrint('nav: admin');
       Navigator.of(context).pushNamed(
         AdminPatientsListScreen.routeName,
         arguments: extractedToken,
@@ -247,7 +253,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     title: 'Log in',
                     onTapFunc: () {
                       Navigator.of(context).pushNamed(
-                        PatientHomeScreen.routeName,
+                        HospitalPatientsDonorsScreen.routeName,
                         arguments: extractedToken,
                       );
                     },
@@ -312,8 +318,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: buttonTextStyle,
                             ),
                             onPressed: () {
-                              Navigator.of(context)
-                                  .pushNamed(DispensaryHomeScreen.routeName);
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => const HospitalPatientsDonorsScreen(),),
+                              );
                             },
                           ),
                         ),

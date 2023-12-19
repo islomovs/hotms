@@ -18,7 +18,7 @@ class HospitalOperationsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SidebarTemplate(
-            title: 'Nigina Roziya',
+            title: 'Nigina Roziya operation',
             email: 'nigina@roziya.com',
             sideBarTitles: sideBarTitlesHospital,
             sideBarListIcons: sideBarListIconsHospital,

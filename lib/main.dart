@@ -95,7 +95,8 @@ class MyApp extends StatelessWidget {
               HospitalPatientsDonorsScreen(),
           HospitalOperationsScreen.routeName: (ctx) =>
               HospitalOperationsScreen(),
-          HospitalPatientScreen.routeName: (ctx) => HospitalPatientScreen(),
+          HospitalPatientScreen.routeName: (ctx) =>
+              HospitalPatientScreen(id: '0'),
           HospitalDonorScreen.routeName: (ctx) => HospitalDonorScreen(),
           HospitalAssignOperationScreen.routeName: (ctx) =>
               HospitalAssignOperationScreen(),

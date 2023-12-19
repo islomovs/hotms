@@ -8,7 +8,8 @@ import './hospital_assign_operation_screen.dart';
 
 class HospitalPatientScreen extends StatefulWidget {
   static const routeName = '/hospital-patient-screen';
-  const HospitalPatientScreen({super.key});
+  final String id;
+  const HospitalPatientScreen({super.key, required this.id});
 
   @override
   State<HospitalPatientScreen> createState() => _HospitalPatientScreenState();
