@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide DatePickerTheme;
+import 'package:myapp/screens/patient_home_inner_screen.dart';
 import 'package:provider/provider.dart';
 
 import './providers/donor.dart';
@@ -121,6 +122,7 @@ class MyApp extends StatelessWidget {
               AdminEditDispenserScreen(),
           AdminEditOrganScreen.routeName: (ctx) => AdminEditOrganScreen(),
           AdminEditPatientScreen.routeName: (ctx) => AdminEditPatientScreen(),
+          PatientHomeInnerScreen.routeName: (ctx) => PatientHomeInnerScreen(),
         },
       ),
     );

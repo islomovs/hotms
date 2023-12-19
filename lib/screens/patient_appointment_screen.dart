@@ -14,6 +14,7 @@ import '../providers/patient.dart';
 
 class PatientAppointmentScreen extends StatefulWidget {
   static const routeName = '/patient-appointment-screen';
+
   const PatientAppointmentScreen({super.key});
 
   @override
@@ -29,7 +30,7 @@ class _PatientAppointmentScreenState extends State<PatientAppointmentScreen> {
 
   bool? isDelivered = true;
   bool? isInProcess = false;
-  bool? finalDecision = false;
+  bool finalDecision = false;
 
   String? _enteredName;
   String? _enteredPhoneNumber;
@@ -109,11 +110,16 @@ class _PatientAppointmentScreenState extends State<PatientAppointmentScreen> {
   @override
   void didChangeDependencies() {
     Provider.of<Patients>(context).fetchDispensaryVisits();
+    Provider.of<Patients>(context).fetchPatientInfo();
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    final patients = Provider.of<Patients>(context).patientInfo;
+    isDelivered = patients.isApproved ?? false;
+    isInProcess = !isDelivered!;
+    finalDecision = isDelivered!;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,11 +165,11 @@ class _PatientAppointmentScreenState extends State<PatientAppointmentScreen> {
                           status: isInProcess!,
                         ),
                         StatusWidget(
-                          title: 'Accepted/Rejected',
+                          title: finalDecision ? 'Accepted' : 'Rejected',
                           appStatusWidget: ApplicationStatusWidget(
-                            status: finalDecision!,
+                            status: finalDecision,
                           ),
-                          status: finalDecision!,
+                          status: finalDecision,
                         ),
                       ],
                     ),
