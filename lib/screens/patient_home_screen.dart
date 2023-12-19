@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/screens/patient_home_inner_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../constants/contants.dart';
@@ -14,7 +15,7 @@ import '../providers/patient.dart';
 class PatientHomeScreen extends StatefulWidget {
   static const routeName = '/patient-home-screen';
 
-  PatientHomeScreen({super.key});
+  const PatientHomeScreen({super.key});
 
   @override
   State<PatientHomeScreen> createState() => _PatientHomeScreenState();
@@ -29,15 +30,16 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
 
   @override
   void didChangeDependencies() {
-    Provider.of<Patients>(context).fetchPatientInfo();
-    Provider.of<Patients>(context).fetchOperations();
+    Provider.of<Patients>(context)
+      ..fetchOperations()
+      ..fetchPatientApplied();
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
     var operations = Provider.of<Patients>(context).patientO;
-    var patientInfo = Provider.of<Patients>(context).patientInfo;
+    var applied = Provider.of<Patients>(context).patientApplied;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,14 +77,16 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                           status: operationDate!,
                         ),
                         StatusWidget(
-                          title: 'Your operation time: ${(operations.operationTime ?? '').split(' ')[1]}',
+                          title:
+                              'Your operation time: ${(operations.operationTime ?? '').split(' ')[1]}',
                           appStatusWidget: ApplicationStatusWidget(
                             status: operationTime!,
                           ),
                           status: operationTime!,
                         ),
                         StatusWidget(
-                          title: 'Your doctor: ${operations.doctorName ?? 'N/A'}',
+                          title:
+                              'Your doctor: ${operations.doctorName ?? 'N/A'}',
                           appStatusWidget: ApplicationStatusWidget(
                             status: doctorsName!,
                           ),
@@ -91,25 +95,59 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                       ],
                     ),
                     const SizedBox(height: 40),
-                    ListHeadingsWidget(
-                      column3: Container(
-                        alignment: Alignment.topLeft,
-                        width: (MediaQuery.of(context).size.width - 720) / 4,
-                        child: Text(
-                          'Address',
-                          style: listTitleTextStyle,
-                        ),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: listHeadingBgCOl,
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                      column4: Container(
-                        alignment: Alignment.topLeft,
-                        width: (MediaQuery.of(context).size.width - 720) / 4,
-                        child: Text(
-                          'Date of operation',
-                          style: listTitleTextStyle,
-                          textAlign: TextAlign.center,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 20,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: 220,
+                              child: Text(
+                                'Hospital',
+                                style: listTitleTextStyle,
+                              ),
+                            ),
+                            Container(
+                              alignment: Alignment.topLeft,
+                              width:
+                                  (MediaQuery.of(context).size.width - 720) / 4,
+                              child: Text(
+                                'Address',
+                                style: listTitleTextStyle,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
+                    // ListHeadingsWidget(
+                    //   column3: Container(
+                    //     alignment: Alignment.topLeft,
+                    //     width: (MediaQuery.of(context).size.width - 720) / 4,
+                    //     child: Text(
+                    //       'Address',
+                    //       style: listTitleTextStyle,
+                    //     ),
+                    //   ),
+                    //   column4: Container(
+                    //     alignment: Alignment.topLeft,
+                    //     width: (MediaQuery.of(context).size.width - 720) / 4,
+                    //     child: Text(
+                    //       'Date of operation',
+                    //       style: listTitleTextStyle,
+                    //       textAlign: TextAlign.center,
+                    //     ),
+                    //   ),
+                    // ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         vertical: 10,
@@ -118,22 +156,51 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                       child: ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: 20,
-                        itemBuilder: (context, index) {
-                          return PatientsListTile(
-                            name: 'Saidova Saida',
-                            subtitle: '21',
-                            diagnosisTitle: 'Cancer',
-                            diagnosisSubtitle: 'per annum',
-                            hospitalName: 'CareMed Clinic',
-                            city: 'Tashkent',
-                            date: '21 / 10 / 2024',
-                            subDate: 'Something...',
-                            urgencyRate: 'Emergency',
-                            navigateFunc: () {
-                              Navigator.of(context)
-                                  .pushNamed(HospitalPatientScreen.routeName);
+                        itemCount: applied.length,
+                        itemBuilder: (_, index) {
+                          var apply = applied[index];
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PatientHomeInnerScreen(
+                                    id: apply.hospitalId?.id ?? 0,
+                                  ),
+                                ),
+                              );
                             },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    width: 220,
+                                    child:  Row(
+                                      children: [
+                                        const CircleAvatar(
+                                          minRadius: 20,
+                                          backgroundImage: AssetImage(
+                                              './assets/images/profile.png'),
+                                        ),
+                                        const SizedBox(width: 25),
+                                        Text(
+                                          apply.hospitalId?.name ?? 'N/A',
+                                          style: listTileTitle,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    apply.hospitalId?.address ?? 'N/A',
+                                    style: listTileTitle,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
                           );
                         },
                       ),
