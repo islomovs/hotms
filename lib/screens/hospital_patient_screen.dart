@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/data/HospitalOperation.dart';
 import '../constants/contants.dart';
 import '../constants/registration_constants.dart';
 import '../widgets/sidebar_template.dart';
@@ -8,23 +9,40 @@ import './hospital_assign_operation_screen.dart';
 
 class HospitalPatientScreen extends StatefulWidget {
   static const routeName = '/hospital-patient-screen';
-  final String id;
-  const HospitalPatientScreen({super.key, required this.id});
+  final HospitalOperation model;
+
+  const HospitalPatientScreen({super.key, required this.model});
 
   @override
   State<HospitalPatientScreen> createState() => _HospitalPatientScreenState();
 }
 
 class _HospitalPatientScreenState extends State<HospitalPatientScreen> {
+  @override
+  void initState() {
+    _enteredFName = widget.model.patientId?.userId?.fullName ?? '';
+    _enteredPhoneNumber = widget.model.patientId?.phoneNumber ?? '';
+    _enteredAddress = widget.model.patientId?.address ?? '';
+    _enteredCity = widget.model.patientId?.city ?? '';
+    _enteredDistrict = widget.model.patientId?.district ?? '';
+    _enteredPassportNumber = widget.model.patientId?.passportNumber ?? '';
+    _enteredDiagnosis = widget.model.patientId?.diagnosis ?? '';
+    _enteredPINFL = widget.model.patientId?.pinfl ?? '';
+    _selectedTypeOfDonation = '';
+    _selectedRHFactor = widget.model.patientId?.rhFactor ?? '';
+    _currentSliderValue = 0;
+    super.initState();
+  }
+
   final _formKey = GlobalKey<FormState>();
   String? _enteredFName;
-  String? _selectedOrgan;
   String? _enteredPhoneNumber;
   String? _enteredAddress;
   String? _enteredCity;
   String? _enteredDistrict;
   String? _enteredPassportNumber;
   String? _enteredDiagnosis;
+  String? _selectedOrgan;
   String? _enteredPINFL;
   String? _selectedTypeOfDonation;
   String? _enteredComment;

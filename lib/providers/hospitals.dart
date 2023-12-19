@@ -85,11 +85,15 @@ class Hospitals with ChangeNotifier {
   Future<void> fetchAllOperations() async {
     print("all operation1");
 
-    final response = await _dio.get('$ip/api/hospitals/allMyOperations',
-        options: Options(headers: {
+    final response = await _dio.get(
+      '$ip/api/hospitals/allMyOperations',
+      options: Options(
+        headers: {
           'Authorization': "Bearer $hospitalToken",
           'Content-Type': 'application/json',
-        }));
+        },
+      ),
+    );
     print("all operation2");
 
     if (response.statusCode == 200) {
@@ -101,73 +105,73 @@ class Hospitals with ChangeNotifier {
     }
   }
 
-  // Future<List<String>> fetchDonorsList() async {
-  // final response = await http.get(
-  //   Uri.parse('$ip/api/hospitals/allMyDonors'),
-  // );
-  // print(response.body);
-  // if (response.statusCode == 200) {
-  //   // If the server returns a 200 OK response, parse the JSON
-  //   List<String> stringList = List<String>.from(json.decode(response.body));
-  //   print(stringList);
-  //   return stringList;
-  // } else {
-  //   // If the server did not return a 200 OK response,
-  //   // throw an exception.
-  //   throw Exception('Failed to load data');
-  // }
-  // }
+// Future<List<String>> fetchDonorsList() async {
+// final response = await http.get(
+//   Uri.parse('$ip/api/hospitals/allMyDonors'),
+// );
+// print(response.body);
+// if (response.statusCode == 200) {
+//   // If the server returns a 200 OK response, parse the JSON
+//   List<String> stringList = List<String>.from(json.decode(response.body));
+//   print(stringList);
+//   return stringList;
+// } else {
+//   // If the server did not return a 200 OK response,
+//   // throw an exception.
+//   throw Exception('Failed to load data');
+// }
+// }
 
-  // Future<List<String>> fetchPatientsList() async {
-  // final response = await http.get(
-  //   Uri.parse('$ip/api/hospitals/allMyPatients'),
-  // );
-  // print('${response.body} patients');
-  // if (response.statusCode == 200) {
-  //   // If the server returns a 200 OK response, parse the JSON
-  //   List<String> stringList = List<String>.from(json.decode(response.body));
-  //   print(stringList);
-  //   return stringList;
-  // } else {
-  //   // If the server did not return a 200 OK response,
-  //   // throw an exception.
-  //   throw Exception('Failed to load data');
-  // }
-  // }
+// Future<List<String>> fetchPatientsList() async {
+// final response = await http.get(
+//   Uri.parse('$ip/api/hospitals/allMyPatients'),
+// );
+// print('${response.body} patients');
+// if (response.statusCode == 200) {
+//   // If the server returns a 200 OK response, parse the JSON
+//   List<String> stringList = List<String>.from(json.decode(response.body));
+//   print(stringList);
+//   return stringList;
+// } else {
+//   // If the server did not return a 200 OK response,
+//   // throw an exception.
+//   throw Exception('Failed to load data');
+// }
+// }
 
-  // Future<List<String>> fetchOperationsList() async {
-  //   // final response = await http.get(
-  //   //   Uri.parse('$ip/api/hospitals/allMyOperations'),
-  //   // );
-  //   // print(response.body);
-  //   // if (response.statusCode == 200) {
-  //   //   // If the server returns a 200 OK response, parse the JSON
-  //   //   List<String> stringList = List<String>.from(json.decode(response.body));
-  //   //   print(stringList);
-  //   //   return stringList;
-  //   // } else {
-  //   //   // If the server did not return a 200 OK response,
-  //   //   // throw an exception.
-  //   //   print(response.body);
-  //   //   throw Exception('Failed to load data');
-  //   // }
-  // }
+// Future<List<String>> fetchOperationsList() async {
+//   // final response = await http.get(
+//   //   Uri.parse('$ip/api/hospitals/allMyOperations'),
+//   // );
+//   // print(response.body);
+//   // if (response.statusCode == 200) {
+//   //   // If the server returns a 200 OK response, parse the JSON
+//   //   List<String> stringList = List<String>.from(json.decode(response.body));
+//   //   print(stringList);
+//   //   return stringList;
+//   // } else {
+//   //   // If the server did not return a 200 OK response,
+//   //   // throw an exception.
+//   //   print(response.body);
+//   //   throw Exception('Failed to load data');
+//   // }
+// }
 
-  // Future<List<String>> fetchPatientsInTheQueue() async {
-  //   final response = await http.get(
-  //     Uri.parse('$ip/api/hospitals/allMyPatientsInTheQueue'),
-  //   );
-  //   print(response.body);
-  //   if (response.statusCode == 200) {
-  //     // If the server returns a 200 OK response, parse the JSON
-  //     List<String> stringList = List<String>.from(json.decode(response.body));
-  //     print(stringList);
-  //     return stringList;
-  //   } else {
-  //     // If the server did not return a 200 OK response,
-  //     // throw an exception.
-  //     print(response.body);
-  //     throw Exception('Failed to load data');
-  //   }
-  // }
+// Future<List<String>> fetchPatientsInTheQueue() async {
+//   final response = await http.get(
+//     Uri.parse('$ip/api/hospitals/allMyPatientsInTheQueue'),
+//   );
+//   print(response.body);
+//   if (response.statusCode == 200) {
+//     // If the server returns a 200 OK response, parse the JSON
+//     List<String> stringList = List<String>.from(json.decode(response.body));
+//     print(stringList);
+//     return stringList;
+//   } else {
+//     // If the server did not return a 200 OK response,
+//     // throw an exception.
+//     print(response.body);
+//     throw Exception('Failed to load data');
+//   }
+// }
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart' hide DatePickerTheme;
+import 'package:myapp/data/HospitalOperation.dart';
 import 'package:myapp/screens/patient_home_inner_screen.dart';
 import 'package:provider/provider.dart';
 
 import './providers/donor.dart';
-import './providers/patient.dart';
+import './providers/patient.dart' as patient;
 import './providers/dispensary.dart';
 import './providers/hospitals.dart';
 import './screens/login_screen.dart';
@@ -58,7 +59,7 @@ class MyApp extends StatelessWidget {
           create: (ctx) => Donors(),
         ),
         ChangeNotifierProvider(
-          create: (ctx) => Patients(),
+          create: (ctx) =>patient.Patients(),
         ),
         ChangeNotifierProvider(
           create: (ctx) => Hospitals(),
@@ -97,7 +98,7 @@ class MyApp extends StatelessWidget {
           HospitalOperationsScreen.routeName: (ctx) =>
               HospitalOperationsScreen(),
           HospitalPatientScreen.routeName: (ctx) =>
-              HospitalPatientScreen(id: '0'),
+              HospitalPatientScreen(model: HospitalOperation(),),
           HospitalDonorScreen.routeName: (ctx) => HospitalDonorScreen(),
           HospitalAssignOperationScreen.routeName: (ctx) =>
               HospitalAssignOperationScreen(),

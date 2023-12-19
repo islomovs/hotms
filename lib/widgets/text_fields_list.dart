@@ -129,7 +129,9 @@ class _TextFieldsListState extends State<TextFieldsList> {
               ),
               const SizedBox(height: 20),
               DropdownButtonFormField(
-                value: widget.selectedBloodGroup,
+                value: widget.selectedBloodGroup?.isEmpty == true
+                    ? null
+                    : widget.selectedBloodGroup,
                 style: originalTextStyle,
                 icon: const Icon(
                   Icons.keyboard_arrow_down,
@@ -192,7 +194,9 @@ class _TextFieldsListState extends State<TextFieldsList> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               DropdownButtonFormField(
-                value: widget.selectedOrgan,
+                value: widget.selectedOrgan?.isEmpty == true
+                    ? null
+                    : widget.selectedOrgan,
                 style: originalTextStyle,
                 icon: const Icon(
                   Icons.keyboard_arrow_down,
@@ -284,7 +288,9 @@ class _TextFieldsListState extends State<TextFieldsList> {
               ),
               const SizedBox(height: 20),
               DropdownButtonFormField(
-                value: widget.selectedRHFactor,
+                value: widget.selectedRHFactor?.isEmpty == true
+                    ? null
+                    : widget.selectedRHFactor=="Minus" ? "Negative" : "Positive",
                 style: originalTextStyle,
                 icon: const Icon(
                   Icons.keyboard_arrow_down,

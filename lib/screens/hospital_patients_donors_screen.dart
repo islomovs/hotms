@@ -21,8 +21,6 @@ class HospitalPatientsDonorsScreen extends StatefulWidget {
 
 class _HospitalOperationsScreenState
     extends State<HospitalPatientsDonorsScreen> {
-
-
   @override
   void initState() {
     print("all operation -1");
@@ -112,12 +110,7 @@ class _HospitalOperationsScreenState
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => HospitalPatientScreen(
-                                      id: rxAllOperations[index]
-                                              .hospitalId
-                                              ?.id
-                                              .toString() ??
-                                          '0',
-                                    ),
+                                        model: rxAllOperations[index]),
                                   ));
                             },
                           );
