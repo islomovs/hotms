@@ -4,7 +4,7 @@ import '../constants/contants.dart';
 
 class PatientsListTile extends StatelessWidget {
   final String name;
-  final String subtitle;
+  final String? subtitle;
   final String diagnosisTitle;
   final String diagnosisSubtitle;
   final String hospitalName;
@@ -13,9 +13,10 @@ class PatientsListTile extends StatelessWidget {
   final String subDate;
   final String urgencyRate;
   VoidCallback navigateFunc;
+
   PatientsListTile({
     required this.name,
-    required this.subtitle,
+    this.subtitle,
     required this.diagnosisTitle,
     required this.diagnosisSubtitle,
     required this.hospitalName,
@@ -56,11 +57,12 @@ class PatientsListTile extends StatelessWidget {
                             name,
                             style: listTileTitle,
                           ),
-                          const SizedBox(height: 5),
-                          Text(
-                            subtitle,
-                            style: listTileSubTitle,
-                          ),
+                          if (subtitle != null) const SizedBox(height: 5),
+                          if (subtitle != null)
+                            Text(
+                              subtitle!,
+                              style: listTileSubTitle,
+                            ),
                         ],
                       ),
                     ],
