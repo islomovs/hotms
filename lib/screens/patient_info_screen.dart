@@ -12,6 +12,7 @@ import '../widgets/text_fields_list_reader.dart';
 
 class PatientInfoScreen extends StatefulWidget {
   static const routeName = '/patient-info-screen';
+
   const PatientInfoScreen({super.key});
 
   @override
@@ -38,17 +39,20 @@ class _PatientInfoScreenState extends State<PatientInfoScreen> {
 
   bool? isDelivered = false;
   bool? isInProcess = false;
-  bool? finalDecision = false;
+  bool finalDecision = false;
 
   @override
   void didChangeDependencies() {
-    Provider.of<Patients>(context).fetchPatientInfo();
+    Provider.of<Patients>(context)
+      ..fetchPatientInfo()
+      ..fetchOperations();
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
     final patients = Provider.of<Patients>(context).patientInfo;
+    final patientO = Provider.of<Patients>(context).patientO;
     _birthday = patients.birthday;
     _enteredFName = patients.userId?.fullName;
     _enteredPhoneNumber = patients.phoneNumber;
@@ -62,8 +66,13 @@ class _PatientInfoScreenState extends State<PatientInfoScreen> {
     _enteredComment = patients.comments;
     _selectedBloodGroup = patients.bloodType;
     _selectedRHFactor = patients.rhFactor;
-    _selectedOrgan = patients.organDonates?.name;
-    //isDelivered = patients.is;
+    _selectedOrgan = patients.organReceives?.name;
+    _currentSliderValue =
+        ((patients.urgencyRate?.toDouble() ?? 0) ~/ 5).toDouble();
+
+    isDelivered = patients.isApproved ?? false;
+    isInProcess = !isDelivered!;
+    finalDecision = isDelivered!;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,7 +105,9 @@ class _PatientInfoScreenState extends State<PatientInfoScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           StatusWidget(
-                            title: 'Your Application is delivered',
+                            title: isDelivered!
+                                ? 'Your Application is delivered'
+                                : 'Your Application is not delivered',
                             appStatusWidget: ApplicationStatusWidget(
                               status: isDelivered!,
                             ),
@@ -110,11 +121,11 @@ class _PatientInfoScreenState extends State<PatientInfoScreen> {
                             status: isInProcess!,
                           ),
                           StatusWidget(
-                            title: 'Accepted/Rejected',
+                            title: finalDecision ? 'Accepted' : 'Rejected',
                             appStatusWidget: ApplicationStatusWidget(
-                              status: finalDecision!,
+                              status: finalDecision,
                             ),
-                            status: finalDecision!,
+                            status: finalDecision,
                           ),
                         ],
                       ),
@@ -147,12 +158,14 @@ class _PatientInfoScreenState extends State<PatientInfoScreen> {
                                   labelText: 'Diagnosis (organ)',
                                   labelStyle: labelTextStyle,
                                   enabledBorder: enabledBorderParams,
-                                  focusedBorder: focusedBorderParams,
-                                  errorBorder: errorBorderParams,
-                                  focusedErrorBorder: focusedErrorBorderParams,
+                                  focusedBorder: enabledBorderParams,
+                                  errorBorder: enabledBorderParams,
+                                  focusedErrorBorder: enabledBorderParams,
                                 ),
-                                onChanged: (value) => _enteredDiagnosis = value,
-                                validator: validateComment,
+                                readOnly: true,
+                                controller: TextEditingController(
+                                  text: _selectedOrgan,
+                                ),
                               ),
                               const SizedBox(height: 20),
                               Text(
@@ -187,13 +200,7 @@ class _PatientInfoScreenState extends State<PatientInfoScreen> {
                                         : _currentSliderValue == 1
                                             ? 'Urgent'
                                             : 'Emergency',
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _currentSliderValue = value;
-                                      });
-                                      print(
-                                          'value changed to $_currentSliderValue');
-                                    },
+                                    onChanged: (value) {},
                                   ),
                                 ),
                               ),

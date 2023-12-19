@@ -11,18 +11,33 @@ import '../widgets/application_status_widget.dart';
 import './hospital_patient_screen.dart';
 import '../providers/patient.dart';
 
-class PatientHomeScreen extends StatelessWidget {
+class PatientHomeScreen extends StatefulWidget {
   static const routeName = '/patient-home-screen';
+
   PatientHomeScreen({super.key});
 
+  @override
+  State<PatientHomeScreen> createState() => _PatientHomeScreenState();
+}
+
+class _PatientHomeScreenState extends State<PatientHomeScreen> {
   bool? operationDate = true;
+
   bool? operationTime = true;
+
   bool? doctorsName = true;
 
   @override
+  void didChangeDependencies() {
+    Provider.of<Patients>(context).fetchPatientInfo();
+    Provider.of<Patients>(context).fetchOperations();
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var operations = Provider.of<Patients>(context).fetchOperations();
-    var patientInfo = Provider.of<Patients>(context).fetchPatientInfo();
+    var operations = Provider.of<Patients>(context).patientO;
+    var patientInfo = Provider.of<Patients>(context).patientInfo;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,21 +67,22 @@ class PatientHomeScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         StatusWidget(
-                          title: 'Your operation date: 32.13.2023',
+                          title:
+                              'Your operation date: ${(operations.operationTime ?? '').split(' ')[0].split('-')[2]}.${(operations.operationTime ?? '').split(' ')[0].split('-')[1]}.${(operations.operationTime ?? '').split(' ')[0].split('-')[0]}',
                           appStatusWidget: ApplicationStatusWidget(
                             status: operationDate!,
                           ),
                           status: operationDate!,
                         ),
                         StatusWidget(
-                          title: 'Your operation time: 14:00',
+                          title: 'Your operation time: ${(operations.operationTime ?? '').split(' ')[1]}',
                           appStatusWidget: ApplicationStatusWidget(
                             status: operationTime!,
                           ),
                           status: operationTime!,
                         ),
                         StatusWidget(
-                          title: 'Your doctor: Full name',
+                          title: 'Your doctor: ${operations.doctorName ?? 'N/A'}',
                           appStatusWidget: ApplicationStatusWidget(
                             status: doctorsName!,
                           ),

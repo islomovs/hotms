@@ -16,6 +16,7 @@ class Donor {
 
   //Null? lastDonated;
   OrganDonates? organDonates;
+  OrganDonates? organReceives;
   String? passportNumber;
   String? pinfl;
   bool? isApproved;
@@ -24,26 +25,30 @@ class Donor {
   bool? isSmoker;
   bool? isDrinker;
   num? donationPrice;
+  num? urgencyRate;
   String? comments;
 
-  Donor(
-      {this.id,
-      this.userId,
-      this.phoneNumber,
-      this.address,
-      this.birthday,
-      this.city,
-      this.district,
-      this.organDonates,
-      this.passportNumber,
-      this.pinfl,
-      this.isApproved,
-      this.bloodType,
-      this.rhFactor,
-      this.isSmoker,
-      this.isDrinker,
-      this.donationPrice,
-      this.comments});
+  Donor({
+    this.id,
+    this.userId,
+    this.phoneNumber,
+    this.address,
+    this.birthday,
+    this.city,
+    this.district,
+    this.organDonates,
+    this.passportNumber,
+    this.pinfl,
+    this.isApproved,
+    this.bloodType,
+    this.rhFactor,
+    this.isSmoker,
+    this.isDrinker,
+    this.donationPrice,
+    this.comments,
+    this.organReceives,
+    this.urgencyRate,
+  });
 
   Donor.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -56,6 +61,9 @@ class Donor {
     organDonates = json['organDonates'] != null
         ? OrganDonates.fromJson(json['organDonates'])
         : null;
+    organReceives = json['organReceives'] != null
+        ? OrganDonates.fromJson(json['organReceives'])
+        : null;
     passportNumber = json['passportNumber'];
     pinfl = json['pinfl'];
     isApproved = json['isApproved'];
@@ -65,6 +73,7 @@ class Donor {
     isDrinker = json['isDrinker'];
     donationPrice = json['donationPrice'];
     comments = json['comments'];
+    urgencyRate = json['urgencyRate'];
   }
 
   Map<String, dynamic> toJson() {
@@ -81,6 +90,9 @@ class Donor {
     if (organDonates != null) {
       data['organDonates'] = organDonates!.toJson();
     }
+    if (organReceives != null) {
+      data['organReceives'] = organReceives!.toJson();
+    }
     data['passportNumber'] = passportNumber;
     data['pinfl'] = pinfl;
     data['isApproved'] = isApproved;
@@ -90,6 +102,8 @@ class Donor {
     data['isDrinker'] = isDrinker;
     data['donationPrice'] = donationPrice;
     data['comments'] = comments;
+    data['urgencyRate'] = urgencyRate;
+
     return data;
   }
 }
@@ -331,7 +345,7 @@ class Donors with ChangeNotifier {
     if (response.statusCode == 200) {
       _donorH.clear();
       // If the server returns a 200 OK response, parse the JSON
-      for(int i = 0; i < json.decode(response.body).length; i++) {
+      for (int i = 0; i < json.decode(response.body).length; i++) {
         _donorH.add(OrganAllHospitals.fromJson(json.decode(response.body)[i]));
       }
       notifyListeners();
@@ -491,9 +505,8 @@ class OrganAllHospitals {
 
   OrganAllHospitals.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    creatorId = json['creatorId'] != null
-        ? UserId.fromJson(json['creatorId'])
-        : null;
+    creatorId =
+        json['creatorId'] != null ? UserId.fromJson(json['creatorId']) : null;
     name = json['name'];
     address = json['address'];
     specializationOrgans = json['specializationOrgans'] != null
@@ -528,4 +541,3 @@ class OrganAllHospitals {
     return data;
   }
 }
-
