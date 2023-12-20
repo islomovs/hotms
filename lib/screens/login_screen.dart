@@ -12,7 +12,7 @@ import './donor_home_screen.dart';
 import './patient_home_screen.dart';
 import './patient_hospitals_screen.dart';
 import './admin_patients_list_screen.dart';
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import './hospital_patients_donors_screen.dart';
 import './dispensary_home_screen.dart';

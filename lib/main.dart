@@ -19,7 +19,6 @@ import './screens/donor_hospitals_screen.dart';
 import './screens/dispensary_home_screen.dart';
 import './screens/dispensary_donor_info_screen.dart';
 import './screens/dispensary_patient_info_screen.dart';
-import './screens/dispensary_appointment_screen.dart';
 import './screens/patient_home_screen.dart';
 import './screens/patient_appointment_screen.dart';
 import './screens/patient_info_screen.dart';
@@ -92,8 +91,6 @@ class MyApp extends StatelessWidget {
               DispensaryOrganInfoScreen(id: 0),
           DispenserPatientInfoScreen.routeName: (ctx) =>
               DispenserPatientInfoScreen(id: 0),
-          DispensaryAppointmentScreen.routeName: (ctx) =>
-              DispensaryAppointmentScreen(),
           PatientHomeScreen.routeName: (ctx) => PatientHomeScreen(),
           PatientAppointmentScreen.routeName: (ctx) =>
               PatientAppointmentScreen(),

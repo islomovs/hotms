@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart' hide DatePickerTheme;
 import 'package:intl/intl.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 
 class TextFieldsListReader extends StatefulWidget {

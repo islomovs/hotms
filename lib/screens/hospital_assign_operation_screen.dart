@@ -23,10 +23,8 @@ class HospitalAssignOperationScreen extends StatefulWidget {
 class _HospitalAssignOperationScreenState
     extends State<HospitalAssignOperationScreen> {
   final _formKey = GlobalKey<FormState>();
-  String? _enteredName;
-  String? _enteredRole;
-  String? _selectedName;
-  String? _selectedOrgan;
+  String? _selectedDoctorsName;
+  String? _selectedDonorsName;
 
   bool? isDelivered = false;
   bool? isInProcess = false;
@@ -192,6 +190,42 @@ class _HospitalAssignOperationScreenState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
+                      DropdownButtonFormField(
+                        value: _selectedDoctorsName,
+                        style: originalTextStyle,
+                        // focusColor: Color(0x802B2B2B),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Choose Doctor\'s name';
+                          }
+                          return null;
+                        },
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(8)),
+                        items: ['A', 'B', 'AB', 'O'].map((String category) {
+                          return DropdownMenuItem(
+                              value: category,
+                              child: Row(
+                                children: <Widget>[
+                                  Text(category),
+                                ],
+                              ));
+                        }).toList(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            _selectedDoctorsName = newValue;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Doctor\'s name',
+                          labelStyle: labelTextStyle,
+                          enabledBorder: enabledBorderParams,
+                          focusedBorder: focusedBorderParams,
+                          errorBorder: errorBorderParams,
+                          focusedErrorBorder: focusedErrorBorderParams,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
                       HeadingWidget(
                         title: 'Assign Doctor',
                         subtitle:
@@ -271,7 +305,7 @@ class _HospitalAssignOperationScreenState
                       HeadingWidget(title: 'Choose Donor'),
                       const SizedBox(height: 20),
                       DropdownButtonFormField(
-                        value: _selectedName,
+                        value: _selectedDonorsName,
                         style: originalTextStyle,
                         // focusColor: Color(0x802B2B2B),
                         validator: (value) {
@@ -293,7 +327,7 @@ class _HospitalAssignOperationScreenState
                         }).toList(),
                         onChanged: (newValue) {
                           setState(() {
-                            _selectedName = newValue;
+                            _selectedDonorsName = newValue;
                           });
                         },
                         decoration: InputDecoration(

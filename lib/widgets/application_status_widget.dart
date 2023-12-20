@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 
 class ApplicationStatusWidget extends StatefulWidget {
   bool status;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 
 class RequestButton extends StatelessWidget {
   final String btnTitle;

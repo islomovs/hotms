@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart' hide DatePickerTheme;
 import 'package:file_picker/file_picker.dart' as fp;
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../widgets/hoverable_list_tile.dart';
 
 class SidebarTemplate extends StatefulWidget {

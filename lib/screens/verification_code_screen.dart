@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:myapp/constants/contants.dart';
+import 'package:myapp/constants/constants.dart';
 
 import '../constants/registration_constants.dart';
 import './reset_password_screen.dart';

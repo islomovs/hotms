@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/constants/contants.dart';
+import 'package:myapp/constants/constants.dart';
 
 class StatusWidget extends StatelessWidget {
   final String title;

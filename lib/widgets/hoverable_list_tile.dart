@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 
 class HoverableListTile extends StatelessWidget {
   final bool isHovered;

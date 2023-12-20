@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import './request_button.dart';
 
 class HospitalCard extends StatelessWidget {

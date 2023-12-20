@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' hide DatePickerTheme;
 import 'package:intl/intl.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 
 class TextFieldsList extends StatefulWidget {
@@ -290,7 +290,9 @@ class _TextFieldsListState extends State<TextFieldsList> {
               DropdownButtonFormField(
                 value: widget.selectedRHFactor?.isEmpty == true
                     ? null
-                    : widget.selectedRHFactor=="Minus" ? "Negative" : "Positive",
+                    : widget.selectedRHFactor == "Minus"
+                        ? "Negative"
+                        : "Positive",
                 style: originalTextStyle,
                 icon: const Icon(
                   Icons.keyboard_arrow_down,
