@@ -77,7 +77,7 @@ class HospitalOperationsScreen extends StatelessWidget {
                             city: 'Tashkent',
                             date: '21 / 10 / 2024',
                             subDate: 'Something...',
-                            urgencyRate: 'Emergency',
+                            status: 'Emergency',
                             navigateFunc: () {
                               Navigator.of(context)
                                   .pushNamed(HospitalPatientScreen.routeName);

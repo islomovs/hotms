@@ -96,7 +96,7 @@ class _PatientHomeInnerScreenState extends State<PatientHomeInnerScreen> {
                             city: 'Tashkent',
                             date: '21 / 10 / 2024',
                             subDate: 'Something...',
-                            urgencyRate: 'Emergency',
+                            status: 'Emergency',
                             navigateFunc: () {},
                           );
                         },

@@ -1,5 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart' hide DatePickerTheme;
 import 'package:intl/intl.dart';
+import 'package:myapp/data/AllDonorsResponse.dart';
+import 'package:myapp/data/AllMyDoctorsResponse.dart';
 
 import '../constants/contants.dart';
 import '../constants/registration_constants.dart';
@@ -11,7 +14,9 @@ import './hospital_patients_donors_screen.dart';
 
 class HospitalAssignOperationScreen extends StatefulWidget {
   static const routeName = '/hospital-assign-operation-screen';
-  const HospitalAssignOperationScreen({super.key});
+  final String id;
+
+  const HospitalAssignOperationScreen({super.key, required this.id});
 
   @override
   State<HospitalAssignOperationScreen> createState() =>
@@ -23,14 +28,18 @@ class _HospitalAssignOperationScreenState
   final _formKey = GlobalKey<FormState>();
   String? _enteredName;
   String? _enteredRole;
-  String? _selectedName;
+  String? _selectedDonorName;
+  String? _selectedDoctorName;
+  AllDoctorsResponse? _selectedDoctor;
+  AllDonorsResponse? _selectedDonor;
   String? _selectedOrgan;
 
   bool? isDelivered = false;
   bool? isInProcess = false;
   bool? finalDecision = false;
 
-  TextEditingController _dateController = TextEditingController();
+  DateTime? _dateController;
+  TimeOfDay? _time;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -56,25 +65,26 @@ class _HospitalAssignOperationScreenState
     );
     if (picked != null) {
       setState(() {
-        _dateController.text = DateFormat('dd-MM-yyyy').format(picked);
+        _dateController = picked;
       });
     }
   }
-
-  TextEditingController _timeController = TextEditingController();
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
       builder: (BuildContext context, Widget? child) {
+        return child!;
         return Theme(
-          data: ThemeData.dark().copyWith(
+          data: ThemeData.light().copyWith(
             colorScheme: ColorScheme.dark(
-              primary: Colors.white, // color of the main part of the picker
-              onPrimary: Colors
-                  .white, // color of the text and icons in the main part of the picker
-              surface: mainColor, // background color of the picker
+              primary: Colors.white,
+              // color of the main part of the picker
+              onPrimary: Colors.white,
+              // color of the text and icons in the main part of the picker
+              surface: mainColor,
+              // background color of the picker
               onSurface:
                   Colors.white, // color of the text and icons on the background
             ),
@@ -88,15 +98,13 @@ class _HospitalAssignOperationScreenState
     );
     if (picked != null && picked != TimeOfDay.now()) {
       setState(() {
-        _timeController.text = picked.format(context);
+        _time = picked;
       });
     }
   }
 
   @override
   void dispose() {
-    _dateController.dispose();
-    _timeController.dispose();
     super.dispose();
   }
 
@@ -137,35 +145,83 @@ class _HospitalAssignOperationScreenState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            TextFormField(
-                              style: originalTextStyle,
-                              cursorColor: const Color(0xFF2B2B2B),
-                              decoration: InputDecoration(
-                                labelText: 'Full name',
-                                labelStyle: labelTextStyle,
-                                enabledBorder: enabledBorderParams,
-                                focusedBorder: focusedBorderParams,
-                                errorBorder: errorBorderParams,
-                                focusedErrorBorder: focusedErrorBorderParams,
-                              ),
-                              onChanged: (value) => _enteredName = value,
-                              validator: validateName,
+                            FutureBuilder(
+                              future: dio.get('$ip/api/hospitals/allMyDoctors',
+                                  options: Options(headers: {
+                                    'Authorization': "Bearer $hospitalToken",
+                                    'Content-Type': 'application/json'
+                                  })),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  final response = snapshot.data;
+                                  final List<AllDoctorsResponse> doctors = [];
+
+                                  if (response?.statusCode == 200) {
+                                    final models = (response?.data as List).map(
+                                        (e) => AllDoctorsResponse.fromJson(e));
+                                    doctors.addAll(models);
+                                  }
+                                  return DropdownButtonFormField(
+                                    value: _selectedDoctorName,
+                                    style: originalTextStyle,
+                                    // focusColor: Color(0x802B2B2B),
+                                    validator: (value) {
+                                      if (value == null) {
+                                        return 'Choose Doctor\'s name';
+                                      }
+                                      return null;
+                                    },
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(8)),
+                                    items: doctors.map((category) {
+                                      return DropdownMenuItem<String>(
+                                        value: category.fullName ?? '',
+                                        child: Row(
+                                          children: <Widget>[
+                                            Text(category.fullName ?? ''),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        _selectedDoctorName = newValue;
+                                      });
+                                      _selectedDoctor = doctors
+                                          .where((element) =>
+                                              element.fullName ==
+                                              _selectedDoctorName)
+                                          .toList()[0];
+                                    },
+                                    decoration: InputDecoration(
+                                      labelText: 'Doctor\'s name',
+                                      labelStyle: labelTextStyle,
+                                      enabledBorder: enabledBorderParams,
+                                      focusedBorder: focusedBorderParams,
+                                      errorBorder: errorBorderParams,
+                                      focusedErrorBorder:
+                                          focusedErrorBorderParams,
+                                    ),
+                                  );
+                                } else {
+                                  return const CircularProgressIndicator();
+                                }
+                              },
                             ),
-                            const SizedBox(height: 20),
-                            TextFormField(
-                              style: originalTextStyle,
-                              cursorColor: const Color(0xFF2B2B2B),
-                              decoration: InputDecoration(
-                                labelText: 'Role',
-                                labelStyle: labelTextStyle,
-                                enabledBorder: enabledBorderParams,
-                                focusedBorder: focusedBorderParams,
-                                errorBorder: errorBorderParams,
-                                focusedErrorBorder: focusedErrorBorderParams,
-                              ),
-                              onChanged: (value) => _enteredRole = value,
-                              validator: validateComment,
-                            ),
+                            // TextFormField(
+                            //   style: originalTextStyle,
+                            //   cursorColor: const Color(0xFF2B2B2B),
+                            //   decoration: InputDecoration(
+                            //     labelText: 'Full name',
+                            //     labelStyle: labelTextStyle,
+                            //     enabledBorder: enabledBorderParams,
+                            //     focusedBorder: focusedBorderParams,
+                            //     errorBorder: errorBorderParams,
+                            //     focusedErrorBorder: focusedErrorBorderParams,
+                            //   ),
+                            //   onChanged: (value) => _enteredName = value,
+                            //   validator: validateName,
+                            // ),
                             const SizedBox(height: 20),
                             HeadingWidget(title: 'Set operation details'),
                             const SizedBox(height: 20),
@@ -176,7 +232,10 @@ class _HospitalAssignOperationScreenState
                                   child: MouseRegion(
                                     cursor: SystemMouseCursors.click,
                                     child: TextFormField(
-                                      controller: _dateController,
+                                      controller: TextEditingController(
+                                          text: DateFormat('dd-MM-yyyy').format(
+                                              _dateController ??
+                                                  DateTime.now())),
                                       style: originalTextStyle,
                                       cursorColor: const Color(0xFF2B2B2B),
                                       decoration: InputDecoration(
@@ -205,7 +264,9 @@ class _HospitalAssignOperationScreenState
                                   child: MouseRegion(
                                     cursor: SystemMouseCursors.click,
                                     child: TextFormField(
-                                      controller: _timeController,
+                                      controller: TextEditingController(
+                                          text:
+                                              '${_time?.hour ?? '00'}:${_time?.minute ?? '00'}'),
                                       style: originalTextStyle,
                                       cursorColor: const Color(0xFF2B2B2B),
                                       decoration: InputDecoration(
@@ -236,40 +297,70 @@ class _HospitalAssignOperationScreenState
                       const SizedBox(height: 20),
                       HeadingWidget(title: 'Choose Donor'),
                       const SizedBox(height: 20),
-                      DropdownButtonFormField(
-                        value: _selectedName,
-                        style: originalTextStyle,
-                        // focusColor: Color(0x802B2B2B),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Choose Donor\'s name';
+                      FutureBuilder(
+                        future: dio.get('$ip/api/hospitals/allMyDonors',
+                            options: Options(headers: {
+                              'Authorization': "Bearer $hospitalToken",
+                              'Content-Type': 'application/json'
+                            })),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final response = snapshot.data;
+                            final List<AllDonorsResponse> donors = [];
+
+                            if (response?.statusCode == 200) {
+                              final models = (response?.data as List)
+                                  .map((e) => AllDonorsResponse.fromJson(e));
+                              donors.addAll(models);
+                            }
+
+                            return DropdownButtonFormField(
+                              value: _selectedDonorName,
+                              style: originalTextStyle,
+                              // focusColor: Color(0x802B2B2B),
+                              validator: (value) {
+                                if (value == null) {
+                                  return 'Choose Donor\'s name';
+                                }
+                                return null;
+                              },
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(8)),
+                              items: donors.map((category) {
+                                return DropdownMenuItem<String>(
+                                  value:
+                                      category.donorId?.userId?.fullName ?? '',
+                                  child: Row(
+                                    children: <Widget>[
+                                      Text(category.donorId?.userId?.fullName ??
+                                          ''),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  _selectedDonorName = newValue;
+                                });
+                                _selectedDonor = donors
+                                    .where((element) =>
+                                        element.donorId?.userId?.fullName ==
+                                        _selectedDonorName)
+                                    .toList()[0];
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'Donor\'s name',
+                                labelStyle: labelTextStyle,
+                                enabledBorder: enabledBorderParams,
+                                focusedBorder: focusedBorderParams,
+                                errorBorder: errorBorderParams,
+                                focusedErrorBorder: focusedErrorBorderParams,
+                              ),
+                            );
+                          } else {
+                            return const CircularProgressIndicator();
                           }
-                          return null;
                         },
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(8)),
-                        items: ['A', 'B', 'AB', 'O'].map((String category) {
-                          return DropdownMenuItem(
-                              value: category,
-                              child: Row(
-                                children: <Widget>[
-                                  Text(category),
-                                ],
-                              ));
-                        }).toList(),
-                        onChanged: (newValue) {
-                          setState(() {
-                            _selectedName = newValue;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          labelText: 'Donor\'s name',
-                          labelStyle: labelTextStyle,
-                          enabledBorder: enabledBorderParams,
-                          focusedBorder: focusedBorderParams,
-                          errorBorder: errorBorderParams,
-                          focusedErrorBorder: focusedErrorBorderParams,
-                        ),
                       ),
                       const SizedBox(height: 40),
                       Row(
@@ -316,11 +407,8 @@ class _HospitalAssignOperationScreenState
                                       MediumButton(
                                         title: 'Yes',
                                         onPress: () {
-                                          Navigator.of(context).popUntil(
-                                            ModalRoute.withName(
-                                                HospitalPatientsDonorsScreen
-                                                    .routeName),
-                                          );
+                                          Navigator.of(ctx).pop();
+                                          rejectEvent();
                                         },
                                       ),
                                     ],
@@ -371,11 +459,8 @@ class _HospitalAssignOperationScreenState
                                       MediumButton(
                                         title: 'Yes',
                                         onPress: () {
-                                          Navigator.of(context).popUntil(
-                                            ModalRoute.withName(
-                                                HospitalPatientsDonorsScreen
-                                                    .routeName),
-                                          );
+                                          Navigator.of(ctx).pop();
+                                          approveEvent();
                                         },
                                       ),
                                     ],
@@ -395,5 +480,75 @@ class _HospitalAssignOperationScreenState
         ],
       ),
     );
+  }
+
+  Future<void> approveEvent() async {
+    try {
+      final response = await dio.post(
+        '$ip/api/hospitals/appointOperationToAnyPatient',
+        options: Options(headers: {
+          'Authorization': "Bearer $hospitalToken",
+          'Content-Type': 'application/json'
+        }),
+        queryParameters: {
+          'doctorId': _selectedDoctor?.id,
+          'time':
+              '${DateFormat('yyyy-MM-dd').format(_dateController ?? DateTime.now())}T${formatNumber(_time?.hour??0)}:${formatNumber(_time?.minute ?? 0)}',
+          'patientId': widget.id,
+          'donorId': _selectedDonor?.donorId?.id,
+        },
+      );
+      if (response.statusCode == 200) {
+        if (response.statusCode == 200) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              backgroundColor: Colors.green, content: Text("Done 🎉")));
+          Navigator.pop(context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              backgroundColor: Colors.red,
+              content: Text("Something went wrong 😢")));
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(backgroundColor: Colors.red, content: Text(e.toString())));
+    }
+  }
+
+  Future<void> rejectEvent() async {
+    try {
+      final response = await dio.delete(
+        '$ip/api/hospitals/cancelOperation',
+        options: Options(headers: {
+          'Authorization': "Bearer $hospitalToken",
+          'Content-Type': 'application/json'
+        }),
+        queryParameters: {
+          'operationId': widget.id,
+        },
+      );
+      if (response.statusCode == 200) {
+        if (response.statusCode == 200) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              backgroundColor: Colors.green, content: Text("Done 🎉")));
+          Navigator.pop(context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              backgroundColor: Colors.red,
+              content: Text("Something went wrong 😢")));
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(backgroundColor: Colors.red, content: Text(e.toString())));
+    }
+  }
+
+  String formatNumber(int num) {
+    if (num < 9) {
+      return '0$num';
+    } else {
+      return num.toString();
+    }
   }
 }
