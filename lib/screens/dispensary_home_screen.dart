@@ -297,7 +297,8 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
                         dHSlistTile: DispenserHomeSectionListTile(
                           models: rxPatients
                               .where((element) =>
-                                  element.date == null && element.date == null)
+                                  element.date == null &&
+                                  element.isApproved == null)
                               .toList(),
                           isProcessing: isProcessing,
                           itemsToShow: _itemsToShow1,
@@ -481,6 +482,7 @@ class DispenserHomeSectionListTile extends StatelessWidget {
   bool status;
   bool? isProcessing;
   final ValueChanged<DonorOrPatient> onSetDate;
+  final List<DonorOrPatient> models;
 
   DispenserHomeSectionListTile({
     required int itemsToShow,
@@ -490,8 +492,6 @@ class DispenserHomeSectionListTile extends StatelessWidget {
     required this.models,
     required this.onSetDate,
   });
-
-  final List<DonorOrPatient> models;
 
   @override
   Widget build(BuildContext context) {
@@ -613,7 +613,7 @@ class DispenserHomeSectionListTile extends StatelessWidget {
                         minimumSize: const Size(95, 40),
                       ),
                       onPressed: () {
-                        if (model.isApproved == null) {
+                        if (model.date != null && model.isApproved == null) {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -752,7 +752,7 @@ class DispenserHomeSectionListTile extends StatelessWidget {
                         minimumSize: const Size(95, 40),
                       ),
                       onPressed: () {
-                        if (model.isApproved == null) {
+                        if (model.date != null && model.isApproved == null) {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
