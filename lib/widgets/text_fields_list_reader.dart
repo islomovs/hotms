@@ -80,7 +80,9 @@ class _TextFieldsListState extends State<TextFieldsListReader> {
                 style: originalTextStyle,
                 cursorColor: const Color(0xFF2B2B2B),
                 controller: TextEditingController(
-                  text: '+${widget.enteredPhoneNumber}',
+                  text: widget.enteredPhoneNumber != null
+                      ? '+${widget.enteredPhoneNumber}'
+                      : '',
                 ),
                 decoration: InputDecoration(
                   labelText: 'Phone Number',

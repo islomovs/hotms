@@ -43,16 +43,13 @@ class _PatientInfoScreenState extends State<PatientInfoScreen> {
 
   @override
   void didChangeDependencies() {
-    Provider.of<Patients>(context)
-      ..fetchPatientInfo()
-      ..fetchOperations();
+    Provider.of<Patients>(context).fetchPatientInfo();
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
     final patients = Provider.of<Patients>(context).patientInfo;
-    final patientO = Provider.of<Patients>(context).patientO;
     _birthday = patients.birthday;
     _enteredFName = patients.userId?.fullName;
     _enteredPhoneNumber = patients.phoneNumber;
@@ -164,7 +161,7 @@ class _PatientInfoScreenState extends State<PatientInfoScreen> {
                                 ),
                                 readOnly: true,
                                 controller: TextEditingController(
-                                  text: _selectedOrgan,
+                                  text: _selectedOrgan ?? '',
                                 ),
                               ),
                               const SizedBox(height: 20),

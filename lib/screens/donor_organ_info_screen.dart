@@ -34,7 +34,7 @@ class _DonorOrganInfoScreenState extends State<DonorOrganInfoScreen> {
   String? _enteredComment;
   String? _selectedBloodGroup;
   String? _selectedRHFactor;
-  String? _enteredPrice;
+  num? _enteredPrice;
   String? _birthday;
 
   final TextEditingController _priceController = TextEditingController();
@@ -73,7 +73,7 @@ class _DonorOrganInfoScreenState extends State<DonorOrganInfoScreen> {
     _enteredComment = donor.comments;
     _selectedBloodGroup = donor.bloodType;
     _selectedRHFactor = donor.rhFactor;
-    _enteredPrice = donor.donationPrice.toString();
+    _enteredPrice = donor.donationPrice;
     _birthday = donor.birthday;
     _updateTextField(_selectedTypeOfDonation);
     return Scaffold(
@@ -123,7 +123,7 @@ class _DonorOrganInfoScreenState extends State<DonorOrganInfoScreen> {
                             children: [
                               TextFormField(
                                 controller: TextEditingController(
-                                  text: _enteredPrice,
+                                  text: _enteredPrice != null ? _enteredPrice.toString() : '',
                                 ),
                                 style: originalTextStyle,
                                 cursorColor: const Color(0xFF2B2B2B),

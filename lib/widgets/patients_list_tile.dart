@@ -32,8 +32,9 @@ class PatientsListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: navigateFunc,
+      borderRadius: BorderRadius.circular(6),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

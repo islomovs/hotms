@@ -1,15 +1,14 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/patient_home_inner_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../constants/contants.dart';
-import '../widgets/list_headings_widget.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
 import '../widgets/status_widget.dart';
-import '../widgets/patients_list_tile.dart';
 import '../widgets/application_status_widget.dart';
-import './hospital_patient_screen.dart';
 import '../providers/patient.dart';
 
 class PatientHomeScreen extends StatefulWidget {
@@ -69,16 +68,18 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         StatusWidget(
-                          title:
-                              'Your operation date: ${(operations.operationTime ?? '').split(' ')[0].split('-')[2]}.${(operations.operationTime ?? '').split(' ')[0].split('-')[1]}.${(operations.operationTime ?? '').split(' ')[0].split('-')[0]}',
+                          title: operations.operationTime != null
+                              ? 'Your operation date: ${(operations.operationTime ?? '').split(' ')[0].split('-')[2]}.${(operations.operationTime ?? '').split(' ')[0].split('-')[1]}.${(operations.operationTime ?? '').split(' ')[0].split('-')[0]}'
+                              : 'Your operation date: --.--.----',
                           appStatusWidget: ApplicationStatusWidget(
                             status: operationDate!,
                           ),
                           status: operationDate!,
                         ),
                         StatusWidget(
-                          title:
-                              'Your operation time: ${(operations.operationTime ?? '').split(' ')[1]}',
+                          title: operations.operationTime != null
+                              ? 'Your operation time: ${(operations.operationTime ?? '').split(' ')[1]}'
+                              : 'Your operation time: --:--',
                           appStatusWidget: ApplicationStatusWidget(
                             status: operationTime!,
                           ),
@@ -109,21 +110,13 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            SizedBox(
-                              width: 220,
-                              child: Text(
-                                'Hospital',
-                                style: listTitleTextStyle,
-                              ),
+                            Text(
+                              'Hospital',
+                              style: listTitleTextStyle,
                             ),
-                            Container(
-                              alignment: Alignment.topLeft,
-                              width:
-                                  (MediaQuery.of(context).size.width - 720) / 4,
-                              child: Text(
-                                'Address',
-                                style: listTitleTextStyle,
-                              ),
+                            Text(
+                              'Address',
+                              style: listTitleTextStyle,
                             ),
                           ],
                         ),
@@ -148,62 +141,60 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                     //     ),
                     //   ),
                     // ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 20,
-                      ),
-                      child: ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: applied.length,
-                        itemBuilder: (_, index) {
-                          var apply = applied[index];
-                          return InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PatientHomeInnerScreen(
-                                    id: apply.hospitalId?.id ?? 0,
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: applied.length,
+                      itemBuilder: (_, index) {
+                        var apply = applied[index];
+                        return InkWell(
+                          borderRadius: BorderRadius.circular(6),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => PatientHomeInnerScreen(
+                                  id: apply.hospitalId?.id ?? 0,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal: 20,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  width: 220,
+                                  child: Row(
+                                    children: [
+                                      const CircleAvatar(
+                                        minRadius: 20,
+                                        backgroundImage: AssetImage(
+                                          './assets/images/profile.png',
+                                        ),
+                                      ),
+                                      const SizedBox(width: 25),
+                                      Text(
+                                        apply.hospitalId?.name ?? 'N/A',
+                                        style: listTileTitle,
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SizedBox(
-                                    width: 220,
-                                    child:  Row(
-                                      children: [
-                                        const CircleAvatar(
-                                          minRadius: 20,
-                                          backgroundImage: AssetImage(
-                                              './assets/images/profile.png'),
-                                        ),
-                                        const SizedBox(width: 25),
-                                        Text(
-                                          apply.hospitalId?.name ?? 'N/A',
-                                          style: listTileTitle,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Text(
-                                    apply.hospitalId?.address ?? 'N/A',
-                                    style: listTileTitle,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
+                                Text(
+                                  apply.hospitalId?.address ?? 'N/A',
+                                  style: listTileTitle,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
