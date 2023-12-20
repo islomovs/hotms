@@ -301,13 +301,21 @@ class Donors with ChangeNotifier {
     );
     debugPrint(response.body);
     if (response.statusCode == 200) {
-      // If the server returns a 200 OK response, parse the JSON
-      _donorE1 = DonorE1.fromJson(json.decode(response.body)[0]);
+      if (response.body.isNotEmpty) {
+        final jsonData = json.decode(response.body);
+        if (jsonData.isNotEmpty) {
+          _donorE1 = DonorE1.fromJson(jsonData);
+        } else {
+          // Handle empty JSON data
+          _donorE1 = DonorE1(); // or null, depending on your class structure
+        }
+      } else {
+        // Handle empty response
+        _donorE1 = DonorE1(); // or null
+      }
       notifyListeners();
       return _donorE1;
     } else {
-      // If the server did not return a 200 OK response,
-      // throw an exception.
       throw Exception('Failed to load data');
     }
   }
@@ -322,13 +330,22 @@ class Donors with ChangeNotifier {
     );
     debugPrint(response.body);
     if (response.statusCode == 200) {
-      // If the server returns a 200 OK response, parse the JSON
-      _donorO = DonorOperations.fromJson(json.decode(response.body)[0]);
+      if (response.body.isNotEmpty) {
+        final jsonData = json.decode(response.body);
+        if (jsonData is List && jsonData.isNotEmpty) {
+          _donorO = DonorOperations.fromJson(jsonData[0]);
+        } else {
+          // Handle empty or non-array JSON data
+          _donorO =
+              DonorOperations(); // or null, depending on your class structure
+        }
+      } else {
+        // Handle empty response
+        _donorO = DonorOperations(); // or null
+      }
       notifyListeners();
       return _donorO;
     } else {
-      // If the server did not return a 200 OK response,
-      // throw an exception.
       throw Exception('Failed to load data');
     }
   }

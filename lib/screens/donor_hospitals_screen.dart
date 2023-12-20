@@ -8,6 +8,7 @@ import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
 import '../widgets/hospital_card.dart';
 import '../providers/donor.dart';
+import '../providers/hospitals.dart';
 
 class DonorHospitalsScreen extends StatefulWidget {
   static const routeName = '/donor-hospitals-screen';
@@ -37,16 +38,19 @@ class _DonorHospitalsScreenState extends State<DonorHospitalsScreen> {
   //     _itemsToShow2 = _itemsToShow2 == _items2.length ? 3 : _items2.length;
   //   });
   // }
-
+  var hospitalId;
   int smth = 1;
 
   void _submitData() async {
     // Change to the working directory and run the C program
+
+    hospitalId =
+        Provider.of<Hospitals>(context).allOperations[0].hospitalId!.id;
     var loginResult = await Process.run(
       'bash',
       [
         '-c',
-        'cd $workingDirectory && ./client $localhost applyToHospital $extractedToken $smth'
+        'cd $workingDirectory && ./client $localhost applyToHospital $extractedToken $hospitalId'
       ],
     );
 

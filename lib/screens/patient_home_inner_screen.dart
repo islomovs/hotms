@@ -42,8 +42,8 @@ class _PatientHomeInnerScreenState extends State<PatientHomeInnerScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SidebarTemplate(
-            title: patientInfo.fullName!,
-            email: patientInfo.email!,
+            title: patientInfo.fullName! ?? 'Default Name',
+            email: patientInfo.email! ?? 'default@email.com',
             sideBarTitles: sideBarTitlesPatient,
             sideBarListIcons: sideBarListIconsPatient,
             sideBarTitlesBottom: sideBarTitlesBottom,

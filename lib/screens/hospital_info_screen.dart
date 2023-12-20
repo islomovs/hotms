@@ -45,9 +45,6 @@ class _HospitalInfoScreenState extends State<HospitalInfoScreen> {
   var hospitalName;
 
   void _submitData() async {
-    var workingDirectory =
-        '~/Desktop/myapp/home/sardorchik/Desktop/myapp/lib/screens/';
-
     hospitalName =
         Provider.of<Hospitals>(context).allOperations[0].hospitalId!.name!;
     // Change to the working directory and run the C program

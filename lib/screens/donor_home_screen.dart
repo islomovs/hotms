@@ -30,16 +30,26 @@ class _DonorHomeScreenState extends State<DonorHomeScreen> {
   }
 
   @override
+  Future<void> didChangeDependencies() async {
+    await Provider.of<Donors>(context).fetchDonorInfo();
+    super.didChangeDependencies();
+  }
+
+  String? _name;
+  String? _email;
+  @override
   Widget build(BuildContext context) {
-    var donorInfo = Provider.of<Donors>(context).donorOrganInfo.userId!;
+    var donorInfo = Provider.of<Donors>(context).donorOrganInfo;
+    _name = donorInfo.userId?.fullName;
+    _email = donorInfo.userId?.email;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Sidebar (Drawer)
           SidebarTemplate(
-            title: donorInfo.fullName!,
-            email: donorInfo.email!,
+            title: _name ?? 'Default Name',
+            email: _email ?? 'default@email.com',
             sideBarTitles: sideBarTitlesDonor,
             sideBarListIcons: sideBarListIconsDonor,
             sideBarTitlesBottom: sideBarTitlesBottom,

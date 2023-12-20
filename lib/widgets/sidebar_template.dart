@@ -33,8 +33,8 @@ class SidebarTemplate extends StatefulWidget {
 class _SidebarTemplateState extends State<SidebarTemplate> {
   int? selectedTile;
   int? selectedTileBottom;
-  List<bool> hoverStates = List.generate(5, (_) => false);
-  List<bool> hoverStatesBottom = List.generate(2, (_) => false);
+  List<bool> hoverStates = List.generate(10, (_) => false);
+  List<bool> hoverStatesBottom = List.generate(3, (_) => false);
 
   final TextEditingController _searchController = TextEditingController();
   void _onSearchChanged() {
@@ -105,6 +105,7 @@ class _SidebarTemplateState extends State<SidebarTemplate> {
                     // Handle the selection
                     if (value == 'logout') {
                       Navigator.of(context).pop();
+                      extractedToken = ' ';
                     } else if (value == 'choose photo') {
                       _pickImage();
                     }
@@ -258,7 +259,7 @@ class _SidebarTemplateState extends State<SidebarTemplate> {
                     children: [
                       Flexible(
                         child: ListView.builder(
-                            itemCount: hoverStatesBottom.length,
+                            itemCount: widget.sideBarListIconsBottom.length,
                             itemBuilder: (context, index) {
                               return MouseRegion(
                                 onEnter: (_) {

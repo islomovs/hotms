@@ -51,10 +51,7 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
   void _submitData() async {
     if (_formKey.currentState!.validate()) {
       // Change to the working directory and run the C program
-      dispensaryId = Provider.of<DispensaryOperations>(context)
-          .donorsList[0]
-          .dispensaryId!
-          .id;
+      dispensaryId = 1;
       var loginResult = await Process.run(
         'bash',
         [
@@ -151,8 +148,8 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
         children: [
           // Sidebar (Drawer)
           SidebarTemplate(
-            title: donorInfo.fullName!,
-            email: donorInfo.email!,
+            title: donorInfo.fullName! ?? 'Default Name',
+            email: donorInfo.email! ?? 'default@email.com',
             sideBarTitles: sideBarTitlesDonor,
             sideBarListIcons: sideBarListIconsDonor,
             sideBarTitlesBottom: sideBarTitlesBottom,
