@@ -19,7 +19,7 @@ import '../providers/dispensary.dart';
 class DonorEvaluationScreen extends StatefulWidget {
   static const routeName = '/donor-evaluation-screen';
 
-  DonorEvaluationScreen({super.key});
+  const DonorEvaluationScreen({super.key});
 
   @override
   State<DonorEvaluationScreen> createState() => _DonorEvaluationScreenState();
@@ -169,13 +169,13 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                       subtitle: 'Monitor and adjust your progress',
                     ),
                     const SizedBox(height: 20),
-                    if (donor.isProcessing ?? false)
+                    if ((donor.isProcessing ?? false) && donor.date != null)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           StatusWidget(
                             title:
-                                'Your appointment : ${months[(int.tryParse((donor.date ?? '').split('-')[1]) ?? 1) - 1]} ${(donor.date ?? '').split('-')[2]}',
+                                'Your appointment :  ${donor.date != null ? months[(int.tryParse((donor.date ?? '').split('-')[1]) ?? 1) - 1] : ''} ${donor.date != null ? (donor.date ?? '').split('-')[2] : ''}',
                             appStatusWidget: ApplicationStatusWidget(
                               status: true,
                             ),
@@ -319,7 +319,9 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                                           420) /
                                       3,
                                   child: Text(
-                                    '${(donorO.operationTime ?? '').split(' ')[0].split('-')[2]}.${(donorO.operationTime ?? '').split(' ')[0].split('-')[1]}.${(donorO.operationTime ?? '').split(' ')[0].split('-')[0]}',
+                                    donorO.operationTime != null
+                                        ? '${donorO.operationTime != null ? (donorO.operationTime ?? '').split(' ')[0].split('-')[2] : ''}.${donorO.operationTime != null ? (donorO.operationTime ?? '').split(' ')[0].split('-')[1] : ''}.${donorO.operationTime != null ? (donorO.operationTime ?? '').split(' ')[0].split('-')[0] : ''}'
+                                        : '--.--.----',
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: blackCol,
@@ -331,7 +333,10 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                                           420) /
                                       3,
                                   child: Text(
-                                    (donorO.operationTime ?? '').split(' ')[1],
+                                    donorO.operationTime != null
+                                        ? (donorO.operationTime ?? '')
+                                            .split(' ')[1]
+                                        : '--:--',
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: blackCol,
@@ -343,7 +348,7 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                                           420) /
                                       3,
                                   child: Text(
-                                    donorO.doctorName ?? '',
+                                    donorO.doctorName ?? 'N/A',
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: blackCol,
@@ -356,6 +361,7 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                         ),
                       ),
                     ),
+                    if(donorO.operationTime != null)
                     Padding(
                       padding: const EdgeInsets.only(
                         top: 30,

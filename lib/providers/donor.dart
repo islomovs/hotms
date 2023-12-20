@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -181,15 +182,15 @@ class DonorE1 {
     this.isProcessing,
   });
 
-  DonorE1.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+  DonorE1.fromJson(Map<String, dynamic>? json) {
+    id = json?['id'];
     // dispensaryId = json['dispensaryId'] != null
     //     ? DispensaryId.fromJson(json['dispensaryId'])
     //     : null;
     // donorId = json['donorId'] != null ? Donor.fromJson(json['donorId']) : null;
-    date = json['date'];
-    isActive = json['isActive'];
-    isProcessing = json['isProcessing'];
+    date = json?['date'];
+    isActive = json?['isActive'];
+    isProcessing = json?['isProcessing'];
   }
 
   Map<String, dynamic> toJson() {
@@ -361,6 +362,7 @@ class Donors with ChangeNotifier {
     debugPrint(response.body);
     if (response.statusCode == 200) {
       _donorH.clear();
+      log('kirdimi: ${json.decode(response.body).length}');
       // If the server returns a 200 OK response, parse the JSON
       for (int i = 0; i < json.decode(response.body).length; i++) {
         _donorH.add(OrganAllHospitals.fromJson(json.decode(response.body)[i]));

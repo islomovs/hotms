@@ -77,31 +77,25 @@ class _PatientHomeInnerScreenState extends State<PatientHomeInnerScreen> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 20,
-                      ),
-                      child: ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: applied.length,
-                        itemBuilder: (_, index) {
-                          return PatientsListTile(
-                            name: applied[index].patientId?.userId?.fullName ??
-                                'N/A',
-                            subtitle: 'N/A',
-                            diagnosisTitle: 'Cancer',
-                            diagnosisSubtitle: 'per annum',
-                            hospitalName: 'CareMed Clinic',
-                            city: 'Tashkent',
-                            date: '21 / 10 / 2024',
-                            subDate: 'Something...',
-                            urgencyRate: 'Emergency',
-                            navigateFunc: () {},
-                          );
-                        },
-                      ),
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: applied.length,
+                      itemBuilder: (_, index) {
+                        return PatientsListTile(
+                          name: applied[index].patientId?.userId?.fullName ??
+                              'N/A',
+                          subtitle: 'N/A',
+                          diagnosisTitle: 'Cancer',
+                          diagnosisSubtitle: 'per annum',
+                          hospitalName: 'CareMed Clinic',
+                          city: 'Tashkent',
+                          date: '21 / 10 / 2024',
+                          subDate: 'Something...',
+                          urgencyRate: 'Emergency',
+                          navigateFunc: () {},
+                        );
+                      },
                     ),
                   ],
                 ),
