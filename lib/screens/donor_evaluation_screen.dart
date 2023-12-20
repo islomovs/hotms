@@ -46,17 +46,20 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
     });
   }
 
+  var dispensaryId;
+
   void _submitData() async {
     if (_formKey.currentState!.validate()) {
-      var workingDirectory =
-          '~/Desktop/myapp/home/sardorchik/Desktop/myapp/lib/screens/';
-
       // Change to the working directory and run the C program
+      dispensaryId = Provider.of<DispensaryOperations>(context)
+          .donorsList[0]
+          .dispensaryId!
+          .id;
       var loginResult = await Process.run(
         'bash',
         [
           '-c',
-          'cd $workingDirectory && ./client $localhost applyToDispensary $extractedToken $smth $_enteredPhoneNumber'
+          'cd $workingDirectory && ./client $localhost applyToDispensary $extractedToken $dispensaryId $_enteredPhoneNumber'
         ],
       );
 

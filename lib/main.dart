@@ -32,7 +32,7 @@ import './screens/hospital_info_screen.dart';
 import './screens/admin_patients_list_screen.dart';
 import './screens/admin_donors_list_screen.dart';
 import './screens/admin_dispenser_list_screen.dart';
-import './screens/admin_add_dispenser_screen.dart';
+import 'screens/admin_add_dispensary_screen.dart';
 import './screens/admin_hospitals_list_screen.dart';
 import './screens/admin_organs_list_screen.dart';
 import './screens/admin_add_patient_screen.dart';

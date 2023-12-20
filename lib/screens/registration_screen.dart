@@ -28,9 +28,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   void _submitData() async {
     if (_formKey.currentState!.validate()) {
-      var workingDirectory =
-          '~/Desktop/myapp/home/sardorchik/Desktop/myapp/lib/screens/';
-
       // Change to the working directory and list its contents
       var listResult = await Process.run(
         'bash',

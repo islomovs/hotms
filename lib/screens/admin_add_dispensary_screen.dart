@@ -30,15 +30,12 @@ class _AdminAddDispensersScreenState extends State<AdminAddDispensersScreen> {
 
   int smth = 1;
   void _submitData() async {
-    var workingDirectory =
-        '~/Desktop/myapp/home/sardorchik/Desktop/myapp/lib/screens/';
-
     // Change to the working directory and run the C program
     var loginResult = await Process.run(
       'bash',
       [
         '-c',
-        'cd $workingDirectory && ./client localhost adminCreateOrgan $extractedToken $_enteredName'
+        'cd $workingDirectory && ./client localhost adminCreateDispensary $extractedToken $_enteredName'
       ],
     );
 

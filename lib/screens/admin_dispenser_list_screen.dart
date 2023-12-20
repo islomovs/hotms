@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../constants/constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
-import './admin_add_dispenser_screen.dart';
+import 'admin_add_dispensary_screen.dart';
 import './admin_edit_dispenser_screen.dart';
 
 class AdminDispensersListScreen extends StatelessWidget {

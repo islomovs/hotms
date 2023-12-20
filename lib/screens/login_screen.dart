@@ -37,9 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
-      var workingDirectory =
-          '~/Desktop/myapp/home/sardorchik/Desktop/myapp/lib/screens/';
-
       // Change to the working directory and run the C program
       var loginResult = await Process.run(
         'bash',
@@ -95,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       } else {
         // Error handling
-        print('C program error: ${loginResult.stderr}');
+        print('C program error: ${loginResult.stderr}, ${loginResult.stdout}');
       }
     }
 

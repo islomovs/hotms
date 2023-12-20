@@ -13,9 +13,6 @@ import '../screens/patient_info_screen.dart';
 import '../screens/patient_hospitals_screen.dart';
 import '../screens/hospital_patients_donors_screen.dart';
 import '../screens/hospital_operations_screen.dart';
-import '../screens/hospital_patient_screen.dart';
-import '../screens/hospital_donor_screen.dart';
-import '../screens/hospital_assign_operation_screen.dart';
 import '../screens/hospital_info_screen.dart';
 import '../screens/admin_patients_list_screen.dart';
 import '../screens/admin_donors_list_screen.dart';
@@ -34,6 +31,8 @@ var ip = 'http://161.35.75.184:1234';
 String? extractedRole;
 String? extractedToken;
 String? localhost = '127.0.0.1';
+
+var workingDirectory = '~/Desktop/myapp/lib/socket/';
 
 final dio = Dio()
   ..interceptors.add(PrettyDioLogger(

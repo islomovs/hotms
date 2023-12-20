@@ -29,15 +29,12 @@ class _AdminAddOrganScreenState extends State<AdminAddOrganScreen> {
 
   int smth = 1;
   void _submitData() async {
-    var workingDirectory =
-        '~/Desktop/myapp/home/sardorchik/Desktop/myapp/lib/screens/';
-
     // Change to the working directory and run the C program
     var loginResult = await Process.run(
       'bash',
       [
         '-c',
-        'cd $workingDirectory && ./client localhost adminCreateDonor $extractedToken $_enteredOrganName'
+        'cd $workingDirectory && ./client localhost adminCreateOrgan  $extractedToken $_enteredOrganName'
       ],
     );
 

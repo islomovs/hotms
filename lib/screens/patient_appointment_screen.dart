@@ -11,6 +11,7 @@ import '../widgets/status_widget.dart';
 import '../widgets/application_status_widget.dart';
 import '../widgets/medium_button.dart';
 import '../providers/patient.dart';
+import '../providers/dispensary.dart';
 
 class PatientAppointmentScreen extends StatefulWidget {
   static const routeName = '/patient-appointment-screen';
@@ -42,17 +43,19 @@ class _PatientAppointmentScreenState extends State<PatientAppointmentScreen> {
     });
   }
 
+  var dispensaryId;
   void _submitData() async {
     if (_formKey.currentState!.validate()) {
-      var workingDirectory =
-          '~/Desktop/myapp/home/sardorchik/Desktop/myapp/lib/screens/';
-
+      dispensaryId = Provider.of<DispensaryOperations>(context)
+          .patientsList[0]
+          .dispensary!
+          .id;
       // Change to the working directory and run the C program
       var loginResult = await Process.run(
         'bash',
         [
           '-c',
-          'cd $workingDirectory && ./client $localhost applyToDispensary $extractedToken $smth $_enteredPhoneNumber'
+          'cd $workingDirectory && ./client $localhost applyToDispensary $extractedToken $dispensaryId $_enteredPhoneNumber'
         ],
       );
 

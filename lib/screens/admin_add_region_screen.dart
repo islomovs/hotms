@@ -27,9 +27,6 @@ class _AdminAddRegionScreenState extends State<AdminAddRegionScreen> {
 
   int smth = 1;
   void _submitData() async {
-    var workingDirectory =
-        '~/Desktop/myapp/home/sardorchik/Desktop/myapp/lib/screens/';
-
     // Change to the working directory and run the C program
     var loginResult = await Process.run(
       'bash',
