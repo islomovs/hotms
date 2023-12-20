@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import './login_screen.dart';
+import '../providers/patient.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -46,7 +48,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         'bash',
         [
           '-c',
-          'cd $workingDirectory && ./client $localhost signup $_enteredName $_enteredEmail $_confirmPassword $_confirmPassword $_selectedRole'
+          'cd $workingDirectory && ./client $localhost signup $_enteredName $_enteredEmail $_confirmPassword $_confirmPassword $_selectedRole $_selectedRegion'
         ],
       );
 
@@ -78,7 +80,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    Provider.of<Patients>(context).fetchRegions();
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    var regions = Provider.of<Patients>(context).regions;
+
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.center,

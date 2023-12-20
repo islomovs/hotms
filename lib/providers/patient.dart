@@ -6,6 +6,21 @@ import 'package:http/http.dart' as http;
 import '../constants/constants.dart';
 import 'donor.dart';
 
+class Region {
+  int? id;
+  String? name;
+
+  Region({
+    this.id,
+    this.name,
+  });
+
+  Region.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+  }
+}
+
 class Patients with ChangeNotifier {
   late final List<OrganAllHospitals> _patientH = [];
 
@@ -31,11 +46,34 @@ class Patients with ChangeNotifier {
 
   DonorOperations get patientO => _patientO;
 
+  late List<Region> _regions;
+  List<Region> get regions => _regions;
+
+  Future<List<Region>> fetchRegions() async {
+    final response = await http.get(
+      Uri.parse('$ip/api/admins/regions/allRegions'),
+    );
+    print(response.body);
+    if (response.statusCode == 200) {
+      // If the server returns a 200 OK response, parse the JSON
+      _patientDis.clear();
+      // If the server returns a 200 OK response, parse the JSON
+      for (int i = 0; i < json.decode(response.body).length; i++) {
+        _regions.add(Region.fromJson(json.decode(response.body)[i]));
+      }
+      notifyListeners();
+      return _regions;
+    } else {
+      // If the server did not return a 200 OK response,
+      // throw an exception.
+      throw Exception('Failed to load data');
+    }
+  }
+
   Future<Donor> fetchPatientInfo() async {
     final response =
         await http.get(Uri.parse('$ip/api/patients/myInfo'), headers: {
-      'Authorization':
-          'Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6MiwiZW1haWwiOiJwYXRpZW50QG1haWwucnUiLCJyb2xlIjoiQVBQUk9WRURfUEFUSUVOVCIsInVzZXIiOnsiaWQiOjIsImVtYWlsIjoicGF0aWVudEBtYWlsLnJ1IiwicGFzc3dvcmQiOiJwYXRpZW50Iiwicm9sZSI6IkFQUFJPVkVEX1BBVElFTlQiLCJmdWxsTmFtZSI6IlBhdGllbnQgUGF0aWVudG92IiwiaW1hZ2VMaW5rIjpudWxsfSwiZXhwIjoxNzAzNTM2MjAzfQ.WhePbl22Z8g0LoCx_QO_vWrijwaG3ZbVwEJsgwC8t1riwryrEBvrgaeSvNsWP207xex_rVrshdrMSHmBZSVQsg',
+      'Authorization': 'Bearer $extractedToken',
       'Content-Type': 'application/json',
     });
     print(response.body);

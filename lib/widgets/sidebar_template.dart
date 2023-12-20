@@ -83,6 +83,43 @@ class _SidebarTemplateState extends State<SidebarTemplate> {
     _searchController.addListener(_onSearchChanged);
   }
 
+  OverlayEntry _createDropdown(BuildContext context) {
+    RenderBox renderBox = context.findRenderObject() as RenderBox;
+    var size = renderBox.size;
+    var offset = renderBox.localToGlobal(Offset.zero);
+
+    return OverlayEntry(
+      builder: (context) => Positioned(
+        left: offset.dx,
+        top: offset.dy + size.height,
+        width: size.width,
+        child: Material(
+          elevation: 4.0,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(title: Text('Option 1')),
+              ListTile(title: Text('Option 2')),
+              // Add more list tiles here for more options
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  OverlayEntry? _dropdownOverlayEntry;
+
+  void _showDropdown(BuildContext context) {
+    _dropdownOverlayEntry = _createDropdown(context);
+    Overlay.of(context).insert(_dropdownOverlayEntry!);
+  }
+
+  void _hideDropdown() {
+    _dropdownOverlayEntry?.remove();
+    _dropdownOverlayEntry = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -249,6 +286,31 @@ class _SidebarTemplateState extends State<SidebarTemplate> {
                         ),
                       );
                     }),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 2),
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                decoration: BoxDecoration(
+                  color: mainColor,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: InkWell(
+                  onTap: () => _showDropdown(context),
+                  enableFeedback: false,
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  child: ListTile(
+                    hoverColor: Colors.transparent,
+                    leading: Icon(
+                      Icons.location_on_outlined,
+                      color: const Color(0xFFFFFFFF),
+                    ),
+                    title: Text(
+                      'Andijan',
+                      style: sideBarListTextStyle,
+                    ),
+                  ),
+                ),
               ),
               SizedBox(
                 height: 120,

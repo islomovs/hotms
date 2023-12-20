@@ -95,12 +95,10 @@ List<IconData> sideBarListIconsDonor = [
   Icons.local_hospital_sharp,
 ];
 List<String> sideBarTitlesBottom = [
-  'Andijan',
   'Support',
   'Settings',
 ];
 List<IconData> sideBarListIconsBottom = [
-  Icons.location_on_outlined,
   Icons.contact_support_outlined,
   Icons.settings_outlined,
 ];
