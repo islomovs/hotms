@@ -209,7 +209,7 @@ class _HospitalPatientScreenState extends State<HospitalPatientScreen> {
                               MaterialPageRoute(
                                 builder: (context) =>
                                     HospitalAssignOperationScreen(
-                                        id: widget.model.id.toString() ?? ''),
+                                        id: widget.model.patientId?.id.toString() ?? ''),
                               ),
                             );
                           },
