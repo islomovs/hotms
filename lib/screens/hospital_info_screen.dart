@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:provider/provider.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
 import '../constants/registration_constants.dart';
+import '../providers/hospitals.dart';
 
 class HospitalInfoScreen extends StatefulWidget {
   static const routeName = '/hospital-info-screen';
@@ -40,6 +42,73 @@ class _HospitalInfoScreenState extends State<HospitalInfoScreen> {
     }
   }
 
+  var hospitalName;
+
+  void _submitData() async {
+    var workingDirectory =
+        '~/Desktop/myapp/home/sardorchik/Desktop/myapp/lib/screens/';
+
+    hospitalName =
+        Provider.of<Hospitals>(context).allOperations[0].hospitalId!.name!;
+    // Change to the working directory and run the C program
+    var loginResult = await Process.run(
+      'bash',
+      [
+        '-c',
+        'cd $workingDirectory && ./client $localhost createQueue $extractedToken $hospitalName'
+      ],
+    );
+
+    // After running the C program
+    if (loginResult.exitCode == 0) {
+      // Success logic
+      print('C program output: ${loginResult.stdout}');
+
+      // Extracting the JWT token
+      String output = loginResult.stdout;
+      String tokenPrefix = "server message: ";
+      int startIndex = output.indexOf(tokenPrefix);
+      if (startIndex != -1) {
+        startIndex += tokenPrefix.length;
+        String jwtToken = output.substring(startIndex).trim();
+
+        // Assign to a new variable and print
+        extractedToken = jwtToken;
+        print('Extracted JWT Token: $extractedToken');
+
+        var infoResult = await Process.run(
+          'bash',
+          [
+            '-c',
+            'cd $workingDirectory && ./client localhost getMyInfo "$extractedToken"'
+          ],
+        );
+
+        if (infoResult.exitCode == 0) {
+          print('C program output: ${infoResult.stdout}');
+
+          // Regular expression to find the role
+          RegExp regExp = RegExp(r'"role":"([^"]+)"');
+          var matches = regExp.allMatches(infoResult.stdout);
+
+          if (matches.isNotEmpty) {
+            // Extract the role
+            extractedRole = matches.first.group(1)!;
+            print('Extracted Role: $extractedRole');
+          }
+        } else {
+          print('C program error: ${infoResult.stderr}');
+        }
+      } else {
+        // Error handling
+        print('C program error: ${loginResult.stderr}');
+      }
+    } else {
+      // Error handling
+      print('C program error: ${loginResult.stderr}');
+    }
+  }
+
   void _onSearchChanged() {
     print("Search text: ${_searchController.text}");
     // Implement your search logic here
@@ -63,8 +132,8 @@ class _HospitalInfoScreenState extends State<HospitalInfoScreen> {
             email: 'nigina@roziya.com',
             sideBarTitles: sideBarTitlesHospital,
             sideBarListIcons: sideBarListIconsHospital,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesHospital,
           ),
           // Main content

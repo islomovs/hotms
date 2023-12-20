@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/providers/hospitals.dart';
 import 'package:provider/provider.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
 import '../widgets/patients_list_tile.dart';
@@ -48,8 +48,8 @@ class _HospitalOperationsScreenState
             email: 'nigina@roziya.com',
             sideBarTitles: sideBarTitlesHospital,
             sideBarListIcons: sideBarListIconsHospital,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesHospital,
           ),
           Expanded(

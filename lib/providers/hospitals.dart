@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:myapp/data/HospitalOperation.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import './patient.dart';
 import './donor.dart';
 
@@ -71,14 +71,17 @@ class Hospitals with ChangeNotifier {
   // }
 
   final _dio = Dio()
-    ..interceptors.add(PrettyDioLogger(
+    ..interceptors.add(
+      PrettyDioLogger(
         requestHeader: true,
         requestBody: true,
         responseBody: true,
         responseHeader: false,
         error: true,
         compact: true,
-        maxWidth: 90));
+        maxWidth: 90,
+      ),
+    );
 
   List<HospitalOperation> allOperations = [];
 
@@ -89,7 +92,7 @@ class Hospitals with ChangeNotifier {
       '$ip/api/hospitals/allMyOperations',
       options: Options(
         headers: {
-          'Authorization': "Bearer $hospitalToken",
+          'Authorization': "Bearer $extractedToken",
           'Content-Type': 'application/json',
         },
       ),

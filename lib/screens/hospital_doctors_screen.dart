@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import '../constants/constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
-import './admin_add_hospital_screen.dart';
-import './admin_edit_hospital_screen.dart';
+import './hospital_add_doctor_screen.dart';
+import './hospital_edit_doctor_screen.dart';
 
-class AdminHospitalsListScreen extends StatelessWidget {
-  static const routeName = '/admin-hospitals-list-screen';
-  const AdminHospitalsListScreen({super.key});
+class HospitalDoctorsListScreen extends StatelessWidget {
+  static const routeName = '/hospital-doctors-list-screen';
+  const HospitalDoctorsListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,7 @@ class AdminHospitalsListScreen extends StatelessWidget {
                             Row(
                               children: [
                                 Text(
-                                  'Total Hospitals',
+                                  'Total Doctors',
                                   style: listHeadingTitleTextStyle,
                                 ),
                                 const SizedBox(width: 10),
@@ -69,7 +69,7 @@ class AdminHospitalsListScreen extends StatelessWidget {
                                 InkWell(
                                   onTap: () {
                                     Navigator.of(context).pushNamed(
-                                        AdminAddHospitalScreen.routeName);
+                                        HospitalAddDoctorScreen.routeName);
                                   },
                                   child: Icon(
                                     Icons.add,
@@ -111,7 +111,7 @@ class AdminHospitalsListScreen extends StatelessWidget {
                               width:
                                   (MediaQuery.of(context).size.width - 620) / 4,
                               child: Text(
-                                'Hospital',
+                                'Full name',
                                 style: listTitleTextStyle,
                               ),
                             ),
@@ -120,7 +120,7 @@ class AdminHospitalsListScreen extends StatelessWidget {
                               width:
                                   (MediaQuery.of(context).size.width - 620) / 4,
                               child: Text(
-                                'Owner',
+                                'Role',
                                 style: listTitleTextStyle,
                               ),
                             ),
@@ -129,7 +129,7 @@ class AdminHospitalsListScreen extends StatelessWidget {
                               width:
                                   (MediaQuery.of(context).size.width - 620) / 4,
                               child: Text(
-                                'Address',
+                                'Email',
                                 style: listTitleTextStyle,
                               ),
                             ),
@@ -139,7 +139,7 @@ class AdminHospitalsListScreen extends StatelessWidget {
                                   (MediaQuery.of(context).size.width - 1000) /
                                       4,
                               child: Text(
-                                'View',
+                                'Status',
                                 style: listTitleTextStyle,
                                 textAlign: TextAlign.center,
                               ),
@@ -244,7 +244,7 @@ class AdminHospitalsListScreen extends StatelessWidget {
                                       ),
                                       onPressed: () {
                                         Navigator.of(context).pushNamed(
-                                            AdminEditHospitalScreen.routeName);
+                                            HospitalEditDoctorScreen.routeName);
                                       },
                                       child: Text(
                                         'Edit',

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
@@ -38,8 +38,8 @@ class _DispensaryAppointmentScreenState
             email: 'nigina@roziya.com',
             sideBarTitles: sideBarTitlesDispensary,
             sideBarListIcons: sideBarListIconsDispensary,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesDispensary,
           ),
           // Main content

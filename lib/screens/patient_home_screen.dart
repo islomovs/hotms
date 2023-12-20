@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:myapp/screens/patient_home_inner_screen.dart';
 import 'package:provider/provider.dart';
 
-import '../constants/contants.dart';
-import '../widgets/list_headings_widget.dart';
+import '../constants/constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
 import '../widgets/status_widget.dart';
-import '../widgets/patients_list_tile.dart';
 import '../widgets/application_status_widget.dart';
-import './hospital_patient_screen.dart';
 import '../providers/patient.dart';
 
 class PatientHomeScreen extends StatefulWidget {
@@ -40,17 +37,18 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
   Widget build(BuildContext context) {
     var operations = Provider.of<Patients>(context).patientO;
     var applied = Provider.of<Patients>(context).patientApplied;
+    var patientInfo = Provider.of<Patients>(context).patientInfo.userId!;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SidebarTemplate(
-            title: 'Nigina Roziya',
-            email: 'nigina@roziya.com',
+            title: patientInfo.fullName!,
+            email: patientInfo.email!,
             sideBarTitles: sideBarTitlesPatient,
             sideBarListIcons: sideBarListIconsPatient,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesPatient,
           ),
           Expanded(
@@ -61,7 +59,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     HeadingWidget(
-                      title: 'Hi Nigina Roziya!',
+                      title: 'Hi ${patientInfo.fullName!}!',
                       subtitle: 'Monitor and adjust your progress',
                     ),
                     const SizedBox(height: 20),
@@ -178,7 +176,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                                 children: [
                                   SizedBox(
                                     width: 220,
-                                    child:  Row(
+                                    child: Row(
                                       children: [
                                         const CircleAvatar(
                                           minRadius: 20,

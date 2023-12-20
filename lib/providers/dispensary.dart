@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:myapp/data/DonorObjectResponse.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 
 class CreatorId {
   final int id;
@@ -69,7 +69,6 @@ abstract class DonorOrPatient {
 
   DonorOrPatient({required this.isPatient, this.date, this.isApproved});
 }
-
 
 // Dispensary class to represent the 'dispensaryId' object in the JSON
 class Dispensary {
@@ -152,7 +151,6 @@ class Donor {
 }
 
 // Function to parse the JSON data into a list of Record objects
-
 
 class Patient {
   final int? id;
@@ -238,11 +236,11 @@ class DispensaryOperations with ChangeNotifier {
     }
   }
 
-  Future<void> fetchPatientsList(String jwtToken) async {
+  Future<void> fetchPatientsList() async {
     final response = await http.get(
       Uri.parse('$ip/api/dispensary/allDispensaryPatients'),
       headers: {
-        'Authorization': 'Bearer $jwtToken',
+        'Authorization': 'Bearer $extractedToken',
         'Content-Type': 'application/json',
       },
     );
@@ -279,11 +277,11 @@ class DispensaryOperations with ChangeNotifier {
     }
   }
 
-  Future<DispensaryId> fetchDispensaryInfo(String jwtToken) async {
+  Future<DispensaryId> fetchDispensaryInfo() async {
     final response = await http.get(
       Uri.parse('$ip/api/dispensary/myDispensaryInfo'),
       headers: {
-        'Authorization': 'Bearer $jwtToken',
+        'Authorization': 'Bearer $extractedToken',
         'Content-Type': 'application/json',
       },
     );
@@ -298,9 +296,9 @@ class DispensaryOperations with ChangeNotifier {
     }
   }
 
-  Future<List<DonorObjectResponse>> fetchDonorsList(String jwtToken) async {
+  Future<List<DonorObjectResponse>> fetchDonorsList() async {
     final dio = Dio();
-    dio.options.headers['Authorization'] = "Bearer $jwtToken";
+    dio.options.headers['Authorization'] = "Bearer $extractedToken";
     dio.options.headers['Content-Type'] = 'application/json';
     final response = await dio.get(
       '$ip/api/dispensary/allDispensaryDonors',

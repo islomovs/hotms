@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:myapp/screens/admin_edit_dispenser_screen.dart';
 
 import './donor_organ_info_screen.dart';
 import './hospital_donor_screen.dart';
@@ -44,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
         'bash',
         [
           '-c',
-          'cd $workingDirectory && ./client localhost login $_enteredEmail $_enteredPassword'
+          'cd $workingDirectory && ./client $localhost login $_enteredEmail $_enteredPassword'
         ],
       );
 
@@ -65,12 +66,11 @@ class _LoginScreenState extends State<LoginScreen> {
           extractedToken = jwtToken;
           print('Extracted JWT Token: $extractedToken');
 
-
           var infoResult = await Process.run(
             'bash',
             [
               '-c',
-              'cd $workingDirectory && ./client localhost getMyInfo "$extractedToken"'
+              'cd $workingDirectory && ./client $localhost getMyInfo "$extractedToken"'
             ],
           );
 
@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
         print('C program error: ${loginResult.stderr}');
       }
     }
-    
+
     print("role1213: $extractedRole");
 
     if (extractedRole == 'DISPENSARY') {
@@ -106,29 +106,25 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pushNamed(
         DispensaryHomeScreen.routeName,
       );
-    } else if (extractedRole == 'PATIENT') {
+    } else if (extractedRole == 'PATIENT' ||
+        extractedRole == 'APPROVED_PATIENT') {
       debugPrint('nav: patient');
-      Navigator.of(context).pushNamed(
-        PatientHomeScreen.routeName,
-        arguments: extractedToken,
-      );
-    } else if (extractedRole == 'DONOR') {
+      Navigator.of(context).pushNamed(PatientHomeScreen.routeName);
+    } else if (extractedRole == 'DONOR' || extractedRole == 'APPROVED_DONOR') {
       debugPrint('nav: donor');
       Navigator.of(context).pushNamed(
         DonorHomeScreen.routeName,
-        arguments: extractedToken,
       );
     } else if (extractedRole == 'HOSPITAL') {
       debugPrint('nav: hospital');
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const HospitalPatientsDonorsScreen(),),
+        MaterialPageRoute(
+          builder: (context) => const HospitalInfoScreen(),
+        ),
       );
     } else if (extractedRole == 'ADMIN') {
       debugPrint('nav: admin');
-      Navigator.of(context).pushNamed(
-        AdminPatientsListScreen.routeName,
-        arguments: extractedToken,
-      );
+      Navigator.of(context).pushNamed(AdminEditDispenserScreen.routeName);
     }
   }
 
@@ -251,12 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 16),
                   MainButton(
                     title: 'Log in',
-                    onTapFunc: () {
-                      Navigator.of(context).pushNamed(
-                        HospitalPatientsDonorsScreen.routeName,
-                        arguments: extractedToken,
-                      );
-                    },
+                    onTapFunc: _login,
                   ),
                   const SizedBox(height: 16),
                   TextButton.icon(
@@ -319,7 +310,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             onPressed: () {
                               Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => const HospitalPatientsDonorsScreen(),),
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const RegistrationScreen(),
+                                ),
                               );
                             },
                           ),

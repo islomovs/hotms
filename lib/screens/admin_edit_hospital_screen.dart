@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
 import '../constants/registration_constants.dart';
@@ -64,8 +64,8 @@ class _AdminEditHospitalScreenState extends State<AdminEditHospitalScreen> {
             email: 'nigina@roziya.com',
             sideBarTitles: sideBarTitlesAdmin,
             sideBarListIcons: sideBarListIconsAdmin,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesAdmin,
             unselectedRoutes: const [AdminEditHospitalScreen.routeName],
           ),

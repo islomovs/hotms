@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:myapp/widgets/text_fields_list.dart';
 import 'package:myapp/widgets/text_fields_list.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 
 class TextFieldsListController extends StatefulWidget {
@@ -38,7 +38,8 @@ class TextFieldsListController extends StatefulWidget {
     required this.selectedRHFactor,
     required this.lastField,
     super.key,
-    this.lastBtn, required this.dateController,
+    this.lastBtn,
+    required this.dateController,
   });
 
   @override

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/widgets/text_fields_controller.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
@@ -49,8 +49,8 @@ class _DispensaryOrganInfoScreenState extends State<DispensaryOrganInfoScreen> {
             email: 'nigina@roziya.com',
             sideBarTitles: sideBarTitlesDispensary,
             sideBarListIcons: sideBarListIconsDispensary,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesDispensary,
           ),
           Expanded(
@@ -148,7 +148,7 @@ class _DispensaryOrganInfoScreenState extends State<DispensaryOrganInfoScreen> {
                           RejectButton(
                             onTapFunc: () async {
                               dio.options.headers['Authorization'] =
-                                  "Bearer $token";
+                                  "Bearer $extractedToken";
                               dio.options.headers['Content-Type'] =
                                   'application/json';
                               print("REJECT PRESSED");
@@ -191,7 +191,7 @@ class _DispensaryOrganInfoScreenState extends State<DispensaryOrganInfoScreen> {
                             title: 'Accept',
                             onTapFunc: () async {
                               dio.options.headers['Authorization'] =
-                                  "Bearer $token";
+                                  "Bearer $extractedToken";
                               dio.options.headers['Content-Type'] =
                                   'application/json';
                               print("ACCEPT PRESSED");
@@ -203,7 +203,7 @@ class _DispensaryOrganInfoScreenState extends State<DispensaryOrganInfoScreen> {
                                     'address': _enteredAddress.text,
                                     'city': _enteredCity.text,
                                     'passportNumber':
-                                    _enteredPassportNumber.text,
+                                        _enteredPassportNumber.text,
                                     'pinfl': _enteredPINFL.text,
                                     'donationPrice': _enteredPrice.text,
                                     'birthday': '2000-12-09',

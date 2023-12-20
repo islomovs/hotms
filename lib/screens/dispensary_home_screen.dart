@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
     as dp;
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
 import '../widgets/status_widget.dart';
@@ -92,7 +92,7 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
         onConfirm: (date) async {
           print("date99: ${DateFormat('yyyy-MM-ddTHH:mm').format(date)}");
           final time = DateFormat('yyyy-MM-ddTHH:mm').format(date);
-          dio.options.headers['Authorization'] = "Bearer $token";
+          dio.options.headers['Authorization'] = "Bearer $extractedToken";
           dio.options.headers['Content-Type'] = 'application/json';
           if (model is PatientObject) {
             final patientModel = model;
@@ -137,7 +137,7 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
       'bash',
       [
         '-c',
-        'cd $workingDirectory && ./client localhost assignDateForPatientsAppointment $extractedToken patientId time'
+        'cd $workingDirectory && ./client $localhost assignDateForPatientsAppointment $extractedToken patientId time'
       ],
     );
 
@@ -194,11 +194,10 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
   @override
   void didChangeDependencies() {
     Provider.of<DispensaryOperations>(context, listen: false)
-        .fetchDispensaryInfo(token);
+        .fetchDispensaryInfo();
+    Provider.of<DispensaryOperations>(context, listen: false).fetchDonorsList();
     Provider.of<DispensaryOperations>(context, listen: false)
-        .fetchDonorsList(token);
-    Provider.of<DispensaryOperations>(context, listen: false)
-        .fetchPatientsList(token);
+        .fetchPatientsList();
     super.didChangeDependencies();
   }
 
@@ -230,8 +229,8 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
             email: 'nigina@roziya.com',
             sideBarTitles: sideBarTitlesDispensary,
             sideBarListIcons: sideBarListIconsDispensary,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesDispensary,
           ),
           // Main content
@@ -297,7 +296,8 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
                         dHSlistTile: DispenserHomeSectionListTile(
                           models: rxPatients
                               .where((element) =>
-                                  element.date == null && element.date == null)
+                                  element.date == null &&
+                                  element.isApproved == null)
                               .toList(),
                           isProcessing: isProcessing,
                           itemsToShow: _itemsToShow1,
@@ -481,6 +481,7 @@ class DispenserHomeSectionListTile extends StatelessWidget {
   bool status;
   bool? isProcessing;
   final ValueChanged<DonorOrPatient> onSetDate;
+  final List<DonorOrPatient> models;
 
   DispenserHomeSectionListTile({
     required int itemsToShow,
@@ -490,8 +491,6 @@ class DispenserHomeSectionListTile extends StatelessWidget {
     required this.models,
     required this.onSetDate,
   });
-
-  final List<DonorOrPatient> models;
 
   @override
   Widget build(BuildContext context) {
@@ -613,7 +612,7 @@ class DispenserHomeSectionListTile extends StatelessWidget {
                         minimumSize: const Size(95, 40),
                       ),
                       onPressed: () {
-                        if (model.isApproved == null) {
+                        if (model.date != null && model.isApproved == null) {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -752,7 +751,7 @@ class DispenserHomeSectionListTile extends StatelessWidget {
                         minimumSize: const Size(95, 40),
                       ),
                       onPressed: () {
-                        if (model.isApproved == null) {
+                        if (model.date != null && model.isApproved == null) {
                           Navigator.push(
                               context,
                               MaterialPageRoute(

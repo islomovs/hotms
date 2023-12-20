@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:myapp/widgets/text_fields_list_reader.dart';
 import 'package:provider/provider.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
-import '../widgets/text_fields_list.dart';
 import '../providers/donor.dart';
 
 class DonorOrganInfoScreen extends StatefulWidget {
@@ -38,10 +37,12 @@ class _DonorOrganInfoScreenState extends State<DonorOrganInfoScreen> {
   String? _birthday;
 
   final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _donationTypeController = TextEditingController();
 
   @override
   void dispose() {
     _priceController.dispose();
+    _donationTypeController.dispose();
     super.dispose();
   }
 
@@ -75,18 +76,21 @@ class _DonorOrganInfoScreenState extends State<DonorOrganInfoScreen> {
     _selectedRHFactor = donor.rhFactor;
     _enteredPrice = donor.donationPrice.toString();
     _birthday = donor.birthday;
+    _selectedTypeOfDonation = donor.donationPrice != null ? 'Sell' : 'Free';
     _updateTextField(_selectedTypeOfDonation);
+
+    var donorInfo = Provider.of<Donors>(context).donorOrganInfo.userId!;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SidebarTemplate(
-            title: 'Nigina Roziya',
-            email: 'nigina@roziya.com',
+            title: donorInfo.fullName!,
+            email: donorInfo.email!,
             sideBarTitles: sideBarTitlesDonor,
             sideBarListIcons: sideBarListIconsDonor,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesDonor,
           ),
           Expanded(
@@ -140,6 +144,9 @@ class _DonorOrganInfoScreenState extends State<DonorOrganInfoScreen> {
                               ),
                               const SizedBox(height: 30),
                               TextFormField(
+                                controller: TextEditingController(
+                                  text: _selectedTypeOfDonation,
+                                ),
                                 style: originalTextStyle,
                                 readOnly: true,
                                 decoration: InputDecoration(

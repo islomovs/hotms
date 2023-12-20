@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import '../constants/constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
-import './admin_add_hospital_screen.dart';
-import './admin_edit_hospital_screen.dart';
+import './admin_add_region_screen.dart';
+import './admin_edit_region_screen.dart';
 
-class AdminHospitalsListScreen extends StatelessWidget {
-  static const routeName = '/admin-hospitals-list-screen';
-  const AdminHospitalsListScreen({super.key});
+class AdminRegionsListScreen extends StatelessWidget {
+  static const routeName = '/admin-regions-list-screen';
+  const AdminRegionsListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +32,7 @@ class AdminHospitalsListScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    HeadingWidget(
-                      title: 'Hospital List',
-                      subtitle:
-                          'You can safely start treatment, which we carry out as quickly and efficiently as possible in Tashkent.',
-                    ),
+                    HeadingWidget(title: 'Regions List'),
                     const SizedBox(height: 20),
                     Container(
                       decoration: BoxDecoration(
@@ -54,12 +50,12 @@ class AdminHospitalsListScreen extends StatelessWidget {
                             Row(
                               children: [
                                 Text(
-                                  'Total Hospitals',
+                                  'Total Regions',
                                   style: listHeadingTitleTextStyle,
                                 ),
                                 const SizedBox(width: 10),
                                 Text(
-                                  '(144)',
+                                  '(4)',
                                   style: listHeadingTitleTextStyle,
                                 ),
                               ],
@@ -69,7 +65,7 @@ class AdminHospitalsListScreen extends StatelessWidget {
                                 InkWell(
                                   onTap: () {
                                     Navigator.of(context).pushNamed(
-                                        AdminAddHospitalScreen.routeName);
+                                        AdminAddRegionScreen.routeName);
                                   },
                                   child: Icon(
                                     Icons.add,
@@ -111,25 +107,7 @@ class AdminHospitalsListScreen extends StatelessWidget {
                               width:
                                   (MediaQuery.of(context).size.width - 620) / 4,
                               child: Text(
-                                'Hospital',
-                                style: listTitleTextStyle,
-                              ),
-                            ),
-                            Container(
-                              alignment: Alignment.topLeft,
-                              width:
-                                  (MediaQuery.of(context).size.width - 620) / 4,
-                              child: Text(
-                                'Owner',
-                                style: listTitleTextStyle,
-                              ),
-                            ),
-                            Container(
-                              alignment: Alignment.topLeft,
-                              width:
-                                  (MediaQuery.of(context).size.width - 620) / 4,
-                              child: Text(
-                                'Address',
+                                'Region',
                                 style: listTitleTextStyle,
                               ),
                             ),
@@ -171,58 +149,30 @@ class AdminHospitalsListScreen extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        'Medical Care',
-                                        style: listTileTitle,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Text(
-                                        'Cardiology Clinic',
-                                        style: listTileSubTitle,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  alignment: Alignment.topLeft,
-                                  width: (MediaQuery.of(context).size.width -
-                                          620) /
-                                      4,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Saidova Saida',
-                                        style: listTileTitle,
-                                        textAlign: TextAlign.left,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Text(
-                                        '21 years',
-                                        style: listTileSubTitle,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  alignment: Alignment.topLeft,
-                                  width: (MediaQuery.of(context).size.width -
-                                          620) /
-                                      4,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Shifokorlar Street, 22',
-                                        style: listTileTitle,
-                                        textAlign: TextAlign.left,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Text(
-                                        'Almazar district',
-                                        style: listTileSubTitle,
+                                      Row(
+                                        children: [
+                                          const CircleAvatar(
+                                            minRadius: 20,
+                                            backgroundImage: AssetImage(
+                                                './assets/images/profile.png'),
+                                          ),
+                                          const SizedBox(width: 25),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Saidova Saida',
+                                                style: listTileTitle,
+                                              ),
+                                              const SizedBox(height: 5),
+                                              Text(
+                                                'Uzbekistan',
+                                                style: listTileSubTitle,
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
@@ -244,7 +194,7 @@ class AdminHospitalsListScreen extends StatelessWidget {
                                       ),
                                       onPressed: () {
                                         Navigator.of(context).pushNamed(
-                                            AdminEditHospitalScreen.routeName);
+                                            AdminEditRegionScreen.routeName);
                                       },
                                       child: Text(
                                         'Edit',

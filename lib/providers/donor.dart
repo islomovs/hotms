@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 
 class Donor {
   int? id;
@@ -275,7 +275,7 @@ class Donors with ChangeNotifier {
     final response = await http.get(
       Uri.parse('$ip/api/donors/myDonorInfo'),
       headers: {
-        'Authorization': 'Bearer $donorDefaultToken',
+        'Authorization': 'Bearer $extractedToken',
         'Content-Type': 'application/json',
       },
     );
@@ -295,7 +295,7 @@ class Donors with ChangeNotifier {
     final response = await http.get(
       Uri.parse('$ip/api/donors/allMyDispensaryVisits'),
       headers: {
-        'Authorization': 'Bearer $donorDefaultToken',
+        'Authorization': 'Bearer $extractedToken',
         'Content-Type': 'application/json',
       },
     );
@@ -316,7 +316,7 @@ class Donors with ChangeNotifier {
     final response = await http.get(
       Uri.parse('$ip/api/donors/allMyOperations'),
       headers: {
-        'Authorization': 'Bearer $donorDefaultToken',
+        'Authorization': 'Bearer $extractedToken',
         'Content-Type': 'application/json',
       },
     );
@@ -337,7 +337,7 @@ class Donors with ChangeNotifier {
     final response = await http.get(
       Uri.parse('$ip/api/donors/allHospitalsMatchingMe'),
       headers: {
-        'Authorization': 'Bearer $donorDefaultToken',
+        'Authorization': 'Bearer $extractedToken',
         'Content-Type': 'application/json',
       },
     );

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
@@ -43,8 +43,8 @@ class _HospitalDonorScreenState extends State<HospitalDonorScreen> {
             email: 'nigina@roziya.com',
             sideBarTitles: sideBarTitlesHospital,
             sideBarListIcons: sideBarListIconsHospital,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesHospital,
             unselectedRoutes: const [
               HospitalDonorScreen.routeName,

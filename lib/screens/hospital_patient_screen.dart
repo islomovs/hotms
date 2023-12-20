@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/data/HospitalOperation.dart';
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
@@ -61,8 +61,8 @@ class _HospitalPatientScreenState extends State<HospitalPatientScreen> {
             email: 'nigina@roziya.com',
             sideBarTitles: sideBarTitlesHospital,
             sideBarListIcons: sideBarListIconsHospital,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesHospital,
             unselectedRoutes: const [
               HospitalPatientScreen.routeName,

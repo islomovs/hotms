@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/donor.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/step_widget.dart';
 import '../widgets/heading_widget.dart';
@@ -29,18 +31,19 @@ class _DonorHomeScreenState extends State<DonorHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var donorInfo = Provider.of<Donors>(context).donorOrganInfo.userId!;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Sidebar (Drawer)
           SidebarTemplate(
-            title: 'Nigina Roziya',
-            email: 'nigina@roziya.com',
+            title: donorInfo.fullName!,
+            email: donorInfo.email!,
             sideBarTitles: sideBarTitlesDonor,
             sideBarListIcons: sideBarListIconsDonor,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesDonor,
           ),
           // Main content

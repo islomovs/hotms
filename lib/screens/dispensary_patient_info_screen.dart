@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/widgets/text_fields_controller.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
@@ -48,8 +48,8 @@ class _DispenserPatientInfoScreenState
             email: 'nigina@roziya.com',
             sideBarTitles: sideBarTitlesDispensary,
             sideBarListIcons: sideBarListIconsDispensary,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesDispensary,
           ),
           Expanded(
@@ -110,10 +110,10 @@ class _DispenserPatientInfoScreenState
                               SliderTheme(
                                 data: SliderTheme.of(context).copyWith(
                                   trackHeight:
-                                  4.0, // Adjust track height (thickness)
+                                      4.0, // Adjust track height (thickness)
                                   thumbShape: RoundSliderThumbShape(
                                       enabledThumbRadius:
-                                      10.0), // Adjust thumb radius
+                                          10.0), // Adjust thumb radius
                                   // Other properties like activeTrackColor, inactiveTrackColor, overlayColor, etc.
                                 ),
                                 child: Container(
@@ -128,8 +128,8 @@ class _DispenserPatientInfoScreenState
                                     label: _currentSliderValue == 0
                                         ? 'Non Urgent'
                                         : _currentSliderValue == 1
-                                        ? 'Urgent'
-                                        : 'Emergency',
+                                            ? 'Urgent'
+                                            : 'Emergency',
                                     onChanged: (value) {
                                       setState(() {
                                         _currentSliderValue = value;
@@ -144,7 +144,7 @@ class _DispenserPatientInfoScreenState
                                 padding: EdgeInsets.symmetric(horizontal: 0),
                                 child: Row(
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     const Text(
                                       'Non Urgent',
@@ -188,9 +188,11 @@ class _DispenserPatientInfoScreenState
                           RejectButton(onTapFunc: () async {
                             await rejectEvent();
                           }),
-                          AcceptButton(title: 'Accept', onTapFunc: () async {
-                            await acceptEvent();
-                          }),
+                          AcceptButton(
+                              title: 'Accept',
+                              onTapFunc: () async {
+                                await acceptEvent();
+                              }),
                         ],
                       ),
                     ],
@@ -205,7 +207,7 @@ class _DispenserPatientInfoScreenState
   }
 
   Future<void> rejectEvent() async {
-    dio.options.headers['Authorization'] = "Bearer $token";
+    dio.options.headers['Authorization'] = "Bearer $extractedToken";
     dio.options.headers['Content-Type'] = 'application/json';
     print("REJECT PRESSED");
     final response = await dio
@@ -239,7 +241,7 @@ class _DispenserPatientInfoScreenState
   }
 
   Future<void> acceptEvent() async {
-    dio.options.headers['Authorization'] = "Bearer $token";
+    dio.options.headers['Authorization'] = "Bearer $extractedToken";
     dio.options.headers['Content-Type'] = 'application/json';
     print("ACCEPT PRESSED");
     final response = await dio

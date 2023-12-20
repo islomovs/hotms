@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
 import '../widgets/hospital_card.dart';
@@ -19,8 +19,6 @@ class DonorHospitalsScreen extends StatefulWidget {
 }
 
 class _DonorHospitalsScreenState extends State<DonorHospitalsScreen> {
-  final List<String> _items = List<String>.generate(20, (i) => "Item $i");
-
   // int _itemsToShow1 = 0;
   //
   // void _showMore1(int length) {
@@ -51,7 +49,7 @@ class _DonorHospitalsScreenState extends State<DonorHospitalsScreen> {
       'bash',
       [
         '-c',
-        'cd $workingDirectory && ./client localhost applyToHospital $extractedToken $smth'
+        'cd $workingDirectory && ./client $localhost applyToHospital $extractedToken $smth'
       ],
     );
 
@@ -119,18 +117,19 @@ class _DonorHospitalsScreenState extends State<DonorHospitalsScreen> {
   @override
   Widget build(BuildContext context) {
     final hospitals = Provider.of<Donors>(context).donorH;
+    var donorInfo = Provider.of<Donors>(context).donorOrganInfo.userId!;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Sidebar (Drawer)
           SidebarTemplate(
-            title: 'Nigina Roziya',
-            email: 'nigina@roziya.com',
+            title: donorInfo.fullName!,
+            email: donorInfo.email!,
             sideBarTitles: sideBarTitlesDonor,
             sideBarListIcons: sideBarListIconsDonor,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesDonor,
           ),
           // Main content
@@ -240,7 +239,8 @@ class _DonorHospitalsScreenState extends State<DonorHospitalsScreen> {
                           itemBuilder: (_, index) {
                             return HospitalCard(
                               title: hospitals[index].name ?? '-- --',
-                              description: hospitals[index].description ?? '---- ----',
+                              description:
+                                  hospitals[index].description ?? '---- ----',
                               img: hospitals[index].imageLink,
                               onTap: _submitData,
                             );

@@ -1,7 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart' hide DatePickerTheme;
 import 'package:intl/intl.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
@@ -100,6 +102,70 @@ class _HospitalAssignOperationScreenState
     super.dispose();
   }
 
+  int smth = 1;
+  void _submitData() async {
+    var workingDirectory =
+        '~/Desktop/myapp/home/sardorchik/Desktop/myapp/lib/screens/';
+
+    // Change to the working directory and run the C program
+    var loginResult = await Process.run(
+      'bash',
+      [
+        '-c',
+        'cd $workingDirectory && ./client $localhost appointOperationToAnyPatient $extractedToken "doctorName" "doctorRole" $smth $smth $smth'
+      ],
+    );
+
+    // After running the C program
+    if (loginResult.exitCode == 0) {
+      // Success logic
+      print('C program output: ${loginResult.stdout}');
+
+      // Extracting the JWT token
+      String output = loginResult.stdout;
+      String tokenPrefix = "server message: ";
+      int startIndex = output.indexOf(tokenPrefix);
+      if (startIndex != -1) {
+        startIndex += tokenPrefix.length;
+        String jwtToken = output.substring(startIndex).trim();
+
+        // Assign to a new variable and print
+        extractedToken = jwtToken;
+        print('Extracted JWT Token: $extractedToken');
+
+        var infoResult = await Process.run(
+          'bash',
+          [
+            '-c',
+            'cd $workingDirectory && ./client $localhost getMyInfo "$extractedToken"'
+          ],
+        );
+
+        if (infoResult.exitCode == 0) {
+          print('C program output: ${infoResult.stdout}');
+
+          // Regular expression to find the role
+          RegExp regExp = RegExp(r'"role":"([^"]+)"');
+          var matches = regExp.allMatches(infoResult.stdout);
+
+          if (matches.isNotEmpty) {
+            // Extract the role
+            extractedRole = matches.first.group(1)!;
+            print('Extracted Role: $extractedRole');
+          }
+        } else {
+          print('C program error: ${infoResult.stderr}');
+        }
+      } else {
+        // Error handling
+        print('C program error: ${loginResult.stderr}');
+      }
+    } else {
+      // Error handling
+      print('C program error: ${loginResult.stderr}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,8 +177,8 @@ class _HospitalAssignOperationScreenState
             email: 'nigina@roziya.com',
             sideBarTitles: sideBarTitlesHospital,
             sideBarListIcons: sideBarListIconsHospital,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesHospital,
             unselectedRoutes: const [HospitalAssignOperationScreen.routeName],
           ),
@@ -137,38 +203,6 @@ class _HospitalAssignOperationScreenState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            TextFormField(
-                              style: originalTextStyle,
-                              cursorColor: const Color(0xFF2B2B2B),
-                              decoration: InputDecoration(
-                                labelText: 'Full name',
-                                labelStyle: labelTextStyle,
-                                enabledBorder: enabledBorderParams,
-                                focusedBorder: focusedBorderParams,
-                                errorBorder: errorBorderParams,
-                                focusedErrorBorder: focusedErrorBorderParams,
-                              ),
-                              onChanged: (value) => _enteredName = value,
-                              validator: validateName,
-                            ),
-                            const SizedBox(height: 20),
-                            TextFormField(
-                              style: originalTextStyle,
-                              cursorColor: const Color(0xFF2B2B2B),
-                              decoration: InputDecoration(
-                                labelText: 'Role',
-                                labelStyle: labelTextStyle,
-                                enabledBorder: enabledBorderParams,
-                                focusedBorder: focusedBorderParams,
-                                errorBorder: errorBorderParams,
-                                focusedErrorBorder: focusedErrorBorderParams,
-                              ),
-                              onChanged: (value) => _enteredRole = value,
-                              validator: validateComment,
-                            ),
-                            const SizedBox(height: 20),
-                            HeadingWidget(title: 'Set operation details'),
-                            const SizedBox(height: 20),
                             Row(
                               children: [
                                 Flexible(
@@ -371,6 +405,7 @@ class _HospitalAssignOperationScreenState
                                       MediumButton(
                                         title: 'Yes',
                                         onPress: () {
+                                          _submitData();
                                           Navigator.of(context).popUntil(
                                             ModalRoute.withName(
                                                 HospitalPatientsDonorsScreen

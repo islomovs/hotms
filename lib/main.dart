@@ -45,6 +45,12 @@ import './screens/admin_edit_donor_screen.dart';
 import './screens/admin_edit_hospital_screen.dart';
 import './screens/admin_edit_organ_screen.dart';
 import './screens/admin_edit_patient_screen.dart';
+import './screens/admin_edit_region_screen.dart';
+import './screens/admin_add_region_screen.dart';
+import './screens/admin_regions_list_screen.dart';
+import './screens/hospital_doctors_screen.dart';
+import './screens/hospital_add_doctor_screen.dart';
+import './screens/hospital_edit_doctor_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -59,7 +65,7 @@ class MyApp extends StatelessWidget {
           create: (ctx) => Donors(),
         ),
         ChangeNotifierProvider(
-          create: (ctx) =>patient.Patients(),
+          create: (ctx) => patient.Patients(),
         ),
         ChangeNotifierProvider(
           create: (ctx) => Hospitals(),
@@ -97,8 +103,9 @@ class MyApp extends StatelessWidget {
               HospitalPatientsDonorsScreen(),
           HospitalOperationsScreen.routeName: (ctx) =>
               HospitalOperationsScreen(),
-          HospitalPatientScreen.routeName: (ctx) =>
-              HospitalPatientScreen(model: HospitalOperation(),),
+          HospitalPatientScreen.routeName: (ctx) => HospitalPatientScreen(
+                model: HospitalOperation(),
+              ),
           HospitalDonorScreen.routeName: (ctx) => HospitalDonorScreen(),
           HospitalAssignOperationScreen.routeName: (ctx) =>
               HospitalAssignOperationScreen(),
@@ -124,6 +131,14 @@ class MyApp extends StatelessWidget {
           AdminEditOrganScreen.routeName: (ctx) => AdminEditOrganScreen(),
           AdminEditPatientScreen.routeName: (ctx) => AdminEditPatientScreen(),
           PatientHomeInnerScreen.routeName: (ctx) => PatientHomeInnerScreen(),
+          HospitalDoctorsListScreen.routeName: (ctx) =>
+              HospitalDoctorsListScreen(),
+          HospitalAddDoctorScreen.routeName: (ctx) => HospitalAddDoctorScreen(),
+          HospitalEditDoctorScreen.routeName: (ctx) =>
+              HospitalEditDoctorScreen(),
+          AdminRegionsListScreen.routeName: (ctx) => AdminRegionsListScreen(),
+          AdminAddRegionScreen.routeName: (ctx) => AdminAddRegionScreen(),
+          AdminEditRegionScreen.routeName: (ctx) => AdminEditRegionScreen(),
         },
       ),
     );

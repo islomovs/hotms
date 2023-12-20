@@ -6,24 +6,22 @@ import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
-import './admin_donors_list_screen.dart';
+import './admin_patients_list_screen.dart';
 
-class AdminAddDonorScreen extends StatefulWidget {
-  static const routeName = '/admin-add-donor-screen';
-  const AdminAddDonorScreen({super.key});
+class AdminAddRegionScreen extends StatefulWidget {
+  static const routeName = '/admin-add-region-screen';
+  const AdminAddRegionScreen({super.key});
 
   @override
-  State<AdminAddDonorScreen> createState() => _AdminAddDonorScreenState();
+  State<AdminAddRegionScreen> createState() => _AdminAddRegionScreenState();
 }
 
-class _AdminAddDonorScreenState extends State<AdminAddDonorScreen> {
-  String? _enteredName;
-  String? _enteredEmail;
-  String? _enteredPassword;
+class _AdminAddRegionScreenState extends State<AdminAddRegionScreen> {
+  String? _enteredRegion;
 
   void _saveFunc() {
     Navigator.of(context).popUntil(
-      ModalRoute.withName(AdminDonorsListScreen.routeName),
+      ModalRoute.withName(AdminPatientsListScreen.routeName),
     );
   }
 
@@ -37,7 +35,7 @@ class _AdminAddDonorScreenState extends State<AdminAddDonorScreen> {
       'bash',
       [
         '-c',
-        'cd $workingDirectory && ./client localhost adminCreateDonor $extractedToken $_enteredName $_enteredEmail $_enteredPassword'
+        'cd $workingDirectory && ./client $localhost adminCreatePatient $extractedToken $_enteredRegion'
       ],
     );
 
@@ -89,8 +87,9 @@ class _AdminAddDonorScreenState extends State<AdminAddDonorScreen> {
       // Error handling
       print('C program error: ${loginResult.stderr}');
     }
-
-    Navigator.of(context).pushNamed(AdminDonorsListScreen.routeName);
+    Navigator.of(context).popUntil(
+      ModalRoute.withName(AdminPatientsListScreen.routeName),
+    );
   }
 
   @override
@@ -107,7 +106,7 @@ class _AdminAddDonorScreenState extends State<AdminAddDonorScreen> {
             sideBarTitlesBottom: sideBarTitlesBottom,
             sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesAdmin,
-            unselectedRoutes: const [AdminAddDonorScreen.routeName],
+            unselectedRoutes: const [AdminAddRegionScreen.routeName],
           ),
           Expanded(
             child: Padding(
@@ -115,11 +114,7 @@ class _AdminAddDonorScreenState extends State<AdminAddDonorScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  HeadingWidget(
-                    title: 'Donor',
-                    subtitle:
-                        'You can safely start treatment, which we carry out as quickly and efficiently as possible in Tashkent.',
-                  ),
+                  HeadingWidget(title: 'Add Region'),
                   const SizedBox(height: 20),
                   Form(
                     child: Column(
@@ -129,45 +124,15 @@ class _AdminAddDonorScreenState extends State<AdminAddDonorScreen> {
                           style: originalTextStyle,
                           cursorColor: const Color(0xFF2B2B2B),
                           decoration: InputDecoration(
-                            labelText: 'Name',
+                            labelText: 'Region',
                             labelStyle: labelTextStyle,
                             enabledBorder: enabledBorderParams,
                             focusedBorder: focusedBorderParams,
                             errorBorder: errorBorderParams,
                             focusedErrorBorder: focusedErrorBorderParams,
                           ),
-                          onChanged: (value) => _enteredName = value,
+                          onChanged: (value) => _enteredRegion = value,
                           validator: validateName,
-                        ),
-                        const SizedBox(height: 20),
-                        TextFormField(
-                          style: originalTextStyle,
-                          cursorColor: const Color(0xFF2B2B2B),
-                          decoration: InputDecoration(
-                            labelText: 'Email',
-                            labelStyle: labelTextStyle,
-                            enabledBorder: enabledBorderParams,
-                            focusedBorder: focusedBorderParams,
-                            errorBorder: errorBorderParams,
-                            focusedErrorBorder: focusedErrorBorderParams,
-                          ),
-                          onChanged: (value) => _enteredEmail = value,
-                          validator: validateEmail,
-                        ),
-                        const SizedBox(height: 20),
-                        TextFormField(
-                          style: originalTextStyle,
-                          cursorColor: const Color(0xFF2B2B2B),
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            labelStyle: labelTextStyle,
-                            enabledBorder: enabledBorderParams,
-                            focusedBorder: focusedBorderParams,
-                            errorBorder: errorBorderParams,
-                            focusedErrorBorder: focusedErrorBorderParams,
-                          ),
-                          onChanged: (value) => _enteredPassword = value,
-                          validator: validatePassword,
                         ),
                         const SizedBox(height: 20),
                         Align(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import '../providers/patient.dart';
 import '../widgets/sidebar_template.dart';
@@ -73,17 +73,18 @@ class _PatientInfoScreenState extends State<PatientInfoScreen> {
     isDelivered = patients.isApproved ?? false;
     isInProcess = !isDelivered!;
     finalDecision = isDelivered!;
+    var patientInfo = Provider.of<Patients>(context).patientInfo.userId!;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SidebarTemplate(
-            title: 'Nigina Roziya',
-            email: 'nigina@roziya.com',
+            title: patientInfo.fullName!,
+            email: patientInfo.email!,
             sideBarTitles: sideBarTitlesPatient,
             sideBarListIcons: sideBarListIconsPatient,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesPatient,
           ),
           Expanded(

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
 import '../widgets/hospital_card.dart';
@@ -50,7 +50,7 @@ class _PatientHospitalsScreenState extends State<PatientHospitalsScreen> {
       'bash',
       [
         '-c',
-        'cd $workingDirectory && ./client localhost applyToHospital $extractedToken $smth'
+        'cd $workingDirectory && ./client $localhost applyToHospital $extractedToken $smth'
       ],
     );
 
@@ -113,18 +113,19 @@ class _PatientHospitalsScreenState extends State<PatientHospitalsScreen> {
   @override
   Widget build(BuildContext context) {
     final hospitals = Provider.of<Patients>(context).patientH;
+    var patientInfo = Provider.of<Patients>(context).patientInfo.userId!;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Sidebar (Drawer)
           SidebarTemplate(
-            title: 'Nigina Roziya',
-            email: 'nigina@roziya.com',
+            title: patientInfo.fullName!,
+            email: patientInfo.email!,
             sideBarTitles: sideBarTitlesPatient,
             sideBarListIcons: sideBarListIconsPatient,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesPatient,
           ),
           // Main content
@@ -138,11 +139,7 @@ class _PatientHospitalsScreenState extends State<PatientHospitalsScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        HeadingWidget(
-                          title: 'Hospital List',
-                          subtitle:
-                              'You can safely start treatment, which we carry out as quickly and efficiently as possible in Tashkent.',
-                        ),
+                        HeadingWidget(title: 'Hospital List'),
                       ],
                     ),
                     const SizedBox(height: 20),

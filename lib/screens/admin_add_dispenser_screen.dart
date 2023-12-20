@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
@@ -105,8 +105,8 @@ class _AdminAddDispensersScreenState extends State<AdminAddDispensersScreen> {
             email: 'nigina@roziya.com',
             sideBarTitles: sideBarTitlesAdmin,
             sideBarListIcons: sideBarListIconsAdmin,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesAdmin,
             unselectedRoutes: const [AdminAddDispensersScreen.routeName],
           ),

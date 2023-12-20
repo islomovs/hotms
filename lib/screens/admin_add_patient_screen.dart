@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
@@ -37,7 +37,7 @@ class _AdminAddPatientScreenState extends State<AdminAddPatientScreen> {
       'bash',
       [
         '-c',
-        'cd $workingDirectory && ./client localhost adminCreatePatient $extractedToken $_enteredName $_enteredEmail $_enteredPassword'
+        'cd $workingDirectory && ./client $localhost adminCreatePatient $extractedToken $_enteredName $_enteredEmail $_enteredPassword'
       ],
     );
 
@@ -105,8 +105,8 @@ class _AdminAddPatientScreenState extends State<AdminAddPatientScreen> {
             email: 'nigina@roziya.com',
             sideBarTitles: sideBarTitlesAdmin,
             sideBarListIcons: sideBarListIconsAdmin,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesAdmin,
             unselectedRoutes: const [AdminAddPatientScreen.routeName],
           ),

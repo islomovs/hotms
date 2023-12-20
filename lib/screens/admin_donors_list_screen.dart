@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
 import '../screens/admin_add_donor_screen.dart';
@@ -21,8 +21,8 @@ class AdminDonorsListScreen extends StatelessWidget {
             email: 'nigina@roziya.com',
             sideBarTitles: sideBarTitlesAdmin,
             sideBarListIcons: sideBarListIconsAdmin,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesAdmin,
           ),
           Expanded(

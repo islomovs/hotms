@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
@@ -52,7 +52,7 @@ class _PatientAppointmentScreenState extends State<PatientAppointmentScreen> {
         'bash',
         [
           '-c',
-          'cd $workingDirectory && ./client localhost applyToDispensary $extractedToken $smth $_enteredPhoneNumber'
+          'cd $workingDirectory && ./client $localhost applyToDispensary $extractedToken $smth $_enteredPhoneNumber'
         ],
       );
 
@@ -120,18 +120,19 @@ class _PatientAppointmentScreenState extends State<PatientAppointmentScreen> {
     isDelivered = patients.isApproved ?? false;
     isInProcess = !isDelivered!;
     finalDecision = isDelivered!;
+    var patientInfo = Provider.of<Patients>(context).patientInfo.userId!;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Sidebar (Drawer)
           SidebarTemplate(
-            title: 'Nigina Roziya',
-            email: 'nigina@roziya.com',
+            title: patientInfo.fullName!,
+            email: patientInfo.email!,
             sideBarTitles: sideBarTitlesPatient,
             sideBarListIcons: sideBarListIconsPatient,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesPatient,
           ),
           // Main content
@@ -143,7 +144,7 @@ class _PatientAppointmentScreenState extends State<PatientAppointmentScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     HeadingWidget(
-                      title: 'Hi Nigina Roziya!',
+                      title: 'Hi ${patientInfo.fullName}!',
                       subtitle: 'Monitor and adjust your progress',
                     ),
                     const SizedBox(height: 20),

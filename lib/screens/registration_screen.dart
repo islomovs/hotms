@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import './login_screen.dart';
 
@@ -24,6 +24,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   String? _password;
   String? _confirmPassword;
   String? _selectedRole;
+  String? _selectedRegion;
 
   void _submitData() async {
     if (_formKey.currentState!.validate()) {
@@ -48,7 +49,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         'bash',
         [
           '-c',
-          'cd $workingDirectory && ./client localhost signup $_enteredName $_enteredEmail $_confirmPassword $_confirmPassword $_selectedRole'
+          'cd $workingDirectory && ./client $localhost signup $_enteredName $_enteredEmail $_confirmPassword $_confirmPassword $_selectedRole'
         ],
       );
 
@@ -166,6 +167,47 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             },
                             decoration: InputDecoration(
                               labelText: 'User',
+                              labelStyle: labelTextStyle,
+                              enabledBorder: enabledBorderParams,
+                              focusedBorder: focusedBorderParams,
+                              errorBorder: errorBorderParams,
+                              focusedErrorBorder: focusedErrorBorderParams,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          DropdownButtonFormField(
+                            value: _selectedRegion,
+                            style: originalTextStyle,
+                            // focusColor: Color(0x802B2B2B),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Choose region';
+                              }
+                              return null;
+                            },
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(8)),
+                            items: [
+                              'Tashkent',
+                              'Kashkadarya',
+                              'Samarkand',
+                              'Bukhara'
+                            ].map((String category) {
+                              return DropdownMenuItem(
+                                  value: category,
+                                  child: Row(
+                                    children: <Widget>[
+                                      Text(category),
+                                    ],
+                                  ));
+                            }).toList(),
+                            onChanged: (newValue) {
+                              setState(() {
+                                _selectedRegion = newValue;
+                              });
+                            },
+                            decoration: InputDecoration(
+                              labelText: 'Region',
                               labelStyle: labelTextStyle,
                               enabledBorder: enabledBorderParams,
                               focusedBorder: focusedBorderParams,

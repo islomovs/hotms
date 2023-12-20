@@ -3,10 +3,9 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../constants/contants.dart';
+import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
@@ -15,6 +14,7 @@ import '../widgets/application_status_widget.dart';
 import '../widgets/medium_button.dart';
 import '../widgets/medium_outlined_button.dart';
 import '../providers/donor.dart';
+import '../providers/dispensary.dart';
 
 class DonorEvaluationScreen extends StatefulWidget {
   static const routeName = '/donor-evaluation-screen';
@@ -56,7 +56,7 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
         'bash',
         [
           '-c',
-          'cd $workingDirectory && ./client localhost applyToDispensary $extractedToken $smth $_enteredPhoneNumber'
+          'cd $workingDirectory && ./client $localhost applyToDispensary $extractedToken $smth $_enteredPhoneNumber'
         ],
       );
 
@@ -111,11 +111,13 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
     }
   }
 
+  bool _isDataFetched = false;
   @override
   void didChangeDependencies() {
     Provider.of<Donors>(context)
       ..fetchMyOperations()
       ..fetchDispensaryVisitsInfo();
+
     super.didChangeDependencies();
   }
 
@@ -138,18 +140,20 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
   Widget build(BuildContext context) {
     final donor = Provider.of<Donors>(context).donorE1;
     final donorO = Provider.of<Donors>(context).donorO;
+    var donorInfo = Provider.of<Donors>(context).donorOrganInfo.userId!;
+    donor.isProcessing = true;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Sidebar (Drawer)
           SidebarTemplate(
-            title: 'Nigina Roziya',
-            email: 'nigina@roziya.com',
+            title: donorInfo.fullName!,
+            email: donorInfo.email!,
             sideBarTitles: sideBarTitlesDonor,
             sideBarListIcons: sideBarListIconsDonor,
-            sideBarTitlesBottom: sideBarTitlesBottomDonor,
-            sideBarListIconsBottom: sideBarListIconsBottomDonor,
+            sideBarTitlesBottom: sideBarTitlesBottom,
+            sideBarListIconsBottom: sideBarListIconsBottom,
             routeNames: routeNamesDonor,
           ),
           // Main content
@@ -161,7 +165,7 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     HeadingWidget(
-                      title: 'Hi Nigina Roziya!',
+                      title: 'Hi ${donorInfo.fullName!}!',
                       subtitle: 'Monitor and adjust your progress',
                     ),
                     const SizedBox(height: 20),
@@ -180,7 +184,7 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                           StatusWidget(
                             title: 'Your data is processing',
                             appStatusWidget: ApplicationStatusWidget(
-                              status: true,
+                              status: donor.isProcessing!,
                             ),
                             status: true,
                           ),
@@ -367,6 +371,10 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                               visible: _visibility!,
                               child: MediumOutlinedButton(
                                 onPress: () {
+                                  donorO.isDonorAccepted = false;
+
+                                  print(
+                                      'IS DONOR ACCEPTED $donorO.isDonorAccepted');
                                   setState(() {
                                     _visibility = false;
                                   });
@@ -380,6 +388,9 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                               child: MediumButton(
                                 title: 'Agree',
                                 onPress: () {
+                                  donorO.isDonorAccepted = true;
+                                  print(
+                                      'IS DONOR ACCEPTED $donorO.isDonorAccepted');
                                   setState(() {
                                     _visibility = false;
                                   });

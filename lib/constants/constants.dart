@@ -29,16 +29,18 @@ import '../screens/admin_add_patient_screen.dart';
 import '../screens/admin_add_hospital_screen.dart';
 import '../screens/admin_add_donor_screen.dart';
 import '../screens/admin_dispenser_list_screen.dart';
+import '../screens/admin_regions_list_screen.dart';
 
-const token =
-    "eyJhbGciOiJIUzUxMiJ9.eyJpZCI6MywiZW1haWwiOiJkaXNwZW5zYXJ5QG1haWwucnUiLCJyb2xlIjoiRElTUEVOU0FSWSIsInVzZXIiOnsiaWQiOjMsImVtYWlsIjoiZGlzcGVuc2FyeUBtYWlsLnJ1IiwicGFzc3dvcmQiOiJkaXNwZW5zYXJ5Iiwicm9sZSI6IkRJU1BFTlNBUlkiLCJmdWxsTmFtZSI6IkRpc3BlbnNhcnkiLCJpbWFnZUxpbmsiOm51bGx9LCJleHAiOjE3MDM0OTc3OTl9.1Zc_3XO5a8LdGwfaigOdLZffrx0NlaLU90PzqMHQoDqBPMOvEYGZ2JOP_HNuN2FdxKzrnx8oNuDRNhKl7uJGKw";
-const hospitalToken =
-    "eyJhbGciOiJIUzUxMiJ9.eyJpZCI6NiwiZW1haWwiOiJhemlrb0BtYWlsLnJ1Iiwicm9sZSI6IkhPU1BJVEFMIiwidXNlciI6eyJpZCI6NiwiZW1haWwiOiJhemlrb0BtYWlsLnJ1IiwicGFzc3dvcmQiOiJhemlrbyIsInJvbGUiOiJIT1NQSVRBTCIsImZ1bGxOYW1lIjoiQXppa28iLCJpbWFnZUxpbmsiOm51bGx9LCJleHAiOjE3MDM0NTIzMzJ9.j7IAv4a5vQixkncIumNLB14Pc04Lwwx5pHxyYVSpn4debJeEAJJjTqjAm0M37MPWWKCKIccMFyzoI61hHvv8sA";
+// const token =
+//     "eyJhbGciOiJIUzUxMiJ9.eyJpZCI6MywiZW1haWwiOiJkaXNwZW5zYXJ5QG1haWwucnUiLCJyb2xlIjoiRElTUEVOU0FSWSIsInVzZXIiOnsiaWQiOjMsImVtYWlsIjoiZGlzcGVuc2FyeUBtYWlsLnJ1IiwicGFzc3dvcmQiOiJkaXNwZW5zYXJ5Iiwicm9sZSI6IkRJU1BFTlNBUlkiLCJmdWxsTmFtZSI6IkRpc3BlbnNhcnkiLCJpbWFnZUxpbmsiOm51bGx9LCJleHAiOjE3MDM0OTc3OTl9.1Zc_3XO5a8LdGwfaigOdLZffrx0NlaLU90PzqMHQoDqBPMOvEYGZ2JOP_HNuN2FdxKzrnx8oNuDRNhKl7uJGKw";
+// const hospitalToken =
+//     "eyJhbGciOiJIUzUxMiJ9.eyJpZCI6NiwiZW1haWwiOiJhemlrb0BtYWlsLnJ1Iiwicm9sZSI6IkhPU1BJVEFMIiwidXNlciI6eyJpZCI6NiwiZW1haWwiOiJhemlrb0BtYWlsLnJ1IiwicGFzc3dvcmQiOiJhemlrbyIsInJvbGUiOiJIT1NQSVRBTCIsImZ1bGxOYW1lIjoiQXppa28iLCJpbWFnZUxpbmsiOm51bGx9LCJleHAiOjE3MDM0NTIzMzJ9.j7IAv4a5vQixkncIumNLB14Pc04Lwwx5pHxyYVSpn4debJeEAJJjTqjAm0M37MPWWKCKIccMFyzoI61hHvv8sA";
 var ip = 'http://161.35.75.184:1234';
-var donorDefaultToken =
-    'eyJhbGciOiJIUzUxMiJ9.eyJpZCI6NCwiZW1haWwiOiJkb25vckBtYWlsLnJ1Iiwicm9sZSI6IkFQUFJPVkVEX0RPTk9SIiwidXNlciI6eyJpZCI6NCwiZW1haWwiOiJkb25vckBtYWlsLnJ1IiwicGFzc3dvcmQiOiJkb25vciIsInJvbGUiOiJBUFBST1ZFRF9ET05PUiIsImZ1bGxOYW1lIjoiRG9ub3IgRG9ub3JvdiIsImltYWdlTGluayI6bnVsbH0sImV4cCI6MTcwMzUxOTI2Nn0.El9l4cA-L-pVkwEmgZCH0RyGb9B35Uz8nYUiYW8B3HBMz0SjXC3AMvyoLcfAsbfJz0_fJc-ziUWvDjPfWA0pUQ';
+// var donorDefaultToken =
+//     'eyJhbGciOiJIUzUxMiJ9.eyJpZCI6NCwiZW1haWwiOiJkb25vckBtYWlsLnJ1Iiwicm9sZSI6IkFQUFJPVkVEX0RPTk9SIiwidXNlciI6eyJpZCI6NCwiZW1haWwiOiJkb25vckBtYWlsLnJ1IiwicGFzc3dvcmQiOiJkb25vciIsInJvbGUiOiJBUFBST1ZFRF9ET05PUiIsImZ1bGxOYW1lIjoiRG9ub3IgRG9ub3JvdiIsImltYWdlTGluayI6bnVsbH0sImV4cCI6MTcwMzUxOTI2Nn0.El9l4cA-L-pVkwEmgZCH0RyGb9B35Uz8nYUiYW8B3HBMz0SjXC3AMvyoLcfAsbfJz0_fJc-ziUWvDjPfWA0pUQ';
 String? extractedRole;
 String? extractedToken;
+String? localhost = '127.0.0.1';
 
 final dio = Dio()
   ..interceptors.add(PrettyDioLogger(
@@ -100,11 +102,13 @@ List<IconData> sideBarListIconsDonor = [
   Icons.library_books_outlined,
   Icons.local_hospital_sharp,
 ];
-List<String> sideBarTitlesBottomDonor = [
+List<String> sideBarTitlesBottom = [
+  'Andijan',
   'Support',
   'Settings',
 ];
-List<IconData> sideBarListIconsBottomDonor = [
+List<IconData> sideBarListIconsBottom = [
+  Icons.location_on_outlined,
   Icons.contact_support_outlined,
   Icons.settings_outlined,
 ];
@@ -174,12 +178,14 @@ List<String> sideBarTitlesAdmin = [
   'Patients',
   'Donors',
   'Hospitals',
-  'Dispensers',
+  'Dispensaries',
   'Organs',
+  'Regions',
 ];
 List<IconData> sideBarListIconsAdmin = [
   Icons.home_outlined,
   Icons.event_available_outlined,
+  Icons.library_books_outlined,
   Icons.library_books_outlined,
   Icons.library_books_outlined,
   Icons.library_books_outlined,
@@ -190,6 +196,7 @@ List<String> routeNamesAdmin = [
   AdminHospitalsListScreen.routeName,
   AdminDispensersListScreen.routeName,
   AdminOrgansListScreen.routeName,
+  AdminRegionsListScreen.routeName,
 ];
 
 var sideBarListTextStyle = TextStyle(
