@@ -113,12 +113,15 @@ class _HospitalInfoScreenState extends State<HospitalInfoScreen> {
 
   @override
   void initState() {
+    Provider.of<Hospitals>(context).fetchMyHospitalInfo();
+    Provider.of<Hospitals>(context).fetchAllDoctors();
     super.initState();
     _searchController.addListener(_onSearchChanged);
   }
 
   @override
   Widget build(BuildContext context) {
+    var myInfo = Provider.of<Hospitals>(context).fetchMyHospitalInfo();
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

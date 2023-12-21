@@ -14,17 +14,15 @@
 #define MAXDATASIZE 2500
 
 // HOSPITALS APIS
-
-void createQueue(int sockfd, const char *jwtToken, const char *name);
-void appointOperationToAnyPatient(int sockfd, const char *jwtToken, const char *doctorName, const char *doctorRole,
-    const char *time, const char *patientId, const char *donorId);
-void appointOperationByTheQueue(int sockfd, const char *jwtToken, const char *doctorName, const char *doctorRole,
-    const char *time, const char *donorId);
+void createDoctor(int sockfd, const char* jwtToken, const char* fullName, const char* email, const char* specialization);
+void createQueue(int sockfd, const char* jwtToken, const char* name);
+void appointOperationToAnyPatient(int sockfd, const char* jwtToken, const char* doctorId, const char* time, const char* patientId, const char* donorId);
+void appointOperationByTheQueue(int sockfd, const char* jwtToken, const char* doctorId, const char* time, const char* donorId);
 void cancelOperation(int sockfd, const char* jwtToken, const char* operationId);
 
 // DONORS AND PATIENTS APIS
 
-void applyToHospital(int sockfd, const char* jwtToken, const char *hospitalId);
+void applyToHospital(int sockfd, const char* jwtToken, const char* hospitalId);
 void applyToDispensary(int sockfd, const char* jwtToken, const char* dispensaryId, const char* phone);
 
 // DISPENSARY APIS
@@ -32,15 +30,26 @@ void applyToDispensary(int sockfd, const char* jwtToken, const char* dispensaryI
 void assignDateForPatientsAppointment(int sockfd, const char* jwtToken, const char* patientId, const char* time);
 void assignDateForDonorsAppointment(int sockfd, const char* jwtToken, const char* donorId, const char* time);
 
-void sendLoginRequest(int sockfd, const char *email, const char *password);
-void sendSignupRequest(int sockfd, const char *fullName, const char *email, const char *password, const char *rePassword, const char *role);
-void sendGetMyInfoRequest(int sockfd, const char *jwtToken);
+// ADMINS APIS
 
-int main(int argc, char *argv[]) {
+void adminCreateRegion(int sockfd, const char* jwtToken, const char* name);
+void adminCreatePatient(int sockfd, const char* jwtToken, const char* fullName, const char* email, const char* password);
+void adminCreateDonor(int sockfd, const char* jwtToken, const char* fullName, const char* email, const char* password);
+void adminCreateHospital(int sockfd, const char* jwtToken, const char* name, const char* specializationOrganId, const char* address);
+void adminCreateDispensary(int sockfd, const char* jwtToken, const char* name);
+void adminCreateOrgan(int sockfd, const char* jwtToken, const char* name);
+
+// USERS APIS
+
+void sendLoginRequest(int sockfd, const char* email, const char* password);
+void sendSignupRequest(int sockfd, const char* fullName, const char* email, const char* password, const char* rePassword, const char* role, const char* regionId);
+void sendGetMyInfoRequest(int sockfd, const char* jwtToken);
+
+int main(int argc, char* argv[]) {
 
     int sockfd, num;
     char buf[MAXDATASIZE];
-    struct hostent *he;
+    struct hostent* he;
     struct sockaddr_in server;
 
     if (argc < 2) {
@@ -60,31 +69,37 @@ int main(int argc, char *argv[]) {
 
     server.sin_family = AF_INET;
     server.sin_port = htons(PORT);
-    server.sin_addr = *((struct in_addr *)he->h_addr);
+    server.sin_addr = *((struct in_addr*)he->h_addr);
     bzero(&(server.sin_zero), 8);
 
-    if (connect(sockfd, (struct sockaddr *)&server, sizeof(struct sockaddr)) == -1) {
+    if (connect(sockfd, (struct sockaddr*)&server, sizeof(struct sockaddr)) == -1) {
         perror("connect");
         exit(1);
     }
-    
-    // HOSPITALS APIS
-    
-    if (argc == 5 && strcmp(argv[2], "createQueue") == 0) {
-    	printf("\nr s");
-    	createQueue(sockfd, argv[3], argv[4]);
-    	printf("\n r e\n");
-    }	
 
-    if (argc == 9 && strcmp(argv[2], "appointOperationToAnyPatient") == 0) {
+    // HOSPITALS APIS
+
+    if (argc == 7 && strcmp(argv[2], "createDoctor") == 0) {
         printf("\nr s");
-        appointOperationToAnyPatient(sockfd, argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
+        createDoctor(sockfd, argv[3], argv[4], argv[5], argv[6]);
         printf("\n r e\n");
     }
 
-    if (argc == 8 && strcmp(argv[2], "appointOperationByTheQueue") == 0) {
+    if (argc == 5 && strcmp(argv[2], "createQueue") == 0) {
         printf("\nr s");
-        appointOperationByTheQueue(sockfd, argv[3], argv[4], argv[5], argv[6], argv[7]);
+        createQueue(sockfd, argv[3], argv[4]);
+        printf("\n r e\n");
+    }
+
+    if (argc == 8 && strcmp(argv[2], "appointOperationToAnyPatient") == 0) {
+        printf("\nr s");
+        appointOperationToAnyPatient(sockfd, argv[3], argv[4], argv[5], argv[6], argv[7]);
+        printf("\n r e\n");
+    }
+
+    if (argc == 7 && strcmp(argv[2], "appointOperationByTheQueue") == 0) {
+        printf("\nr s");
+        appointOperationByTheQueue(sockfd, argv[3], argv[4], argv[5], argv[6]);
         printf("\n r e\n");
     }
 
@@ -122,6 +137,44 @@ int main(int argc, char *argv[]) {
         printf("\n r e\n");
     }
 
+    // ADMINS APIS
+
+    if (argc == 5 && strcmp(argv[2], "adminCreateRegion") == 0) {
+        printf("\nr s");
+        adminCreateRegion(sockfd, argv[3], argv[4]);
+        printf("\n r e\n");
+    }
+
+    if (argc == 7 && strcmp(argv[2], "adminCreatePatient") == 0) {
+        printf("\nr s");
+        adminCreatePatient(sockfd, argv[3], argv[4], argv[5], argv[6]);
+        printf("\n r e\n");
+    }
+
+    if (argc == 7 && strcmp(argv[2], "adminCreateDonor") == 0) {
+        printf("\nr s");
+        adminCreateDonor(sockfd, argv[3], argv[4], argv[5], argv[6]);
+        printf("\n r e\n");
+    }
+
+    if (argc == 7 && strcmp(argv[2], "adminCreateHospital") == 0) {
+        printf("\nr s");
+        adminCreateHospital(sockfd, argv[3], argv[4], argv[5], argv[6]);
+        printf("\n r e\n");
+    }
+
+    if (argc == 5 && strcmp(argv[2], "adminCreateOrgan") == 0) {
+        printf("\nr s");
+        adminCreateOrgan(sockfd, argv[3], argv[4]);
+        printf("\n r e\n");
+    }
+
+    if (argc == 5 && strcmp(argv[2], "adminCreateDispensary") == 0) {
+        printf("\nr s");
+        adminCreateDispensary(sockfd, argv[3], argv[4]);
+        printf("\n r e\n");
+    }
+
     // AUTHENTICATION APIS
 
     // Check for additional command-line arguments for login
@@ -130,15 +183,15 @@ int main(int argc, char *argv[]) {
     }
 
     // Check for additional command-line arguments for signup
-    if (argc == 8 && strcmp(argv[2], "signup") == 0) {
-    	printf("\nCalling signUp request\n");
-        sendSignupRequest(sockfd, argv[3], argv[4], argv[5], argv[6], argv[7]);
+    if (argc == 9 && strcmp(argv[2], "signup") == 0) {
+        printf("\nCalling signUp request\n");
+        sendSignupRequest(sockfd, argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
         printf("Request completed\n");
     }
-    
+
     // Check for additional command-line arguments for token request
     if (argc == 4 && strcmp(argv[2], "getMyInfo") == 0) {
-    	printf("\nMyInfo request");
+        printf("\nMyInfo request");
         sendGetMyInfoRequest(sockfd, argv[3]);
         printf("\nEnded\n");
     }
@@ -158,23 +211,34 @@ int main(int argc, char *argv[]) {
 
 // HOSPITALS APIS
 
-void createQueue(int sockfd, const char *jwtToken, const char *name) {
+void createDoctor(int sockfd, const char* jwtToken, const char* fullName, const char* email, const char* specialization) {
     printf("\nReached");
     char createRequest[MAXDATASIZE];
-    snprintf(createRequest, MAXDATASIZE, "createQueue \"%s\" \"%s\"", jwtToken, name);
-    
+    snprintf(createRequest, MAXDATASIZE, "createDoctor \"%s\" \"%s\" %s \"%s\"", jwtToken, fullName, email, specialization);
+
     if (send(sockfd, createRequest, strlen(createRequest), 0) == -1) {
         perror("send");
         exit(1);
     }
 }
 
-void appointOperationToAnyPatient(int sockfd, const char* jwtToken, const char* doctorName, const char* doctorRole,
+void createQueue(int sockfd, const char* jwtToken, const char* name) {
+    printf("\nReached");
+    char createRequest[MAXDATASIZE];
+    snprintf(createRequest, MAXDATASIZE, "createQueue \"%s\" \"%s\"", jwtToken, name);
+
+    if (send(sockfd, createRequest, strlen(createRequest), 0) == -1) {
+        perror("send");
+        exit(1);
+    }
+}
+
+void appointOperationToAnyPatient(int sockfd, const char* jwtToken, const char* doctorId,
     const char* time, const char* patientId, const char* donorId) {
 
     printf("\nReached");
     char createRequest[MAXDATASIZE];
-    snprintf(createRequest, MAXDATASIZE, "appointOperationToAnyPatient \"%s\" \"%s\" \"%s\" %s %s %s", jwtToken, doctorName, doctorRole, time, patientId, donorId);
+    snprintf(createRequest, MAXDATASIZE, "appointOperationToAnyPatient \"%s\" %s  %s %s %s", jwtToken, doctorId, time, patientId, donorId);
 
     if (send(sockfd, createRequest, strlen(createRequest), 0) == -1) {
         perror("send");
@@ -194,12 +258,12 @@ void cancelOperation(int sockfd, const char* jwtToken, const char* operationId) 
     }
 }
 
-void appointOperationByTheQueue(int sockfd, const char* jwtToken, const char* doctorName, const char* doctorRole,
+void appointOperationByTheQueue(int sockfd, const char* jwtToken, const char* doctorId,
     const char* time, const char* donorId) {
 
     printf("\nReached");
     char createRequest[MAXDATASIZE];
-    snprintf(createRequest, MAXDATASIZE, "appointOperationByTheQueue \"%s\" \"%s\" \"%s\" %s %s", jwtToken, doctorName, doctorRole, time, donorId);
+    snprintf(createRequest, MAXDATASIZE, "appointOperationByTheQueue \"%s\" %s %s %s", jwtToken, doctorId, time, donorId);
 
     if (send(sockfd, createRequest, strlen(createRequest), 0) == -1) {
         perror("send");
@@ -255,9 +319,77 @@ void assignDateForDonorsAppointment(int sockfd, const char* jwtToken, const char
     }
 }
 
+// ADMINS APIS
+
+void adminCreateRegion(int sockfd, const char* jwtToken, const char* name) {
+    printf("\nReached");
+    char createRequest[MAXDATASIZE];
+    snprintf(createRequest, MAXDATASIZE, "adminCreateRegion \"%s\" \"%s\"", jwtToken, name);
+
+    if (send(sockfd, createRequest, strlen(createRequest), 0) == -1) {
+        perror("send");
+        exit(1);
+    }
+}
+
+void adminCreatePatient(int sockfd, const char* jwtToken, const char* fullName, const char* email, const char* password) {
+    printf("\nReached");
+    char createRequest[MAXDATASIZE];
+    snprintf(createRequest, MAXDATASIZE, "adminCreatePatient \"%s\" \"%s\" %s %s", jwtToken, fullName, email, password);
+
+    if (send(sockfd, createRequest, strlen(createRequest), 0) == -1) {
+        perror("send");
+        exit(1);
+    }
+}
+
+void adminCreateDonor(int sockfd, const char* jwtToken, const char* fullName, const char* email, const char* password) {
+    printf("\nReached");
+    char createRequest[MAXDATASIZE];
+    snprintf(createRequest, MAXDATASIZE, "adminCreateDonor \"%s\" \"%s\" %s %s", jwtToken, fullName, email, password);
+
+    if (send(sockfd, createRequest, strlen(createRequest), 0) == -1) {
+        perror("send");
+        exit(1);
+    }
+}
+
+void adminCreateHospital(int sockfd, const char* jwtToken, const char* name, const char* specializationOrganId, const char* address) {
+    printf("\nReached");
+    char createRequest[MAXDATASIZE];
+    snprintf(createRequest, MAXDATASIZE, "adminCreateHospital \"%s\" \"%s\" %s \"%s\"", jwtToken, name, specializationOrganId, address);
+
+    if (send(sockfd, createRequest, strlen(createRequest), 0) == -1) {
+        perror("send");
+        exit(1);
+    }
+}
+
+void adminCreateDispensary(int sockfd, const char* jwtToken, const char* name) {
+    printf("\nReached");
+    char createRequest[MAXDATASIZE];
+    snprintf(createRequest, MAXDATASIZE, "adminCreateDispensary \"%s\" \"%s\"", jwtToken, name);
+
+    if (send(sockfd, createRequest, strlen(createRequest), 0) == -1) {
+        perror("send");
+        exit(1);
+    }
+}
+
+void adminCreateOrgan(int sockfd, const char* jwtToken, const char* name) {
+    printf("\nReached");
+    char createRequest[MAXDATASIZE];
+    snprintf(createRequest, MAXDATASIZE, "adminCreateOrgan \"%s\" \"%s\"", jwtToken, name);
+
+    if (send(sockfd, createRequest, strlen(createRequest), 0) == -1) {
+        perror("send");
+        exit(1);
+    }
+}
+
 // AUTHENTICATION APIS
 
-void sendLoginRequest(int sockfd, const char *email, const char *password) {
+void sendLoginRequest(int sockfd, const char* email, const char* password) {
     char loginRequest[MAXDATASIZE];
     snprintf(loginRequest, MAXDATASIZE, "login %s %s", email, password);
 
@@ -268,23 +400,23 @@ void sendLoginRequest(int sockfd, const char *email, const char *password) {
     }
 }
 
-void sendSignupRequest(int sockfd, const char *fullName, const char *email, const char *password, const char *rePassword, const char *role) {
+void sendSignupRequest(int sockfd, const char* fullName, const char* email, const char* password, const char* rePassword, const char* role, const char* regionId) {
     char signupRequest[MAXDATASIZE];
-    snprintf(signupRequest, MAXDATASIZE, "signup \"%s\" %s %s %s %s", fullName, email, password, rePassword, role);
+    snprintf(signupRequest, MAXDATASIZE, "signup \"%s\" %s %s %s %s %s", fullName, email, password, rePassword, role, regionId);
     printf("\nReached Here! %s, %s, %s, %s, %s ", fullName, email, password, rePassword, role);
 
     printf("\nSending signup request: %s\n", signupRequest); // Print the request being sent
 
     // Send the signup request to the server
     if (send(sockfd, signupRequest, strlen(signupRequest), 0) == -1) {
-        perror("send");     
+        perror("send");
         exit(1);
     }
 
     printf("\nSignup request sent\n"); // Print a message after the request is sent
 }
 
-void sendGetMyInfoRequest(int sockfd, const char *jwtToken) {
+void sendGetMyInfoRequest(int sockfd, const char* jwtToken) {
     char getMyInfoRequest[MAXDATASIZE];
     snprintf(getMyInfoRequest, MAXDATASIZE, "getMyInfo \"%s\"", jwtToken);
 

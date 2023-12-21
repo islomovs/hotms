@@ -15,82 +15,17 @@
 #define PORT 5555
 #define MAXDATASIZE 2500
 
-size_t writeCallback(void *contents, size_t size, size_t nmemb, char *output) {
+size_t writeCallback(void* contents, size_t size, size_t nmemb, char* output) {
     // Write the received data to the provided buffer
-    strcat(output, (char *)contents);
+    strcat(output, (char*)contents);
     return size * nmemb;
 }
 
 // HOSPITALS APIS
 
-void handleCreateQueue(int new_fd, const char *jwtToken, const char *name) {
+void handleCreateDoctor(int new_fd, const char* jwtToken, const char* fullName, const char* email, const char* specialization) {
     char apiUrl[MAXDATASIZE];
-    snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/hospitals/createQueue");
-
-    // Initialize libcurl
-    CURL *curl;
-    CURLcode res;
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-    curl = curl_easy_init();
-
-    // Check if libcurl initialization is successful
-    if (curl) {
-        // Set the POST parameters
-	struct curl_slist *headers = NULL;
-	headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
-
-	// Set the authorization header
-	char authorizationHeader[MAXDATASIZE];
-	snprintf(authorizationHeader, MAXDATASIZE, "Authorization: Bearer %s", jwtToken);
-	headers = curl_slist_append(headers, authorizationHeader);
-
-	// Prepare the POST data
-	char postData[MAXDATASIZE];
-	snprintf(postData, MAXDATASIZE, "name=%s", name);
-
-	// Set libcurl options
-	curl_easy_setopt(curl, CURLOPT_URL, apiUrl);
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
-	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
-
-        // Create a buffer to store the response
-        char responseBuffer[MAXDATASIZE];
-        responseBuffer[0] = '\0';
-
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, responseBuffer);
-
-        // Perform the POST request
-        res = curl_easy_perform(curl);
-
-        // Check for errors during the request
-        if (res != CURLE_OK) {
-            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-        } else {
-            // Print the received data (for testing purposes)
-            printf("Received response from API: %s\n", responseBuffer);
-
-            // Send the response back to the client
-            if (send(new_fd, responseBuffer, strlen(responseBuffer), 0) == -1) {
-                perror("send");
-                exit(1);
-            }
-        }
-
-        // Cleanup libcurl resources
-        curl_easy_cleanup(curl);
-        curl_global_cleanup();
-    } 
-    else {
-        fprintf(stderr, "Error initializing libcurl\n");
-    }
-}
-
-void handleAppointOperationToAnyPatient(int new_fd, const char* jwtToken, const char* doctorName, const char* doctorRole,
-    const char* time, const char* patientId, const char* donorId) {
-
-    char apiUrl[MAXDATASIZE];
-    snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/hospitals/appointOperationToAnyPatient");
+    snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/hospitals/createMyDoctor");
 
     // Initialize libcurl
     CURL* curl;
@@ -111,7 +46,7 @@ void handleAppointOperationToAnyPatient(int new_fd, const char* jwtToken, const 
 
         // Prepare the POST data
         char postData[MAXDATASIZE];
-        snprintf(postData, MAXDATASIZE, "doctorName=%s&doctorRole=%s&time=%s&patientId=%s&donorId=%s", doctorName, doctorRole, time, patientId, donorId);
+        snprintf(postData, MAXDATASIZE, "fullName=%s&email=%s&specialization=%s", fullName, email, specialization);
 
         // Set libcurl options
         curl_easy_setopt(curl, CURLOPT_URL, apiUrl);
@@ -152,7 +87,137 @@ void handleAppointOperationToAnyPatient(int new_fd, const char* jwtToken, const 
     }
 }
 
-void handleAppointOperationByTheQueue(int new_fd, const char* jwtToken, const char* doctorName, const char* doctorRole,
+void handleCreateQueue(int new_fd, const char* jwtToken, const char* name) {
+    char apiUrl[MAXDATASIZE];
+    snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/hospitals/createQueue");
+
+    // Initialize libcurl
+    CURL* curl;
+    CURLcode res;
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+
+    // Check if libcurl initialization is successful
+    if (curl) {
+        // Set the POST parameters
+        struct curl_slist* headers = NULL;
+        headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+
+        // Set the authorization header
+        char authorizationHeader[MAXDATASIZE];
+        snprintf(authorizationHeader, MAXDATASIZE, "Authorization: Bearer %s", jwtToken);
+        headers = curl_slist_append(headers, authorizationHeader);
+
+        // Prepare the POST data
+        char postData[MAXDATASIZE];
+        snprintf(postData, MAXDATASIZE, "name=%s", name);
+
+        // Set libcurl options
+        curl_easy_setopt(curl, CURLOPT_URL, apiUrl);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+
+        // Create a buffer to store the response
+        char responseBuffer[MAXDATASIZE];
+        responseBuffer[0] = '\0';
+
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, responseBuffer);
+
+        // Perform the POST request
+        res = curl_easy_perform(curl);
+
+        // Check for errors during the request
+        if (res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+        else {
+            // Print the received data (for testing purposes)
+            printf("Received response from API: %s\n", responseBuffer);
+
+            // Send the response back to the client
+            if (send(new_fd, responseBuffer, strlen(responseBuffer), 0) == -1) {
+                perror("send");
+                exit(1);
+            }
+        }
+
+        // Cleanup libcurl resources
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
+    }
+    else {
+        fprintf(stderr, "Error initializing libcurl\n");
+    }
+}
+
+void handleAppointOperationToAnyPatient(int new_fd, const char* jwtToken, const char* doctorId,
+    const char* time, const char* patientId, const char* donorId) {
+
+    char apiUrl[MAXDATASIZE];
+    snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/hospitals/appointOperationToAnyPatient");
+
+    // Initialize libcurl
+    CURL* curl;
+    CURLcode res;
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+
+    // Check if libcurl initialization is successful
+    if (curl) {
+        // Set the POST parameters
+        struct curl_slist* headers = NULL;
+        headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+
+        // Set the authorization header
+        char authorizationHeader[MAXDATASIZE];
+        snprintf(authorizationHeader, MAXDATASIZE, "Authorization: Bearer %s", jwtToken);
+        headers = curl_slist_append(headers, authorizationHeader);
+
+        // Prepare the POST data
+        char postData[MAXDATASIZE];
+        snprintf(postData, MAXDATASIZE, "doctorId=%s&time=%s&patientId=%s&donorId=%s", doctorId, time, patientId, donorId);
+
+        // Set libcurl options
+        curl_easy_setopt(curl, CURLOPT_URL, apiUrl);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+
+        // Create a buffer to store the response
+        char responseBuffer[MAXDATASIZE];
+        responseBuffer[0] = '\0';
+
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, responseBuffer);
+
+        // Perform the POST request
+        res = curl_easy_perform(curl);
+
+        // Check for errors during the request
+        if (res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+        else {
+            // Print the received data (for testing purposes)
+            printf("Received response from API: %s\n", responseBuffer);
+
+            // Send the response back to the client
+            if (send(new_fd, responseBuffer, strlen(responseBuffer), 0) == -1) {
+                perror("send");
+                exit(1);
+            }
+        }
+
+        // Cleanup libcurl resources
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
+    }
+    else {
+        fprintf(stderr, "Error initializing libcurl\n");
+    }
+}
+
+void handleAppointOperationByTheQueue(int new_fd, const char* jwtToken, const char* doctorId,
     const char* time, const char* donorId) {
 
     char apiUrl[MAXDATASIZE];
@@ -177,7 +242,7 @@ void handleAppointOperationByTheQueue(int new_fd, const char* jwtToken, const ch
 
         // Prepare the POST data
         char postData[MAXDATASIZE];
-        snprintf(postData, MAXDATASIZE, "doctorName=%s&doctorRole=%s&time=%s&donorId=%s", doctorName, doctorRole, time, donorId);
+        snprintf(postData, MAXDATASIZE, "doctorId=%s&time=%s&donorId=%s", doctorId, time, donorId);
 
         // Set libcurl options
         curl_easy_setopt(curl, CURLOPT_URL, apiUrl);
@@ -548,12 +613,13 @@ void handleAssignDateForDonorsAppointment(int new_fd, const char* jwtToken, cons
 }
 
 // USERS APIS
-void handleUploadProfilePhoto(int new_fd, const char *filename) {
+
+void handleUploadProfilePhoto(int new_fd, const char* filename) {
     char apiUrl[MAXDATASIZE];
     snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/users/uploadMyPhoto");
 
     // Initialize libcurl
-    CURL *curl;
+    CURL* curl;
     CURLcode res;
     curl_global_init(CURL_GLOBAL_DEFAULT);
     curl = curl_easy_init();
@@ -561,12 +627,12 @@ void handleUploadProfilePhoto(int new_fd, const char *filename) {
     // Check if libcurl initialization is successful
     if (curl) {
         // Prepare the form data
-        struct curl_httppost *formpost = NULL;
-        struct curl_httppost *lastptr = NULL;
+        struct curl_httppost* formpost = NULL;
+        struct curl_httppost* lastptr = NULL;
         curl_formadd(&formpost, &lastptr,
-                     CURLFORM_COPYNAME, "file",
-                     CURLFORM_FILE, filename,
-                     CURLFORM_END);
+            CURLFORM_COPYNAME, "file",
+            CURLFORM_FILE, filename,
+            CURLFORM_END);
 
         // Set libcurl options
         curl_easy_setopt(curl, CURLOPT_URL, apiUrl);
@@ -584,17 +650,18 @@ void handleUploadProfilePhoto(int new_fd, const char *filename) {
         curl_easy_cleanup(curl);
         curl_formfree(formpost);
         curl_global_cleanup();
-    } else {
+    }
+    else {
         fprintf(stderr, "Error initializing libcurl\n");
     }
 }
 
-void handleLoginRequest(int new_fd, const char *email, const char *password) {
+void handleLoginRequest(int new_fd, const char* email, const char* password) {
     char apiUrl[MAXDATASIZE];
     snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/login");
 
     // Initialize libcurl
-    CURL *curl;
+    CURL* curl;
     CURLcode res;
     curl_global_init(CURL_GLOBAL_DEFAULT);
     curl = curl_easy_init();
@@ -602,7 +669,7 @@ void handleLoginRequest(int new_fd, const char *email, const char *password) {
     // Check if libcurl initialization is successful
     if (curl) {
         // Set the POST parameters
-        struct curl_slist *headers = NULL;
+        struct curl_slist* headers = NULL;
         headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
 
         // Prepare the POST data
@@ -627,7 +694,8 @@ void handleLoginRequest(int new_fd, const char *email, const char *password) {
         // Check for errors during the request
         if (res != CURLE_OK) {
             fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-        } else {
+        }
+        else {
             // Print the received data (for testing purposes)
             printf("Received response from API: %s\n", responseBuffer);
 
@@ -641,18 +709,19 @@ void handleLoginRequest(int new_fd, const char *email, const char *password) {
         // Cleanup libcurl resources
         curl_easy_cleanup(curl);
         curl_global_cleanup();
-    } else {
+    }
+    else {
         fprintf(stderr, "Error initializing libcurl\n");
     }
 }
 
-void handleSignupRequest(int new_fd, const char *fullName, const char *email, const char *password, const char *rePassword, const char *role) {
+void handleSignupRequest(int new_fd, const char* fullName, const char* email, const char* password, const char* rePassword, const char* role, const char* regionId) {
     char apiUrl[MAXDATASIZE];
-    printf(fullName, email, password, rePassword, role);
+    printf(fullName, email, password, rePassword, role, regionId);
     snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/signUp");
 
     // Initialize libcurl
-    CURL *curl;
+    CURL* curl;
     CURLcode res;
     curl_global_init(CURL_GLOBAL_DEFAULT);
     curl = curl_easy_init();
@@ -660,13 +729,13 @@ void handleSignupRequest(int new_fd, const char *fullName, const char *email, co
     // Check if libcurl initialization is successful
     if (curl) {
         // Set the POST parameters
-        struct curl_slist *headers = NULL;
+        struct curl_slist* headers = NULL;
         headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
 
         // Prepare the POST data
         char postData[MAXDATASIZE];
-        snprintf(postData, MAXDATASIZE, "fullName=%s&email=%s&password=%s&rePassword=%s&role=%s",
-                 fullName, email, password, rePassword, role);
+        snprintf(postData, MAXDATASIZE, "fullName=%s&email=%s&password=%s&rePassword=%s&role=%s&regionId=%s",
+            fullName, email, password, rePassword, role, regionId);
 
         // Set libcurl options
         curl_easy_setopt(curl, CURLOPT_URL, apiUrl);
@@ -686,7 +755,8 @@ void handleSignupRequest(int new_fd, const char *fullName, const char *email, co
         // Check for errors during the request
         if (res != CURLE_OK) {
             fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-        } else {
+        }
+        else {
             // Print the received data (for testing purposes)
             printf("Received response from API: %s\n", responseBuffer);
 
@@ -700,18 +770,18 @@ void handleSignupRequest(int new_fd, const char *fullName, const char *email, co
         // Cleanup libcurl resources
         curl_easy_cleanup(curl);
         curl_global_cleanup();
-    } 
+    }
     else {
         fprintf(stderr, "Error initializing libcurl\n");
     }
 }
 
-void handleGetInfoRequest(int new_fd, const char *jwtToken) {
+void handleGetInfoRequest(int new_fd, const char* jwtToken) {
     char apiUrl[MAXDATASIZE];
-    snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/me");
+    snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/users/myInfo");
 
     // Initialize libcurl
-    CURL *curl;
+    CURL* curl;
     CURLcode res;
     curl_global_init(CURL_GLOBAL_DEFAULT);
     curl = curl_easy_init();
@@ -719,7 +789,7 @@ void handleGetInfoRequest(int new_fd, const char *jwtToken) {
     // Check if libcurl initialization is successful
     if (curl) {
         // Set the Authorization header with the JWT token
-        struct curl_slist *headers = NULL;
+        struct curl_slist* headers = NULL;
         char authHeader[MAXDATASIZE];
         snprintf(authHeader, MAXDATASIZE, "Authorization: Bearer %s", jwtToken);
         headers = curl_slist_append(headers, authHeader);
@@ -741,7 +811,8 @@ void handleGetInfoRequest(int new_fd, const char *jwtToken) {
         // Check for errors during the request
         if (res != CURLE_OK) {
             fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-        } else {
+        }
+        else {
             // Print the received data (for testing purposes)
             printf("Received response from API: %s\n", responseBuffer);
 
@@ -755,10 +826,404 @@ void handleGetInfoRequest(int new_fd, const char *jwtToken) {
         // Cleanup libcurl resources
         curl_easy_cleanup(curl);
         curl_global_cleanup();
-    } else {
+    }
+    else {
         fprintf(stderr, "Error initializing libcurl\n");
     }
 }
+
+// ADMINS APIS
+
+void handleAdminCreateRegion(int new_fd, const char* jwtToken, const char* name) {
+
+    char apiUrl[MAXDATASIZE];
+    snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/admins/regions/createRegion");
+
+    // Initialize libcurl
+    CURL* curl;
+    CURLcode res;
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+
+    // Check if libcurl initialization is successful
+    if (curl) {
+        // Set the POST parameters
+        struct curl_slist* headers = NULL;
+        headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+
+        // Set the authorization header
+        char authorizationHeader[MAXDATASIZE];
+        snprintf(authorizationHeader, MAXDATASIZE, "Authorization: Bearer %s", jwtToken);
+        headers = curl_slist_append(headers, authorizationHeader);
+
+        // Prepare the POST data
+        char postData[MAXDATASIZE];
+        snprintf(postData, MAXDATASIZE, "name=%s", name);
+
+        // Set libcurl options
+        curl_easy_setopt(curl, CURLOPT_URL, apiUrl);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+
+        // Create a buffer to store the response
+        char responseBuffer[MAXDATASIZE];
+        responseBuffer[0] = '\0';
+
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, responseBuffer);
+
+        // Perform the POST request
+        res = curl_easy_perform(curl);
+
+        // Check for errors during the request
+        if (res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+        else {
+            // Print the received data (for testing purposes)
+            printf("Received response from API: %s\n", responseBuffer);
+
+            // Send the response back to the client
+            if (send(new_fd, responseBuffer, strlen(responseBuffer), 0) == -1) {
+                perror("send");
+                exit(1);
+            }
+        }
+
+        // Cleanup libcurl resources
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
+    }
+    else {
+        fprintf(stderr, "Error initializing libcurl\n");
+    }
+}
+
+void handleAdminCreatePatient(int new_fd, const char* jwtToken, const char* fullName, const char* email, const char* password) {
+
+    char apiUrl[MAXDATASIZE];
+    snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/admins/patients/createPatient");
+
+    // Initialize libcurl
+    CURL* curl;
+    CURLcode res;
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+
+    // Check if libcurl initialization is successful
+    if (curl) {
+        // Set the POST parameters
+        struct curl_slist* headers = NULL;
+        headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+
+        // Set the authorization header
+        char authorizationHeader[MAXDATASIZE];
+        snprintf(authorizationHeader, MAXDATASIZE, "Authorization: Bearer %s", jwtToken);
+        headers = curl_slist_append(headers, authorizationHeader);
+
+        // Prepare the POST data
+        char postData[MAXDATASIZE];
+        snprintf(postData, MAXDATASIZE, "fullName=%s&email=%s&password=%s", fullName, email, password);
+
+        // Set libcurl options
+        curl_easy_setopt(curl, CURLOPT_URL, apiUrl);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+
+        // Create a buffer to store the response
+        char responseBuffer[MAXDATASIZE];
+        responseBuffer[0] = '\0';
+
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, responseBuffer);
+
+        // Perform the POST request
+        res = curl_easy_perform(curl);
+
+        // Check for errors during the request
+        if (res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+        else {
+            // Print the received data (for testing purposes)
+            printf("Received response from API: %s\n", responseBuffer);
+
+            // Send the response back to the client
+            if (send(new_fd, responseBuffer, strlen(responseBuffer), 0) == -1) {
+                perror("send");
+                exit(1);
+            }
+        }
+
+        // Cleanup libcurl resources
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
+    }
+    else {
+        fprintf(stderr, "Error initializing libcurl\n");
+    }
+}
+
+void handleAdminCreateDonor(int new_fd, const char* jwtToken, const char* fullName, const char* email, const char* password) {
+
+    char apiUrl[MAXDATASIZE];
+    snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/admins/donors/createDonor");
+
+    // Initialize libcurl
+    CURL* curl;
+    CURLcode res;
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+
+    // Check if libcurl initialization is successful
+    if (curl) {
+        // Set the POST parameters
+        struct curl_slist* headers = NULL;
+        headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+
+        // Set the authorization header
+        char authorizationHeader[MAXDATASIZE];
+        snprintf(authorizationHeader, MAXDATASIZE, "Authorization: Bearer %s", jwtToken);
+        headers = curl_slist_append(headers, authorizationHeader);
+
+        // Prepare the POST data
+        char postData[MAXDATASIZE];
+        snprintf(postData, MAXDATASIZE, "fullName=%s&email=%s&password=%s", fullName, email, password);
+
+        // Set libcurl options
+        curl_easy_setopt(curl, CURLOPT_URL, apiUrl);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+
+        // Create a buffer to store the response
+        char responseBuffer[MAXDATASIZE];
+        responseBuffer[0] = '\0';
+
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, responseBuffer);
+
+        // Perform the POST request
+        res = curl_easy_perform(curl);
+
+        // Check for errors during the request
+        if (res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+        else {
+            // Print the received data (for testing purposes)
+            printf("Received response from API: %s\n", responseBuffer);
+
+            // Send the response back to the client
+            if (send(new_fd, responseBuffer, strlen(responseBuffer), 0) == -1) {
+                perror("send");
+                exit(1);
+            }
+        }
+
+        // Cleanup libcurl resources
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
+    }
+    else {
+        fprintf(stderr, "Error initializing libcurl\n");
+    }
+}
+
+void handleAdminCreateHospital(int new_fd, const char* jwtToken, const char* name, const char* specializationOrganId, const char* address) {
+
+    char apiUrl[MAXDATASIZE];
+    snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/admins/hospitals/createHospital");
+
+    // Initialize libcurl
+    CURL* curl;
+    CURLcode res;
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+
+    // Check if libcurl initialization is successful
+    if (curl) {
+        // Set the POST parameters
+        struct curl_slist* headers = NULL;
+        headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+
+        // Set the authorization header
+        char authorizationHeader[MAXDATASIZE];
+        snprintf(authorizationHeader, MAXDATASIZE, "Authorization: Bearer %s", jwtToken);
+        headers = curl_slist_append(headers, authorizationHeader);
+
+        // Prepare the POST data
+        char postData[MAXDATASIZE];
+        snprintf(postData, MAXDATASIZE, "name=%s&specializationOrganId=%s&address=%s", name, specializationOrganId, address);
+
+        // Set libcurl options
+        curl_easy_setopt(curl, CURLOPT_URL, apiUrl);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+
+        // Create a buffer to store the response
+        char responseBuffer[MAXDATASIZE];
+        responseBuffer[0] = '\0';
+
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, responseBuffer);
+
+        // Perform the POST request
+        res = curl_easy_perform(curl);
+
+        // Check for errors during the request
+        if (res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+        else {
+            // Print the received data (for testing purposes)
+            printf("Received response from API: %s\n", responseBuffer);
+
+            // Send the response back to the client
+            if (send(new_fd, responseBuffer, strlen(responseBuffer), 0) == -1) {
+                perror("send");
+                exit(1);
+            }
+        }
+
+        // Cleanup libcurl resources
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
+    }
+    else {
+        fprintf(stderr, "Error initializing libcurl\n");
+    }
+}
+
+void handleAdminCreateOrgan(int new_fd, const char* jwtToken, const char* name) {
+
+    char apiUrl[MAXDATASIZE];
+    snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/admins/organs/createOrgan");
+
+    // Initialize libcurl
+    CURL* curl;
+    CURLcode res;
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+
+    // Check if libcurl initialization is successful
+    if (curl) {
+        // Set the POST parameters
+        struct curl_slist* headers = NULL;
+        headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+
+        // Set the authorization header
+        char authorizationHeader[MAXDATASIZE];
+        snprintf(authorizationHeader, MAXDATASIZE, "Authorization: Bearer %s", jwtToken);
+        headers = curl_slist_append(headers, authorizationHeader);
+
+        // Prepare the POST data
+        char postData[MAXDATASIZE];
+        snprintf(postData, MAXDATASIZE, "name=%s", name);
+
+        // Set libcurl options
+        curl_easy_setopt(curl, CURLOPT_URL, apiUrl);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+
+        // Create a buffer to store the response
+        char responseBuffer[MAXDATASIZE];
+        responseBuffer[0] = '\0';
+
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, responseBuffer);
+
+        // Perform the POST request
+        res = curl_easy_perform(curl);
+
+        // Check for errors during the request
+        if (res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+        else {
+            // Print the received data (for testing purposes)
+            printf("Received response from API: %s\n", responseBuffer);
+
+            // Send the response back to the client
+            if (send(new_fd, responseBuffer, strlen(responseBuffer), 0) == -1) {
+                perror("send");
+                exit(1);
+            }
+        }
+
+        // Cleanup libcurl resources
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
+    }
+    else {
+        fprintf(stderr, "Error initializing libcurl\n");
+    }
+}
+
+void handleAdminCreateDispensary(int new_fd, const char* jwtToken, const char* name) {
+
+    char apiUrl[MAXDATASIZE];
+    snprintf(apiUrl, MAXDATASIZE, "http://161.35.75.184:1234/api/admins/dispensary/createDispensary");
+
+    // Initialize libcurl
+    CURL* curl;
+    CURLcode res;
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+
+    // Check if libcurl initialization is successful
+    if (curl) {
+        // Set the POST parameters
+        struct curl_slist* headers = NULL;
+        headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+
+        // Set the authorization header
+        char authorizationHeader[MAXDATASIZE];
+        snprintf(authorizationHeader, MAXDATASIZE, "Authorization: Bearer %s", jwtToken);
+        headers = curl_slist_append(headers, authorizationHeader);
+
+        // Prepare the POST data
+        char postData[MAXDATASIZE];
+        snprintf(postData, MAXDATASIZE, "name=%s", name);
+
+        // Set libcurl options
+        curl_easy_setopt(curl, CURLOPT_URL, apiUrl);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+
+        // Create a buffer to store the response
+        char responseBuffer[MAXDATASIZE];
+        responseBuffer[0] = '\0';
+
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, responseBuffer);
+
+        // Perform the POST request
+        res = curl_easy_perform(curl);
+
+        // Check for errors during the request
+        if (res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }
+        else {
+            // Print the received data (for testing purposes)
+            printf("Received response from API: %s\n", responseBuffer);
+
+            // Send the response back to the client
+            if (send(new_fd, responseBuffer, strlen(responseBuffer), 0) == -1) {
+                perror("send");
+                exit(1);
+            }
+        }
+
+        // Cleanup libcurl resources
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
+    }
+    else {
+        fprintf(stderr, "Error initializing libcurl\n");
+    }
+}
+
 
 int main(void) {
     int sockfd, new_fd;
@@ -777,7 +1242,7 @@ int main(void) {
     server_addr.sin_addr.s_addr = INADDR_ANY;
     bzero(&(server_addr.sin_zero), 8);
 
-    if (bind(sockfd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) == -1) {
+    if (bind(sockfd, (struct sockaddr*)&server_addr, sizeof(struct sockaddr)) == -1) {
         perror("bind");
         exit(1);
     }
@@ -790,7 +1255,7 @@ int main(void) {
     while (1) {
         sin_size = sizeof(struct sockaddr_in);
 
-        if ((new_fd = accept(sockfd, (struct sockaddr *)&client_addr, &sin_size)) == -1) {
+        if ((new_fd = accept(sockfd, (struct sockaddr*)&client_addr, &sin_size)) == -1) {
             perror("accept");
             continue;
         }
@@ -808,25 +1273,34 @@ int main(void) {
         if (strncmp(buf, "createQueue", strlen("createQueue")) == 0) {
             char jwtToken[MAXDATASIZE], name[MAXDATASIZE];
             if (sscanf(buf, "createQueue \"%[^\"]\" \"%[^\"]\"", jwtToken, name) == 2) {
-            	handleCreateQueue(new_fd, jwtToken, name);
+                handleCreateQueue(new_fd, jwtToken, name);
             }
             else {
-		        printf("Invalid signup command format\n");
-	        }
-	    }
+                printf("Invalid signup command format\n");
+            }
+        }
+        else if (strncmp(buf, "createDoctor", strlen("createDoctor")) == 0) {
+            char jwtToken[MAXDATASIZE], fullName[MAXDATASIZE], email[MAXDATASIZE], specialization[MAXDATASIZE];
+            if (sscanf(buf, "createDoctor \"%[^\"]\" \"%[^\"]\" %s \"%[^\"]\"", jwtToken, fullName, email, specialization) == 4) {
+                handleCreateDoctor(new_fd, jwtToken, fullName, email, specialization);
+            }
+            else {
+                printf("Invalid createDoctor command format\n");
+            }
+        }
         else if (strncmp(buf, "appointOperationToAnyPatient", strlen("appointOperationByTheQueue")) == 0) {
-            char jwtToken[MAXDATASIZE], doctorName[MAXDATASIZE], doctorRole[MAXDATASIZE], time[MAXDATASIZE], patientId[MAXDATASIZE], donorId[MAXDATASIZE];
-            if (sscanf(buf, "appointOperationToAnyPatient \"%[^\"]\" \"%[^\"]\" \"%[^\"]\" %s %s %s", jwtToken, doctorName, doctorRole, time, patientId, donorId) == 6) {
-                handleAppointOperationToAnyPatient(new_fd, jwtToken, doctorName, doctorRole, time, patientId, donorId);
+            char jwtToken[MAXDATASIZE], doctorId[MAXDATASIZE], time[MAXDATASIZE], patientId[MAXDATASIZE], donorId[MAXDATASIZE];
+            if (sscanf(buf, "appointOperationToAnyPatient \"%[^\"]\" %s %s %s %s", jwtToken, doctorId, time, patientId, donorId) == 5) {
+                handleAppointOperationToAnyPatient(new_fd, jwtToken, doctorId, time, patientId, donorId);
             }
             else {
                 printf("Invalid appointOperationToAnyPatient command format\n");
             }
         }
         else if (strncmp(buf, "appointOperationByTheQueue", strlen("appointOperationByTheQueue")) == 0) {
-            char jwtToken[MAXDATASIZE], doctorName[MAXDATASIZE], doctorRole[MAXDATASIZE], time[MAXDATASIZE], donorId[MAXDATASIZE];
-            if (sscanf(buf, "appointOperationByTheQueue \"%[^\"]\" \"%[^\"]\" \"%[^\"]\" %s %s", jwtToken, doctorName, doctorRole, time, donorId) == 5) {
-                handleAppointOperationByTheQueue(new_fd, jwtToken, doctorName, doctorRole, time, donorId);
+            char jwtToken[MAXDATASIZE], doctorId[MAXDATASIZE], time[MAXDATASIZE], donorId[MAXDATASIZE];
+            if (sscanf(buf, "appointOperationByTheQueue \"%[^\"]\" %s %s %s", jwtToken, doctorId, time, donorId) == 4) {
+                handleAppointOperationByTheQueue(new_fd, jwtToken, doctorId, time, donorId);
             }
             else {
                 printf("Invalid appointOperationByTheQueue command format\n");
@@ -877,37 +1351,94 @@ int main(void) {
                 printf("Invalid assignDateForDonorsAppointment command format\n");
             }
         }
+        else if (strncmp(buf, "adminCreatePatient", strlen("adminCreatePatient")) == 0) {
+            char jwtToken[MAXDATASIZE], fullName[MAXDATASIZE], email[MAXDATASIZE], password[MAXDATASIZE];
+            if (sscanf(buf, "adminCreatePatient \"%[^\"]\" \"%[^\"]\" %s %s", jwtToken, fullName, email, password) == 4) {
+                handleAdminCreatePatient(new_fd, jwtToken, fullName, email, password);
+            }
+            else {
+                printf("Invalid adminCreatePatient command format\n");
+            }
+        }
+        else if (strncmp(buf, "adminCreateDonor", strlen("adminCreateDonor")) == 0) {
+            char jwtToken[MAXDATASIZE], fullName[MAXDATASIZE], email[MAXDATASIZE], password[MAXDATASIZE];
+            if (sscanf(buf, "adminCreateDonor \"%[^\"]\" \"%[^\"]\" %s %s", jwtToken, fullName, email, password) == 4) {
+                handleAdminCreateDonor(new_fd, jwtToken, fullName, email, password);
+            }
+            else {
+                printf("Invalid adminCreateDonor command format\n");
+            }
+        }
+        else if (strncmp(buf, "adminCreateHospital", strlen("adminCreateHospital")) == 0) {
+            char jwtToken[MAXDATASIZE], name[MAXDATASIZE], specializationOrganId[MAXDATASIZE], address[MAXDATASIZE];
+            if (sscanf(buf, "adminCreateHospital \"%[^\"]\" \"%[^\"]\" %s \"%[^\"]\"", jwtToken, name, specializationOrganId, address) == 4) {
+                handleAdminCreateHospital(new_fd, jwtToken, name, specializationOrganId, address);
+            }
+            else {
+                printf("Invalid adminCreateHospital command format\n");
+            }
+        }
+        else if (strncmp(buf, "adminCreateDispensary", strlen("adminCreateDispensary")) == 0) {
+            char jwtToken[MAXDATASIZE], name[MAXDATASIZE];
+            if (sscanf(buf, "adminCreateDispensary \"%[^\"]\" \"%[^\"]\"", jwtToken, name) == 2) {
+                handleAdminCreateDispensary(new_fd, jwtToken, name);
+            }
+            else {
+                printf("Invalid adminCreateDispensary command format\n");
+            }
+        }
+        else if (strncmp(buf, "adminCreateOrgan", strlen("adminCreateOrgan")) == 0) {
+            char jwtToken[MAXDATASIZE], name[MAXDATASIZE];
+            if (sscanf(buf, "adminCreateOrgan \"%[^\"]\" \"%[^\"]\"", jwtToken, name) == 2) {
+                handleAdminCreateOrgan(new_fd, jwtToken, name);
+            }
+            else {
+                printf("Invalid adminCreateOrgan command format\n");
+            }
+        }
+        else if (strncmp(buf, "adminCreateRegion", strlen("adminCreateRegion")) == 0) {
+        char jwtToken[MAXDATASIZE], name[MAXDATASIZE];
+        if (sscanf(buf, "adminCreateRegion \"%[^\"]\" \"%[^\"]\"", jwtToken, name) == 2) {
+            handleAdminCreateRegion(new_fd, jwtToken, name);
+        }
+        else {
+            printf("Invalid adminCreateRegion command format\n");
+        }
+        }
         else if (strncmp(buf, "login", 5) == 0) {
             // Extract email and password from the login command
             char email[MAXDATASIZE], password[MAXDATASIZE];
             if (sscanf(buf, "login %s %s", email, password) == 2) {
                 handleLoginRequest(new_fd, email, password);
-            } else {
+            }
+            else {
                 printf("Invalid login command format\n");
             }
         }
-	// Check for signup command
+        // Check for signup command
         else if (strncmp(buf, "signup", 6) == 0) {
-	    // Extract parameters from the signup command
-	    char fullName[MAXDATASIZE], email[MAXDATASIZE], password[MAXDATASIZE], rePassword[MAXDATASIZE], role[MAXDATASIZE];
+            // Extract parameters from the signup command
+            char fullName[MAXDATASIZE], email[MAXDATASIZE], password[MAXDATASIZE], rePassword[MAXDATASIZE], role[MAXDATASIZE], regionId[MAXDATASIZE];
 
-	    // Use a format specifier that allows spaces in the full name
-	    if (sscanf(buf, "signup \"%[^\"]\" %s %s %s %s", fullName, email, password, rePassword, role) == 5) {
-		  handleSignupRequest(new_fd, fullName, email, password, rePassword, role);
-	    } else {
-		  printf("Invalid signup command format\n");
-	    }
-	}
-	// Check for getInfo command
-	else if (strncmp(buf, "getMyInfo", 7) == 0) {
-	    // Extract the JWT token from the getInfo command
-	    char jwtToken[MAXDATASIZE];
-	    if (sscanf(buf, "getMyInfo \"%[^\"]\"", jwtToken) == 1) {
-		handleGetInfoRequest(new_fd, jwtToken);
-	    } else {
-		printf("Invalid getInfo command format\n");
-	    }
-	}
+            // Use a format specifier that allows spaces in the full name
+            if (sscanf(buf, "signup \"%[^\"]\" %s %s %s %s %s", fullName, email, password, rePassword, role, regionId) == 6) {
+                handleSignupRequest(new_fd, fullName, email, password, rePassword, role, regionId);
+            }
+            else {
+                printf("Invalid signup command format\n");
+            }
+        }
+        // Check for getInfo command
+        else if (strncmp(buf, "getMyInfo", 7) == 0) {
+            // Extract the JWT token from the getInfo command
+            char jwtToken[MAXDATASIZE];
+            if (sscanf(buf, "getMyInfo \"%[^\"]\"", jwtToken) == 1) {
+                handleGetInfoRequest(new_fd, jwtToken);
+            }
+            else {
+                printf("Invalid getInfo command format\n");
+            }
+        }
 
         close(new_fd);
     }

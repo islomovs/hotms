@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/providers/hospitals.dart';
+import 'package:provider/provider.dart';
 
 import '../constants/constants.dart';
 import '../widgets/sidebar_template.dart';
@@ -7,12 +9,29 @@ import '../widgets/patients_list_tile.dart';
 import '../widgets/list_headings_widget.dart';
 import './hospital_patient_screen.dart';
 
-class HospitalOperationsScreen extends StatelessWidget {
+class HospitalOperationsScreen extends StatefulWidget {
   static const routeName = '/hospital-operations-screen';
   const HospitalOperationsScreen({super.key});
 
   @override
+  State<HospitalOperationsScreen> createState() =>
+      _HospitalOperationsScreenState();
+}
+
+class _HospitalOperationsScreenState extends State<HospitalOperationsScreen> {
+  bool _isFetched = false;
+  @override
+  void didChangeDependencies() {
+    if (!_isFetched) {
+      Provider.of<Hospitals>(context).fetchAllOperations();
+      _isFetched = true;
+    }
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    var operations = Provider.of<Hospitals>(context).allOperations;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,15 +88,24 @@ class HospitalOperationsScreen extends StatelessWidget {
                         itemCount: 20,
                         itemBuilder: (context, index) {
                           return PatientsListTile(
-                            name: 'Saidova Sayka',
-                            subtitle: '21',
-                            diagnosisTitle: 'Cancer',
-                            diagnosisSubtitle: 'per annum',
-                            hospitalName: 'CareMed Clinic',
-                            city: 'Tashkent',
-                            date: '21 / 10 / 2024',
-                            subDate: 'Something...',
-                            urgencyRate: 'Emergency',
+                            name:
+                                operations[index].donorId!.userId!.fullName! ??
+                                    ' ',
+                            subtitle:
+                                operations[index].donorId!.birthday ?? ' ',
+                            diagnosisTitle:
+                                operations[index].patientId!.diagnosis! ?? ' ',
+                            diagnosisSubtitle: ' ',
+                            hospitalName:
+                                operations[index].hospitalId!.name! ?? ' ',
+                            city: operations[index].donorId!.city! ?? ' ',
+                            date: operations[index].operationTime! ?? ' ',
+                            subDate: ' ',
+                            status: operations[index]
+                                    .patientId!
+                                    .urgencyRate
+                                    .toString() ??
+                                ' ',
                             navigateFunc: () {
                               Navigator.of(context)
                                   .pushNamed(HospitalPatientScreen.routeName);

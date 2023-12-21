@@ -1,81 +1,41 @@
 import 'dart:convert';
-/// id : 2
-/// hospitalId : {"id":2,"creatorId":{"id":6,"email":"aziko@mail.ru","password":"aziko","role":"HOSPITAL","fullName":"Aziko","imageLink":null},"name":"Azikos Hospital","address":"Registan 5","specializationOrgans":{"id":1,"name":"lungs"},"description":"Azikos Hospital","imageLink":"Azikos Hospital_avatar.png","patients":[{"id":1,"userId":{"id":2,"email":"patient@mail.ru","password":"patient","role":"APPROVED_PATIENT","fullName":"Patient Patientov","imageLink":null},"phoneNumber":"998946805777","address":"Registan 5","birthday":"2023-01-01","city":"Tashkent","district":"Yunusabad","passportNumber":"AC2679449","pinfl":"1991919191","isApproved":true,"bloodType":"3 minus","rhFactor":"Minus","organReceives":{"id":1,"name":"lungs"},"urgencyRate":5,"diagnosis":"Diagnosis cancer","comments":"bla bla bla,bla bla bla"}]}
-/// patientId : {"id":1,"userId":{"id":2,"email":"patient@mail.ru","password":"patient","role":"APPROVED_PATIENT","fullName":"Patient Patientov","imageLink":null},"phoneNumber":"998946805777","address":"Registan 5","birthday":"2023-01-01","city":"Tashkent","district":"Yunusabad","passportNumber":"AC2679449","pinfl":"1991919191","isApproved":true,"bloodType":"3 minus","rhFactor":"Minus","organReceives":{"id":1,"name":"lungs"},"urgencyRate":5,"diagnosis":"Diagnosis cancer","comments":"bla bla bla,bla bla bla"}
-/// donorId : {"id":8,"userId":{"id":17,"email":"testdonor2@mail.ru","password":"testdonor2","role":"APPROVED_DONOR","fullName":"Test Donor 2","imageLink":null},"phoneNumber":"998946805777","address":"address","birthday":"2000-12-09","city":"fwafwa","district":"2121","lastDonated":null,"organDonates":{"id":1,"name":"lungs"},"passportNumber":"adwbf24","pinfl":"212","isApproved":true,"bloodType":"B","rhFactor":"Positive","isSmoker":null,"isDrinker":null,"donationPrice":12000.0,"comments":"fafw"}
-/// organId : {"id":1,"name":"lungs"}
-/// doctorName : "Doctor Who"
-/// doctorSpecialization : "Surgeon"
-/// operationTime : "2023-12-15 18:25"
-/// isDonorAccepted : null
-/// operationIsSuccessful : null
+/// hospitalId : {"id":2,"creatorId":{"id":6,"email":"aziko@mail.ru","password":"aziko","role":"HOSPITAL","fullName":"Aziko","imageLink":null,"regionId":{"id":1,"name":"Tashkent"}},"name":"Azikos Hospital","address":"Registan 5","specializationOrgans":{"id":1,"name":"Lungs"},"description":"Azikos Hospital","imageLink":"Azikos Hospital_avatar.png","patients":[{"id":8,"userId":{"id":30,"email":"TESTPATIENT@mail.ru","password":"TESTPATIENT","role":"APPROVED_PATIENT","fullName":"PATIETN","imageLink":null,"regionId":{"id":1,"name":"Tashkent"}},"phoneNumber":null,"address":null,"birthday":null,"city":null,"district":null,"passportNumber":null,"pinfl":null,"isApproved":true,"bloodType":null,"rhFactor":null,"organReceives":{"id":1,"name":"Lungs"},"urgencyRate":null,"diagnosis":null,"comments":null},{"id":1,"userId":{"id":2,"email":"patient@mail.ru","password":"patient","role":"APPROVED_PATIENT","fullName":"Patient Patientov","imageLink":null,"regionId":null},"phoneNumber":"998946805777","address":"Registan 5","birthday":"2023-01-01","city":"Tashkent","district":"Yunusabad","passportNumber":"AC2679449","pinfl":"1991919191","isApproved":true,"bloodType":"3 minus","rhFactor":"Minus","organReceives":{"id":1,"name":"Lungs"},"urgencyRate":5,"diagnosis":"Diagnosis cancer","comments":"bla bla bla,bla bla bla"}]}
+/// donorId : {"id":8,"userId":{"id":17,"email":"testdonor2@mail.ru","password":"testdonor2","role":"APPROVED_DONOR","fullName":"Test Donor 2","imageLink":null,"regionId":null},"phoneNumber":"998946805777","address":"address","birthday":"2000-12-09","city":"fwafwa","district":"2121","lastDonated":null,"organDonates":{"id":1,"name":"Lungs"},"passportNumber":"adwbf24","pinfl":"212","isApproved":true,"bloodType":"B","rhFactor":"Positive","isSmoker":null,"isDrinker":null,"donationPrice":12000.0,"comments":"fafw"}
+/// organId : {"id":1,"name":"Lungs"}
+/// price : 12000.0
 
-HospitalOperation hospitalOperationFromJson(String str) => HospitalOperation.fromJson(json.decode(str));
-String hospitalOperationToJson(HospitalOperation data) => json.encode(data.toJson());
-class HospitalOperation {
-  HospitalOperation({
-      this.id, 
+AllDonorsResponse allDonorsResponseFromJson(String str) => AllDonorsResponse.fromJson(json.decode(str));
+String allDonorsResponseToJson(AllDonorsResponse data) => json.encode(data.toJson());
+class AllDonorsResponse {
+  AllDonorsResponse({
       this.hospitalId, 
-      this.patientId, 
       this.donorId, 
       this.organId, 
-      this.doctorName, 
-      this.doctorSpecialization, 
-      this.operationTime, 
-      this.isDonorAccepted, 
-      this.operationIsSuccessful,});
+      this.price,});
 
-  HospitalOperation.fromJson(dynamic json) {
-    id = json['id'];
+  AllDonorsResponse.fromJson(dynamic json) {
     hospitalId = json['hospitalId'] != null ? HospitalId.fromJson(json['hospitalId']) : null;
-    patientId = json['patientId'] != null ? PatientId.fromJson(json['patientId']) : null;
     donorId = json['donorId'] != null ? DonorId.fromJson(json['donorId']) : null;
     organId = json['organId'] != null ? OrganId.fromJson(json['organId']) : null;
-    doctorName = json['doctorName'];
-    doctorSpecialization = json['doctorSpecialization'];
-    operationTime = json['operationTime'];
-    isDonorAccepted = json['isDonorAccepted'];
-    operationIsSuccessful = json['operationIsSuccessful'];
+    price = json['price'];
   }
-  num? id;
   HospitalId? hospitalId;
-  PatientId? patientId;
   DonorId? donorId;
   OrganId? organId;
-  String? doctorName;
-  String? doctorSpecialization;
-  String? operationTime;
-  dynamic isDonorAccepted;
-  bool? operationIsSuccessful;
-HospitalOperation copyWith({  num? id,
-  HospitalId? hospitalId,
-  PatientId? patientId,
+  num? price;
+AllDonorsResponse copyWith({  HospitalId? hospitalId,
   DonorId? donorId,
   OrganId? organId,
-  String? doctorName,
-  String? doctorSpecialization,
-  String? operationTime,
-  dynamic isDonorAccepted,
-  dynamic operationIsSuccessful,
-}) => HospitalOperation(  id: id ?? this.id,
-  hospitalId: hospitalId ?? this.hospitalId,
-  patientId: patientId ?? this.patientId,
+  num? price,
+}) => AllDonorsResponse(  hospitalId: hospitalId ?? this.hospitalId,
   donorId: donorId ?? this.donorId,
   organId: organId ?? this.organId,
-  doctorName: doctorName ?? this.doctorName,
-  doctorSpecialization: doctorSpecialization ?? this.doctorSpecialization,
-  operationTime: operationTime ?? this.operationTime,
-  isDonorAccepted: isDonorAccepted ?? this.isDonorAccepted,
-  operationIsSuccessful: operationIsSuccessful ?? this.operationIsSuccessful,
+  price: price ?? this.price,
 );
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['id'] = id;
     if (hospitalId != null) {
       map['hospitalId'] = hospitalId?.toJson();
-    }
-    if (patientId != null) {
-      map['patientId'] = patientId?.toJson();
     }
     if (donorId != null) {
       map['donorId'] = donorId?.toJson();
@@ -83,18 +43,14 @@ HospitalOperation copyWith({  num? id,
     if (organId != null) {
       map['organId'] = organId?.toJson();
     }
-    map['doctorName'] = doctorName;
-    map['doctorSpecialization'] = doctorSpecialization;
-    map['operationTime'] = operationTime;
-    map['isDonorAccepted'] = isDonorAccepted;
-    map['operationIsSuccessful'] = operationIsSuccessful;
+    map['price'] = price;
     return map;
   }
 
 }
 
 /// id : 1
-/// name : "lungs"
+/// name : "Lungs"
 
 OrganId organIdFromJson(String str) => OrganId.fromJson(json.decode(str));
 String organIdToJson(OrganId data) => json.encode(data.toJson());
@@ -124,14 +80,14 @@ OrganId copyWith({  num? id,
 }
 
 /// id : 8
-/// userId : {"id":17,"email":"testdonor2@mail.ru","password":"testdonor2","role":"APPROVED_DONOR","fullName":"Test Donor 2","imageLink":null}
+/// userId : {"id":17,"email":"testdonor2@mail.ru","password":"testdonor2","role":"APPROVED_DONOR","fullName":"Test Donor 2","imageLink":null,"regionId":null}
 /// phoneNumber : "998946805777"
 /// address : "address"
 /// birthday : "2000-12-09"
 /// city : "fwafwa"
 /// district : "2121"
 /// lastDonated : null
-/// organDonates : {"id":1,"name":"lungs"}
+/// organDonates : {"id":1,"name":"Lungs"}
 /// passportNumber : "adwbf24"
 /// pinfl : "212"
 /// isApproved : true
@@ -270,7 +226,7 @@ DonorId copyWith({  num? id,
 }
 
 /// id : 1
-/// name : "lungs"
+/// name : "Lungs"
 
 OrganDonates organDonatesFromJson(String str) => OrganDonates.fromJson(json.decode(str));
 String organDonatesToJson(OrganDonates data) => json.encode(data.toJson());
@@ -305,6 +261,7 @@ OrganDonates copyWith({  num? id,
 /// role : "APPROVED_DONOR"
 /// fullName : "Test Donor 2"
 /// imageLink : null
+/// regionId : null
 
 UserId userIdFromJson(String str) => UserId.fromJson(json.decode(str));
 String userIdToJson(UserId data) => json.encode(data.toJson());
@@ -315,7 +272,8 @@ class UserId {
       this.password, 
       this.role, 
       this.fullName, 
-      this.imageLink,});
+      this.imageLink, 
+      this.regionId,});
 
   UserId.fromJson(dynamic json) {
     id = json['id'];
@@ -324,6 +282,7 @@ class UserId {
     role = json['role'];
     fullName = json['fullName'];
     imageLink = json['imageLink'];
+    regionId = json['regionId'];
   }
   num? id;
   String? email;
@@ -331,18 +290,21 @@ class UserId {
   String? role;
   String? fullName;
   dynamic imageLink;
+  dynamic regionId;
 UserId copyWith({  num? id,
   String? email,
   String? password,
   String? role,
   String? fullName,
   dynamic imageLink,
+  dynamic regionId,
 }) => UserId(  id: id ?? this.id,
   email: email ?? this.email,
   password: password ?? this.password,
   role: role ?? this.role,
   fullName: fullName ?? this.fullName,
   imageLink: imageLink ?? this.imageLink,
+  regionId: regionId ?? this.regionId,
 );
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -352,189 +314,20 @@ UserId copyWith({  num? id,
     map['role'] = role;
     map['fullName'] = fullName;
     map['imageLink'] = imageLink;
-    return map;
-  }
-
-}
-
-/// id : 1
-/// userId : {"id":2,"email":"patient@mail.ru","password":"patient","role":"APPROVED_PATIENT","fullName":"Patient Patientov","imageLink":null}
-/// phoneNumber : "998946805777"
-/// address : "Registan 5"
-/// birthday : "2023-01-01"
-/// city : "Tashkent"
-/// district : "Yunusabad"
-/// passportNumber : "AC2679449"
-/// pinfl : "1991919191"
-/// isApproved : true
-/// bloodType : "3 minus"
-/// rhFactor : "Minus"
-/// organReceives : {"id":1,"name":"lungs"}
-/// urgencyRate : 5
-/// diagnosis : "Diagnosis cancer"
-/// comments : "bla bla bla,bla bla bla"
-
-PatientId patientIdFromJson(String str) => PatientId.fromJson(json.decode(str));
-String patientIdToJson(PatientId data) => json.encode(data.toJson());
-class PatientId {
-  PatientId({
-      this.id, 
-      this.userId, 
-      this.phoneNumber, 
-      this.address, 
-      this.birthday, 
-      this.city, 
-      this.district, 
-      this.passportNumber, 
-      this.pinfl, 
-      this.isApproved, 
-      this.bloodType, 
-      this.rhFactor, 
-      this.organReceives, 
-      this.urgencyRate, 
-      this.diagnosis, 
-      this.comments,});
-
-  PatientId.fromJson(dynamic json) {
-    id = json['id'];
-    userId = json['userId'] != null ? UserId.fromJson(json['userId']) : null;
-    phoneNumber = json['phoneNumber'];
-    address = json['address'];
-    birthday = json['birthday'];
-    city = json['city'];
-    district = json['district'];
-    passportNumber = json['passportNumber'];
-    pinfl = json['pinfl'];
-    isApproved = json['isApproved'];
-    bloodType = json['bloodType'];
-    rhFactor = json['rhFactor'];
-    organReceives = json['organReceives'] != null ? OrganReceives.fromJson(json['organReceives']) : null;
-    urgencyRate = json['urgencyRate'];
-    diagnosis = json['diagnosis'];
-    comments = json['comments'];
-  }
-  num? id;
-  UserId? userId;
-  String? phoneNumber;
-  String? address;
-  String? birthday;
-  String? city;
-  String? district;
-  String? passportNumber;
-  String? pinfl;
-  bool? isApproved;
-  String? bloodType;
-  String? rhFactor;
-  OrganReceives? organReceives;
-  num? urgencyRate;
-  String? diagnosis;
-  String? comments;
-PatientId copyWith({  num? id,
-  UserId? userId,
-  String? phoneNumber,
-  String? address,
-  String? birthday,
-  String? city,
-  String? district,
-  String? passportNumber,
-  String? pinfl,
-  bool? isApproved,
-  String? bloodType,
-  String? rhFactor,
-  OrganReceives? organReceives,
-  num? urgencyRate,
-  String? diagnosis,
-  String? comments,
-}) => PatientId(  id: id ?? this.id,
-  userId: userId ?? this.userId,
-  phoneNumber: phoneNumber ?? this.phoneNumber,
-  address: address ?? this.address,
-  birthday: birthday ?? this.birthday,
-  city: city ?? this.city,
-  district: district ?? this.district,
-  passportNumber: passportNumber ?? this.passportNumber,
-  pinfl: pinfl ?? this.pinfl,
-  isApproved: isApproved ?? this.isApproved,
-  bloodType: bloodType ?? this.bloodType,
-  rhFactor: rhFactor ?? this.rhFactor,
-  organReceives: organReceives ?? this.organReceives,
-  urgencyRate: urgencyRate ?? this.urgencyRate,
-  diagnosis: diagnosis ?? this.diagnosis,
-  comments: comments ?? this.comments,
-);
-  Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['id'] = id;
-    if (userId != null) {
-      map['userId'] = userId?.toJson();
-    }
-    map['phoneNumber'] = phoneNumber;
-    map['address'] = address;
-    map['birthday'] = birthday;
-    map['city'] = city;
-    map['district'] = district;
-    map['passportNumber'] = passportNumber;
-    map['pinfl'] = pinfl;
-    map['isApproved'] = isApproved;
-    map['bloodType'] = bloodType;
-    map['rhFactor'] = rhFactor;
-    if (organReceives != null) {
-      map['organReceives'] = organReceives?.toJson();
-    }
-    map['urgencyRate'] = urgencyRate;
-    map['diagnosis'] = diagnosis;
-    map['comments'] = comments;
-    return map;
-  }
-
-}
-
-/// id : 1
-/// name : "lungs"
-
-OrganReceives organReceivesFromJson(String str) => OrganReceives.fromJson(json.decode(str));
-String organReceivesToJson(OrganReceives data) => json.encode(data.toJson());
-class OrganReceives {
-  OrganReceives({
-      this.id, 
-      this.name,});
-
-  OrganReceives.fromJson(dynamic json) {
-    id = json['id'];
-    name = json['name'];
-  }
-  num? id;
-  String? name;
-OrganReceives copyWith({  num? id,
-  String? name,
-}) => OrganReceives(  id: id ?? this.id,
-  name: name ?? this.name,
-);
-  Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['id'] = id;
-    map['name'] = name;
+    map['regionId'] = regionId;
     return map;
   }
 
 }
 
 /// id : 2
-/// email : "patient@mail.ru"
-/// password : "patient"
-/// role : "APPROVED_PATIENT"
-/// fullName : "Patient Patientov"
-/// imageLink : null
-
-
-/// id : 2
-/// creatorId : {"id":6,"email":"aziko@mail.ru","password":"aziko","role":"HOSPITAL","fullName":"Aziko","imageLink":null}
+/// creatorId : {"id":6,"email":"aziko@mail.ru","password":"aziko","role":"HOSPITAL","fullName":"Aziko","imageLink":null,"regionId":{"id":1,"name":"Tashkent"}}
 /// name : "Azikos Hospital"
 /// address : "Registan 5"
-/// specializationOrgans : {"id":1,"name":"lungs"}
+/// specializationOrgans : {"id":1,"name":"Lungs"}
 /// description : "Azikos Hospital"
 /// imageLink : "Azikos Hospital_avatar.png"
-/// patients : [{"id":1,"userId":{"id":2,"email":"patient@mail.ru","password":"patient","role":"APPROVED_PATIENT","fullName":"Patient Patientov","imageLink":null},"phoneNumber":"998946805777","address":"Registan 5","birthday":"2023-01-01","city":"Tashkent","district":"Yunusabad","passportNumber":"AC2679449","pinfl":"1991919191","isApproved":true,"bloodType":"3 minus","rhFactor":"Minus","organReceives":{"id":1,"name":"lungs"},"urgencyRate":5,"diagnosis":"Diagnosis cancer","comments":"bla bla bla,bla bla bla"}]
+/// patients : [{"id":8,"userId":{"id":30,"email":"TESTPATIENT@mail.ru","password":"TESTPATIENT","role":"APPROVED_PATIENT","fullName":"PATIETN","imageLink":null,"regionId":{"id":1,"name":"Tashkent"}},"phoneNumber":null,"address":null,"birthday":null,"city":null,"district":null,"passportNumber":null,"pinfl":null,"isApproved":true,"bloodType":null,"rhFactor":null,"organReceives":{"id":1,"name":"Lungs"},"urgencyRate":null,"diagnosis":null,"comments":null},{"id":1,"userId":{"id":2,"email":"patient@mail.ru","password":"patient","role":"APPROVED_PATIENT","fullName":"Patient Patientov","imageLink":null,"regionId":null},"phoneNumber":"998946805777","address":"Registan 5","birthday":"2023-01-01","city":"Tashkent","district":"Yunusabad","passportNumber":"AC2679449","pinfl":"1991919191","isApproved":true,"bloodType":"3 minus","rhFactor":"Minus","organReceives":{"id":1,"name":"Lungs"},"urgencyRate":5,"diagnosis":"Diagnosis cancer","comments":"bla bla bla,bla bla bla"}]
 
 HospitalId hospitalIdFromJson(String str) => HospitalId.fromJson(json.decode(str));
 String hospitalIdToJson(HospitalId data) => json.encode(data.toJson());
@@ -610,22 +403,22 @@ HospitalId copyWith({  num? id,
 
 }
 
-/// id : 1
-/// userId : {"id":2,"email":"patient@mail.ru","password":"patient","role":"APPROVED_PATIENT","fullName":"Patient Patientov","imageLink":null}
-/// phoneNumber : "998946805777"
-/// address : "Registan 5"
-/// birthday : "2023-01-01"
-/// city : "Tashkent"
-/// district : "Yunusabad"
-/// passportNumber : "AC2679449"
-/// pinfl : "1991919191"
+/// id : 8
+/// userId : {"id":30,"email":"TESTPATIENT@mail.ru","password":"TESTPATIENT","role":"APPROVED_PATIENT","fullName":"PATIETN","imageLink":null,"regionId":{"id":1,"name":"Tashkent"}}
+/// phoneNumber : null
+/// address : null
+/// birthday : null
+/// city : null
+/// district : null
+/// passportNumber : null
+/// pinfl : null
 /// isApproved : true
-/// bloodType : "3 minus"
-/// rhFactor : "Minus"
-/// organReceives : {"id":1,"name":"lungs"}
-/// urgencyRate : 5
-/// diagnosis : "Diagnosis cancer"
-/// comments : "bla bla bla,bla bla bla"
+/// bloodType : null
+/// rhFactor : null
+/// organReceives : {"id":1,"name":"Lungs"}
+/// urgencyRate : null
+/// diagnosis : null
+/// comments : null
 
 Patients patientsFromJson(String str) => Patients.fromJson(json.decode(str));
 String patientsToJson(Patients data) => json.encode(data.toJson());
@@ -668,36 +461,36 @@ class Patients {
   }
   num? id;
   UserId? userId;
-  String? phoneNumber;
-  String? address;
-  String? birthday;
-  String? city;
-  String? district;
-  String? passportNumber;
-  String? pinfl;
+  dynamic phoneNumber;
+  dynamic address;
+  dynamic birthday;
+  dynamic city;
+  dynamic district;
+  dynamic passportNumber;
+  dynamic pinfl;
   bool? isApproved;
-  String? bloodType;
-  String? rhFactor;
+  dynamic bloodType;
+  dynamic rhFactor;
   OrganReceives? organReceives;
-  num? urgencyRate;
-  String? diagnosis;
-  String? comments;
+  dynamic urgencyRate;
+  dynamic diagnosis;
+  dynamic comments;
 Patients copyWith({  num? id,
   UserId? userId,
-  String? phoneNumber,
-  String? address,
-  String? birthday,
-  String? city,
-  String? district,
-  String? passportNumber,
-  String? pinfl,
+  dynamic phoneNumber,
+  dynamic address,
+  dynamic birthday,
+  dynamic city,
+  dynamic district,
+  dynamic passportNumber,
+  dynamic pinfl,
   bool? isApproved,
-  String? bloodType,
-  String? rhFactor,
+  dynamic bloodType,
+  dynamic rhFactor,
   OrganReceives? organReceives,
-  num? urgencyRate,
-  String? diagnosis,
-  String? comments,
+  dynamic urgencyRate,
+  dynamic diagnosis,
+  dynamic comments,
 }) => Patients(  id: id ?? this.id,
   userId: userId ?? this.userId,
   phoneNumber: phoneNumber ?? this.phoneNumber,
@@ -743,19 +536,77 @@ Patients copyWith({  num? id,
 }
 
 /// id : 1
-/// name : "lungs"
+/// name : "Lungs"
 
+OrganReceives organReceivesFromJson(String str) => OrganReceives.fromJson(json.decode(str));
+String organReceivesToJson(OrganReceives data) => json.encode(data.toJson());
+class OrganReceives {
+  OrganReceives({
+      this.id, 
+      this.name,});
 
-/// id : 2
-/// email : "patient@mail.ru"
-/// password : "patient"
+  OrganReceives.fromJson(dynamic json) {
+    id = json['id'];
+    name = json['name'];
+  }
+  num? id;
+  String? name;
+OrganReceives copyWith({  num? id,
+  String? name,
+}) => OrganReceives(  id: id ?? this.id,
+  name: name ?? this.name,
+);
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['id'] = id;
+    map['name'] = name;
+    return map;
+  }
+
+}
+
+/// id : 30
+/// email : "TESTPATIENT@mail.ru"
+/// password : "TESTPATIENT"
 /// role : "APPROVED_PATIENT"
-/// fullName : "Patient Patientov"
+/// fullName : "PATIETN"
 /// imageLink : null
+/// regionId : {"id":1,"name":"Tashkent"}
+
 
 
 /// id : 1
-/// name : "lungs"
+/// name : "Tashkent"
+
+RegionId regionIdFromJson(String str) => RegionId.fromJson(json.decode(str));
+String regionIdToJson(RegionId data) => json.encode(data.toJson());
+class RegionId {
+  RegionId({
+      this.id, 
+      this.name,});
+
+  RegionId.fromJson(dynamic json) {
+    id = json['id'];
+    name = json['name'];
+  }
+  num? id;
+  String? name;
+RegionId copyWith({  num? id,
+  String? name,
+}) => RegionId(  id: id ?? this.id,
+  name: name ?? this.name,
+);
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['id'] = id;
+    map['name'] = name;
+    return map;
+  }
+
+}
+
+/// id : 1
+/// name : "Lungs"
 
 SpecializationOrgans specializationOrgansFromJson(String str) => SpecializationOrgans.fromJson(json.decode(str));
 String specializationOrgansToJson(SpecializationOrgans data) => json.encode(data.toJson());
@@ -790,6 +641,7 @@ SpecializationOrgans copyWith({  num? id,
 /// role : "HOSPITAL"
 /// fullName : "Aziko"
 /// imageLink : null
+/// regionId : {"id":1,"name":"Tashkent"}
 
 CreatorId creatorIdFromJson(String str) => CreatorId.fromJson(json.decode(str));
 String creatorIdToJson(CreatorId data) => json.encode(data.toJson());
@@ -800,7 +652,8 @@ class CreatorId {
       this.password, 
       this.role, 
       this.fullName, 
-      this.imageLink,});
+      this.imageLink, 
+      this.regionId,});
 
   CreatorId.fromJson(dynamic json) {
     id = json['id'];
@@ -809,6 +662,7 @@ class CreatorId {
     role = json['role'];
     fullName = json['fullName'];
     imageLink = json['imageLink'];
+    regionId = json['regionId'] != null ? RegionId.fromJson(json['regionId']) : null;
   }
   num? id;
   String? email;
@@ -816,18 +670,21 @@ class CreatorId {
   String? role;
   String? fullName;
   dynamic imageLink;
+  RegionId? regionId;
 CreatorId copyWith({  num? id,
   String? email,
   String? password,
   String? role,
   String? fullName,
   dynamic imageLink,
+  RegionId? regionId,
 }) => CreatorId(  id: id ?? this.id,
   email: email ?? this.email,
   password: password ?? this.password,
   role: role ?? this.role,
   fullName: fullName ?? this.fullName,
   imageLink: imageLink ?? this.imageLink,
+  regionId: regionId ?? this.regionId,
 );
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -837,7 +694,13 @@ CreatorId copyWith({  num? id,
     map['role'] = role;
     map['fullName'] = fullName;
     map['imageLink'] = imageLink;
+    if (regionId != null) {
+      map['regionId'] = regionId?.toJson();
+    }
     return map;
   }
 
 }
+
+/// id : 1
+/// name : "Tashkent"

@@ -20,6 +20,7 @@ class HospitalPatientScreen extends StatefulWidget {
 class _HospitalPatientScreenState extends State<HospitalPatientScreen> {
   @override
   void initState() {
+    _selectedOrgan = widget.model.patientId?.organReceives?.name;
     _enteredFName = widget.model.patientId?.userId?.fullName ?? '';
     _enteredPhoneNumber = widget.model.patientId?.phoneNumber ?? '';
     _enteredAddress = widget.model.patientId?.address ?? '';
@@ -30,7 +31,10 @@ class _HospitalPatientScreenState extends State<HospitalPatientScreen> {
     _enteredPINFL = widget.model.patientId?.pinfl ?? '';
     _selectedTypeOfDonation = '';
     _selectedRHFactor = widget.model.patientId?.rhFactor ?? '';
-    _currentSliderValue = 0;
+    _enteredComment = widget.model.patientId?.comments ?? '';
+    _currentSliderValue = (widget.model.patientId?.urgencyRate ?? 0) > 2
+        ? 2
+        : widget.model.patientId?.urgencyRate?.toDouble() ?? 0;
     super.initState();
   }
 
@@ -78,7 +82,9 @@ class _HospitalPatientScreenState extends State<HospitalPatientScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      HeadingWidget(title: 'Patient information'),
+                      HeadingWidget(
+                          title:
+                              ' Patient information'),
                       const SizedBox(height: 20),
                       Form(
                         key: _formKey,
@@ -99,10 +105,12 @@ class _HospitalPatientScreenState extends State<HospitalPatientScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               TextFormField(
+                                initialValue: widget.model.patientId?.diagnosis,
                                 style: originalTextStyle,
                                 cursorColor: const Color(0xFF2B2B2B),
                                 decoration: InputDecoration(
-                                  labelText: 'Diagnosis (organ)',
+                                  labelText:
+                                      'Diagnosis (organ)                                  ',
                                   labelStyle: labelTextStyle,
                                   enabledBorder: enabledBorderParams,
                                   focusedBorder: focusedBorderParams,
@@ -196,8 +204,14 @@ class _HospitalPatientScreenState extends State<HospitalPatientScreen> {
                         child: AcceptButton(
                           title: 'Next',
                           onTapFunc: () {
-                            Navigator.of(context).pushNamed(
-                                HospitalAssignOperationScreen.routeName);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    HospitalAssignOperationScreen(
+                                        id: widget.model.patientId?.id.toString() ?? ''),
+                              ),
+                            );
                           },
                         ),
                       ),

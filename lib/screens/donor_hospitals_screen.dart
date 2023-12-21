@@ -50,7 +50,7 @@ class _DonorHospitalsScreenState extends State<DonorHospitalsScreen> {
       'bash',
       [
         '-c',
-        'cd $workingDirectory && ./client $localhost applyToHospital $extractedToken $hospitalId'
+        'cd $workingDirectory && ./client $localhost applyToHospitalDonor $extractedToken $hospitalId'
       ],
     );
 

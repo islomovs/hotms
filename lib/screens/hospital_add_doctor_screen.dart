@@ -1,12 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:myapp/screens/hospital_doctors_screen.dart';
+import 'package:provider/provider.dart';
 
 import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
 import './admin_patients_list_screen.dart';
+import '../providers/hospitals.dart';
 
 class HospitalAddDoctorScreen extends StatefulWidget {
   static const routeName = '/hospital-add-doctor-screen';
@@ -22,77 +25,26 @@ class _HospitalAddDoctorScreenState extends State<HospitalAddDoctorScreen> {
   String? _enteredEmail;
   String? _enteredRole;
 
-  void _saveFunc() {
-    Navigator.of(context).popUntil(
-      ModalRoute.withName(AdminPatientsListScreen.routeName),
-    );
-  }
-
-  int smth = 1;
-  void _submitData() async {
-    var workingDirectory =
-        '~/Desktop/myapp/home/sardorchik/Desktop/myapp/lib/screens/';
-
-    // Change to the working directory and run the C program
-    var loginResult = await Process.run(
-      'bash',
-      [
-        '-c',
-        'cd $workingDirectory && ./client $localhost adminCreatePatient $extractedToken $_enteredName $_enteredEmail $_enteredRole'
-      ],
-    );
-
-    // After running the C program
-    if (loginResult.exitCode == 0) {
-      // Success logic
-      print('C program output: ${loginResult.stdout}');
-
-      // Extracting the JWT token
-      String output = loginResult.stdout;
-      String tokenPrefix = "server message: ";
-      int startIndex = output.indexOf(tokenPrefix);
-      if (startIndex != -1) {
-        startIndex += tokenPrefix.length;
-        String jwtToken = output.substring(startIndex).trim();
-
-        // Assign to a new variable and print
-        extractedToken = jwtToken;
-        print('Extracted JWT Token: $extractedToken');
-
-        var infoResult = await Process.run(
-          'bash',
-          [
-            '-c',
-            'cd $workingDirectory && ./client $localhost getMyInfo "$extractedToken"'
-          ],
-        );
-
-        if (infoResult.exitCode == 0) {
-          print('C program output: ${infoResult.stdout}');
-
-          // Regular expression to find the role
-          RegExp regExp = RegExp(r'"role":"([^"]+)"');
-          var matches = regExp.allMatches(infoResult.stdout);
-
-          if (matches.isNotEmpty) {
-            // Extract the role
-            extractedRole = matches.first.group(1)!;
-            print('Extracted Role: $extractedRole');
-          }
+  void _saveFunc() async {
+    try {
+      await Provider.of<Hospitals>(context)
+          .createDoctor(_enteredName!, _enteredEmail!, _enteredRole!)
+          .then((response) {
+        if (response.statusCode == 200) {
+          print('Doctor created: ${response.body}');
+          Navigator.of(context).popUntil(
+            ModalRoute.withName(HospitalDoctorsListScreen.routeName),
+          );
         } else {
-          print('C program error: ${infoResult.stderr}');
+          print('Failed to create doctor. Status code: ${response.statusCode}');
         }
-      } else {
-        // Error handling
-        print('C program error: ${loginResult.stderr}');
-      }
-    } else {
-      // Error handling
-      print('C program error: ${loginResult.stderr}');
+      }).catchError((error) {
+        print('Error: $error');
+      });
+    } catch (e) {
+      // Handle any exceptions
+      print('Error: $e');
     }
-    Navigator.of(context).popUntil(
-      ModalRoute.withName(AdminPatientsListScreen.routeName),
-    );
   }
 
   @override
@@ -104,11 +56,11 @@ class _HospitalAddDoctorScreenState extends State<HospitalAddDoctorScreen> {
           SidebarTemplate(
             title: 'Nigina Roziya',
             email: 'nigina@roziya.com',
-            sideBarTitles: sideBarTitlesAdmin,
-            sideBarListIcons: sideBarListIconsAdmin,
+            sideBarTitles: sideBarTitlesHospital,
+            sideBarListIcons: sideBarListIconsHospital,
             sideBarTitlesBottom: sideBarTitlesBottom,
             sideBarListIconsBottom: sideBarListIconsBottom,
-            routeNames: routeNamesAdmin,
+            routeNames: routeNamesHospital,
             unselectedRoutes: const [HospitalAddDoctorScreen.routeName],
           ),
           Expanded(
@@ -171,7 +123,7 @@ class _HospitalAddDoctorScreenState extends State<HospitalAddDoctorScreen> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: AcceptButton(
-                            title: 'Save',
+                            title: 'Create',
                             onTapFunc: _saveFunc,
                           ),
                         ),

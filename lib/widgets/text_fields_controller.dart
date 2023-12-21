@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart' hide DatePickerTheme;
 import 'package:intl/intl.dart';
+import 'package:myapp/providers/patient.dart';
 import 'package:myapp/widgets/text_fields_list.dart';
 import 'package:myapp/widgets/text_fields_list.dart';
 
 import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
+import 'package:provider/provider.dart';
+import '../providers/dispensary.dart';
 
 class TextFieldsListController extends StatefulWidget {
   final TextEditingController enteredFName;
-  final TextEditingController selectedOrgan;
+  int? selectedOrgan;
   final TextEditingController enteredPhoneNumber;
   final TextEditingController enteredAddress;
   final TextEditingController enteredCity;
@@ -23,7 +26,7 @@ class TextFieldsListController extends StatefulWidget {
   final Widget? lastField;
   final Widget? lastBtn;
 
-  const TextFieldsListController({
+  TextFieldsListController({
     required this.enteredFName,
     required this.selectedOrgan,
     required this.enteredPhoneNumber,
@@ -75,8 +78,18 @@ class _TextFieldsListControllerState extends State<TextFieldsListController> {
     }
   }
 
+  bool _isFetched = false;
+  @override
+  void didChangeDependencies() {
+    if (!_isFetched) {
+      Provider.of<DispensaryOperations>(context).fetchOrgans();
+    }
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
+    var organs = Provider.of<DispensaryOperations>(context).organs;
     return Row(
       children: [
         Expanded(
@@ -197,36 +210,27 @@ class _TextFieldsListControllerState extends State<TextFieldsListController> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               DropdownButtonFormField(
-                value: widget.selectedOrgan.text.isEmpty
-                    ? null
-                    : widget.selectedOrgan.text,
+                value: widget.selectedOrgan,
                 style: originalTextStyle,
-                icon: const Icon(
-                  Icons.keyboard_arrow_down,
-                  color: Color(0xFFD7D7D7),
-                ),
-                // focusColor: Color(0x802B2B2B),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Choose organ';
+                  if (value == null) {
+                    return 'Choose type of donation';
                   }
                   return null;
                 },
                 borderRadius: const BorderRadius.all(Radius.circular(8)),
-                items: ['A', 'B', 'AB', 'O'].map((String category) {
+                items: organs.map((OrganId organs) {
                   return DropdownMenuItem(
-                      value: category,
+                      value: organs.id,
                       child: Row(
-                        children: <Widget>[
-                          Text(category),
-                        ],
+                        children: [Text(organs.name!)],
                       ));
                 }).toList(),
                 onChanged: (newValue) {
-                  widget.selectedOrgan.text = newValue.toString();
+                  widget.selectedOrgan = newValue;
                 },
                 decoration: InputDecoration(
-                  labelText: 'Organ',
+                  labelText: 'Type of donation',
                   labelStyle: labelTextStyle,
                   enabledBorder: enabledBorderParams,
                   focusedBorder: focusedBorderParams,

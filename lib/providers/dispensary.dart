@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:myapp/data/DonorObjectResponse.dart';
+import 'package:myapp/providers/patient.dart';
 
 import '../constants/constants.dart';
 
@@ -325,6 +326,30 @@ class DispensaryOperations with ChangeNotifier {
     } else {
       throw Exception(
           'Failed to load data with status code: ${response.statusCode}');
+    }
+  }
+
+  List<OrganId> _organs = [];
+
+  List<OrganId> get organs => _organs;
+  Future<void> fetchOrgans() async {
+    var url = Uri.parse(
+        '$ip/api/admins/regions/allRegions'); // Replace with your API URL
+    try {
+      var response = await http.get(url);
+      print(response.body);
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = json.decode(response.body);
+        _organs =
+            jsonData.map((jsonItem) => OrganId.fromJson(jsonItem)).toList();
+        print(jsonData);
+        notifyListeners();
+      } else {
+        throw 'Failed to load organs';
+      }
+    } catch (error) {
+      print('Error fetching regions: $error');
+      throw error;
     }
   }
 }

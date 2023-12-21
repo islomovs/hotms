@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:myapp/providers/dispensary.dart';
 import 'package:myapp/widgets/text_fields_controller.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:provider/provider.dart';
 
 import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
@@ -24,7 +26,7 @@ class DispensaryOrganInfoScreen extends StatefulWidget {
 class _DispensaryOrganInfoScreenState extends State<DispensaryOrganInfoScreen> {
   final _formKey = GlobalKey<FormState>();
   final _enteredFName = TextEditingController();
-  final _selectedOrgan = TextEditingController();
+  int? _selectedOrgan;
   final _enteredPhoneNumber = TextEditingController();
   final _enteredAddress = TextEditingController();
   final _enteredCity = TextEditingController();
@@ -38,15 +40,25 @@ class _DispensaryOrganInfoScreenState extends State<DispensaryOrganInfoScreen> {
   final _enteredPrice = TextEditingController();
   final _enteredBirthday = TextEditingController();
 
+  bool _isFetched = false;
+  @override
+  void didChangeDependencies() {
+    if (!_isFetched) {
+      Provider.of<DispensaryOperations>(context).fetchOrgans();
+    }
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
+    var organs = Provider.of<DispensaryOperations>(context).organs;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SidebarTemplate(
-            title: 'Nigina Roziya',
-            email: 'nigina@roziya.com',
+            title: 'Dispensary',
+            email: 'dispensary@mail.com',
             sideBarTitles: sideBarTitlesDispensary,
             sideBarListIcons: sideBarListIconsDispensary,
             sideBarTitlesBottom: sideBarTitlesBottom,

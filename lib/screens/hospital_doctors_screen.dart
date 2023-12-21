@@ -1,17 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../constants/constants.dart';
 import '../widgets/sidebar_template.dart';
 import '../widgets/heading_widget.dart';
 import './hospital_add_doctor_screen.dart';
 import './hospital_edit_doctor_screen.dart';
+import '../providers/hospitals.dart';
 
-class HospitalDoctorsListScreen extends StatelessWidget {
+class HospitalDoctorsListScreen extends StatefulWidget {
   static const routeName = '/hospital-doctors-list-screen';
   const HospitalDoctorsListScreen({super.key});
 
   @override
+  State<HospitalDoctorsListScreen> createState() =>
+      _HospitalDoctorsListScreenState();
+}
+
+class _HospitalDoctorsListScreenState extends State<HospitalDoctorsListScreen> {
+  bool _isFetched = false;
+  @override
+  void didChangeDependencies() {
+    if (!_isFetched) {
+      Provider.of<Hospitals>(context).fetchAllDoctors();
+      _isFetched = true;
+    }
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    var doctors = Provider.of<Hospitals>(context).allDoctors;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -19,11 +38,11 @@ class HospitalDoctorsListScreen extends StatelessWidget {
           SidebarTemplate(
             title: 'Nigina Roziya',
             email: 'nigina@roziya.com',
-            sideBarTitles: sideBarTitlesAdmin,
-            sideBarListIcons: sideBarListIconsAdmin,
+            sideBarTitles: sideBarTitlesHospital,
+            sideBarListIcons: sideBarListIconsHospital,
             sideBarTitlesBottom: sideBarTitlesBottom,
             sideBarListIconsBottom: sideBarListIconsBottom,
-            routeNames: routeNamesAdmin,
+            routeNames: routeNamesHospital,
           ),
           Expanded(
             child: SingleChildScrollView(
@@ -32,11 +51,7 @@ class HospitalDoctorsListScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    HeadingWidget(
-                      title: 'Hospital List',
-                      subtitle:
-                          'You can safely start treatment, which we carry out as quickly and efficiently as possible in Tashkent.',
-                    ),
+                    HeadingWidget(title: 'Doctors List'),
                     const SizedBox(height: 20),
                     Container(
                       decoration: BoxDecoration(
@@ -59,7 +74,7 @@ class HospitalDoctorsListScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 10),
                                 Text(
-                                  '(144)',
+                                  '(${doctors.length})',
                                   style: listHeadingTitleTextStyle,
                                 ),
                               ],
@@ -156,7 +171,7 @@ class HospitalDoctorsListScreen extends StatelessWidget {
                       child: ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount: 20,
+                        itemCount: doctors.length,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10),
@@ -172,12 +187,12 @@ class HospitalDoctorsListScreen extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Medical Care',
+                                        doctors[index].fullName!,
                                         style: listTileTitle,
                                       ),
                                       const SizedBox(height: 5),
                                       Text(
-                                        'Cardiology Clinic',
+                                        ' ',
                                         style: listTileSubTitle,
                                       ),
                                     ],
@@ -193,13 +208,13 @@ class HospitalDoctorsListScreen extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Saidova Saida',
+                                        doctors[index].specialization!,
                                         style: listTileTitle,
                                         textAlign: TextAlign.left,
                                       ),
                                       const SizedBox(height: 5),
                                       Text(
-                                        '21 years',
+                                        ' ',
                                         style: listTileSubTitle,
                                       ),
                                     ],
@@ -215,13 +230,13 @@ class HospitalDoctorsListScreen extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Shifokorlar Street, 22',
+                                        doctors[index].email!,
                                         style: listTileTitle,
                                         textAlign: TextAlign.left,
                                       ),
                                       const SizedBox(height: 5),
                                       Text(
-                                        'Almazar district',
+                                        ' ',
                                         style: listTileSubTitle,
                                       ),
                                     ],

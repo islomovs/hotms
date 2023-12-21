@@ -11,6 +11,8 @@ import '../constants/constants.dart';
 import '../constants/registration_constants.dart';
 import './hospital_patients_donors_screen.dart';
 import './dispensary_home_screen.dart';
+import './hospital_info_screen.dart';
+import './registration_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

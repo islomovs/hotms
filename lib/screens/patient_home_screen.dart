@@ -33,18 +33,22 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
     super.didChangeDependencies();
   }
 
+  String? _name;
+  String? _email;
   @override
   Widget build(BuildContext context) {
     var operations = Provider.of<Patients>(context).patientO;
     var applied = Provider.of<Patients>(context).patientApplied;
-    var patientInfo = Provider.of<Patients>(context).patientInfo.userId!;
+    var patientInfo = Provider.of<Patients>(context).patientInfo;
+    _name = patientInfo.userId?.fullName;
+    _email = patientInfo.userId?.email;
     return Scaffold(
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SidebarTemplate(
-            title: patientInfo.fullName! ?? 'Default Name',
-            email: patientInfo.email! ?? 'default@email.com',
+            title: _name ?? 'Default Name',
+            email: _email ?? 'default@email.com',
             sideBarTitles: sideBarTitlesPatient,
             sideBarListIcons: sideBarListIconsPatient,
             sideBarTitlesBottom: sideBarTitlesBottom,
@@ -59,7 +63,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     HeadingWidget(
-                      title: 'Hi ${patientInfo.fullName!}!',
+                      title: 'Hi ${_name ?? 'Default Name'}!',
                       subtitle: 'Monitor and adjust your progress',
                     ),
                     const SizedBox(height: 20),
@@ -67,18 +71,16 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         StatusWidget(
-                          title: operations.operationTime != null
-                              ? 'Your operation date: ${(operations.operationTime ?? '').split(' ')[0].split('-')[2]}.${(operations.operationTime ?? '').split(' ')[0].split('-')[1]}.${(operations.operationTime ?? '').split(' ')[0].split('-')[0]}'
-                              : 'Your operation date: --.--.----',
+                          title:
+                              'Your operation date: ${operations.operationTime != null ? (operations.operationTime ?? '').split(' ')[0].split('-')[2] : ''}.${operations.operationTime != null ? (operations.operationTime ?? '').split(' ')[0].split('-')[1] : ''}.${operations.operationTime != null ? (operations.operationTime ?? '').split(' ')[0].split('-')[0] : ''}',
                           appStatusWidget: ApplicationStatusWidget(
                             status: operationDate!,
                           ),
                           status: operationDate!,
                         ),
                         StatusWidget(
-                          title: operations.operationTime != null
-                              ? 'Your operation time: ${(operations.operationTime ?? '').split(' ')[1]}'
-                              : 'Your operation time: --:--',
+                          title:
+                              'Your operation time: ${operations.operationTime != null ? (operations.operationTime ?? '').split(' ')[1] : ''}',
                           appStatusWidget: ApplicationStatusWidget(
                             status: operationTime!,
                           ),
@@ -109,13 +111,21 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Hospital',
-                              style: listTitleTextStyle,
+                            SizedBox(
+                              width: 220,
+                              child: Text(
+                                'Hospital',
+                                style: listTitleTextStyle,
+                              ),
                             ),
-                            Text(
-                              'Address',
-                              style: listTitleTextStyle,
+                            Container(
+                              alignment: Alignment.topLeft,
+                              width:
+                                  (MediaQuery.of(context).size.width - 720) / 4,
+                              child: Text(
+                                'Address',
+                                style: listTitleTextStyle,
+                              ),
                             ),
                           ],
                         ),
@@ -140,60 +150,62 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                     //     ),
                     //   ),
                     // ),
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: applied.length,
-                      itemBuilder: (_, index) {
-                        var apply = applied[index];
-                        return InkWell(
-                          borderRadius: BorderRadius.circular(6),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => PatientHomeInnerScreen(
-                                  id: apply.hospitalId?.id ?? 0,
-                                ),
-                              ),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 20,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                SizedBox(
-                                  width: 220,
-                                  child: Row(
-                                    children: [
-                                      const CircleAvatar(
-                                        minRadius: 20,
-                                        backgroundImage: AssetImage(
-                                          './assets/images/profile.png',
-                                        ),
-                                      ),
-                                      const SizedBox(width: 25),
-                                      Text(
-                                        apply.hospitalId?.name ?? 'N/A',
-                                        style: listTileTitle,
-                                      ),
-                                    ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 20,
+                      ),
+                      child: ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: applied.length,
+                        itemBuilder: (_, index) {
+                          var apply = applied[index];
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PatientHomeInnerScreen(
+                                    id: apply.hospitalId?.id ?? 0,
                                   ),
                                 ),
-                                Text(
-                                  apply.hospitalId?.address ?? 'N/A',
-                                  style: listTileTitle,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    width: 220,
+                                    child: Row(
+                                      children: [
+                                        const CircleAvatar(
+                                          minRadius: 20,
+                                          backgroundImage: AssetImage(
+                                              './assets/images/profile.png'),
+                                        ),
+                                        const SizedBox(width: 25),
+                                        Text(
+                                          apply.hospitalId?.name ?? 'N/A',
+                                          style: listTileTitle,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    apply.hospitalId?.address ?? 'N/A',
+                                    style: listTileTitle,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),

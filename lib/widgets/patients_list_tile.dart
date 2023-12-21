@@ -11,7 +11,7 @@ class PatientsListTile extends StatelessWidget {
   final String city;
   final String date;
   final String subDate;
-  final String urgencyRate;
+  final String status;
   VoidCallback navigateFunc;
 
   PatientsListTile({
@@ -23,7 +23,7 @@ class PatientsListTile extends StatelessWidget {
     required this.city,
     required this.date,
     required this.subDate,
-    required this.urgencyRate,
+    required this.status,
     required this.navigateFunc,
     super.key,
   });
@@ -140,7 +140,7 @@ class PatientsListTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  urgencyRate,
+                  status,
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 12,

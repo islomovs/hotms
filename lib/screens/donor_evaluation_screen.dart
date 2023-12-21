@@ -56,7 +56,7 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
         'bash',
         [
           '-c',
-          'cd $workingDirectory && ./client $localhost applyToDispensary $extractedToken $dispensaryId $_enteredPhoneNumber'
+          'cd $workingDirectory && ./client $localhost applyToDispensaryDonor $extractedToken $dispensaryId $_enteredPhoneNumber'
         ],
       );
 
@@ -361,52 +361,52 @@ class _DonorEvaluationScreenState extends State<DonorEvaluationScreen> {
                         ),
                       ),
                     ),
-                    if(donorO.operationTime != null)
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        top: 30,
-                        bottom: 10,
-                        left: 60,
-                      ),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Visibility(
-                              visible: _visibility!,
-                              child: MediumOutlinedButton(
-                                onPress: () {
-                                  donorO.isDonorAccepted = false;
+                    if (donorO.operationTime != null)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 30,
+                          bottom: 10,
+                          left: 60,
+                        ),
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Visibility(
+                                visible: _visibility!,
+                                child: MediumOutlinedButton(
+                                  onPress: () {
+                                    donorO.isDonorAccepted = false;
 
-                                  print(
-                                      'IS DONOR ACCEPTED $donorO.isDonorAccepted');
-                                  setState(() {
-                                    _visibility = false;
-                                  });
-                                },
-                                title: 'Not agree',
+                                    print(
+                                        'IS DONOR ACCEPTED $donorO.isDonorAccepted');
+                                    setState(() {
+                                      _visibility = false;
+                                    });
+                                  },
+                                  title: 'Not agree',
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 25),
-                            Visibility(
-                              visible: _visibility!,
-                              child: MediumButton(
-                                title: 'Agree',
-                                onPress: () {
-                                  donorO.isDonorAccepted = true;
-                                  print(
-                                      'IS DONOR ACCEPTED $donorO.isDonorAccepted');
-                                  setState(() {
-                                    _visibility = false;
-                                  });
-                                },
+                              const SizedBox(width: 25),
+                              Visibility(
+                                visible: _visibility!,
+                                child: MediumButton(
+                                  title: 'Agree',
+                                  onPress: () {
+                                    donorO.isDonorAccepted = true;
+                                    print(
+                                        'IS DONOR ACCEPTED $donorO.isDonorAccepted');
+                                    setState(() {
+                                      _visibility = false;
+                                    });
+                                  },
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
                     // const SizedBox(height: 40),
                     // Row(
                     //   mainAxisAlignment: MainAxisAlignment.spaceBetween,

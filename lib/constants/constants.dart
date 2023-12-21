@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:myapp/screens/hospital_doctors_screen.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../screens/donor_home_screen.dart';
@@ -151,16 +152,19 @@ List<String> sideBarTitlesHospital = [
   'Setup profile',
   'Patients/Donors',
   'Operations',
+  'Doctors',
 ];
 List<IconData> sideBarListIconsHospital = [
   Icons.home_outlined,
   Icons.event_available_outlined,
+  Icons.library_books_outlined,
   Icons.library_books_outlined,
 ];
 List<String> routeNamesHospital = [
   HospitalInfoScreen.routeName,
   HospitalPatientsDonorsScreen.routeName,
   HospitalOperationsScreen.routeName,
+  HospitalDoctorsListScreen.routeName,
 ];
 
 // constants for sidebar of patient screens

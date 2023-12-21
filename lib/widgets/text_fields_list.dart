@@ -43,6 +43,8 @@ class TextFieldsList extends StatefulWidget {
 }
 
 class _TextFieldsListState extends State<TextFieldsList> {
+
+
   final TextEditingController _dateController = TextEditingController();
 
   Future<void> _selectDate(BuildContext context) async {
@@ -83,6 +85,7 @@ class _TextFieldsListState extends State<TextFieldsList> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               TextFormField(
+                initialValue: widget.enteredFName,
                 style: originalTextStyle,
                 cursorColor: const Color(0xFF2B2B2B),
                 decoration: InputDecoration(
@@ -98,6 +101,7 @@ class _TextFieldsListState extends State<TextFieldsList> {
               ),
               const SizedBox(height: 20),
               TextFormField(
+                initialValue: widget.enteredPhoneNumber,
                 style: originalTextStyle,
                 cursorColor: const Color(0xFF2B2B2B),
                 decoration: InputDecoration(
@@ -113,6 +117,7 @@ class _TextFieldsListState extends State<TextFieldsList> {
               ),
               const SizedBox(height: 20),
               TextFormField(
+                initialValue: widget.enteredAddress,
                 style: originalTextStyle,
                 cursorColor: const Color(0xFF2B2B2B),
                 decoration: InputDecoration(
@@ -170,6 +175,7 @@ class _TextFieldsListState extends State<TextFieldsList> {
               ),
               const SizedBox(height: 20),
               TextFormField(
+                initialValue: widget.enteredPassportNumber,
                 style: originalTextStyle,
                 cursorColor: const Color(0xFF2B2B2B),
                 decoration: InputDecoration(
@@ -193,46 +199,60 @@ class _TextFieldsListState extends State<TextFieldsList> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              DropdownButtonFormField(
-                value: widget.selectedOrgan?.isEmpty == true
-                    ? null
-                    : widget.selectedOrgan,
+              TextFormField(
+                initialValue: widget.selectedOrgan,
                 style: originalTextStyle,
-                icon: const Icon(
-                  Icons.keyboard_arrow_down,
-                  color: Color(0xFFD7D7D7),
-                ),
-                // focusColor: Color(0x802B2B2B),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Choose organ';
-                  }
-                  return null;
-                },
-                borderRadius: const BorderRadius.all(Radius.circular(8)),
-                items: ['A', 'B', 'AB', 'O'].map((String category) {
-                  return DropdownMenuItem(
-                      value: category,
-                      child: Row(
-                        children: <Widget>[
-                          Text(category),
-                        ],
-                      ));
-                }).toList(),
-                onChanged: (newValue) {
-                  setState(() {
-                    widget.selectedOrgan = newValue;
-                  });
-                },
+                cursorColor: const Color(0xFF2B2B2B),
                 decoration: InputDecoration(
-                  labelText: 'Organ',
+                  labelText: 'Choose organ',
                   labelStyle: labelTextStyle,
                   enabledBorder: enabledBorderParams,
                   focusedBorder: focusedBorderParams,
                   errorBorder: errorBorderParams,
                   focusedErrorBorder: focusedErrorBorderParams,
                 ),
+                onChanged: (value) => widget.selectedOrgan = value,
               ),
+              // DropdownButtonFormField(
+              //   value: widget.selectedOrgan?.isEmpty == true
+              //       ? null
+              //       : widget.selectedOrgan,
+              //   style: originalTextStyle,
+              //   icon: const Icon(
+              //     Icons.keyboard_arrow_down,
+              //     color: Color(0xFFD7D7D7),
+              //   ),
+              //   // focusColor: Color(0x802B2B2B),
+              //   validator: (value) {
+              //     if (value == null || value.isEmpty) {
+              //       return 'Choose organ';
+              //     }
+              //     return null;
+              //   },
+              //   borderRadius: const BorderRadius.all(Radius.circular(8)),
+              //   items: ['A', 'B', 'AB', 'O'].map((String category) {
+              //     return DropdownMenuItem(
+              //         value: category,
+              //         child: Row(
+              //           children: <Widget>[
+              //             Text(category),
+              //           ],
+              //         ));
+              //   }).toList(),
+              //   onChanged: (newValue) {
+              //     setState(() {
+              //       widget.selectedOrgan = newValue;
+              //     });
+              //   },
+              //   decoration: InputDecoration(
+              //     labelText: 'Organ',
+              //     labelStyle: labelTextStyle,
+              //     enabledBorder: enabledBorderParams,
+              //     focusedBorder: focusedBorderParams,
+              //     errorBorder: errorBorderParams,
+              //     focusedErrorBorder: focusedErrorBorderParams,
+              //   ),
+              // ),
               const SizedBox(height: 20),
               MouseRegion(
                 cursor: SystemMouseCursors.click,
@@ -258,6 +278,7 @@ class _TextFieldsListState extends State<TextFieldsList> {
               ),
               const SizedBox(height: 20),
               TextFormField(
+                initialValue: widget.enteredCity,
                 style: originalTextStyle,
                 cursorColor: const Color(0xFF2B2B2B),
                 decoration: InputDecoration(
@@ -273,6 +294,7 @@ class _TextFieldsListState extends State<TextFieldsList> {
               ),
               const SizedBox(height: 30),
               TextFormField(
+                initialValue: widget.enteredDistrict,
                 style: originalTextStyle,
                 cursorColor: const Color(0xFF2B2B2B),
                 decoration: InputDecoration(
@@ -331,6 +353,7 @@ class _TextFieldsListState extends State<TextFieldsList> {
               ),
               const SizedBox(height: 20),
               TextFormField(
+                initialValue: widget.enteredPINFL,
                 style: originalTextStyle,
                 cursorColor: const Color(0xFF2B2B2B),
                 decoration: InputDecoration(
@@ -346,6 +369,7 @@ class _TextFieldsListState extends State<TextFieldsList> {
               ),
               const SizedBox(height: 20),
               TextFormField(
+                initialValue: widget.enteredComment,
                 style: originalTextStyle,
                 cursorColor: const Color(0xFF2B2B2B),
                 decoration: InputDecoration(

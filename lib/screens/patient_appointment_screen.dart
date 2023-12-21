@@ -46,10 +46,7 @@ class _PatientAppointmentScreenState extends State<PatientAppointmentScreen> {
   var dispensaryId;
   void _submitData() async {
     if (_formKey.currentState!.validate()) {
-      dispensaryId = Provider.of<DispensaryOperations>(context)
-          .patientsList[0]
-          .dispensary!
-          .id;
+      dispensaryId = 1;
       // Change to the working directory and run the C program
       var loginResult = await Process.run(
         'bash',
@@ -184,44 +181,19 @@ class _PatientAppointmentScreenState extends State<PatientAppointmentScreen> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextFormField(
-                                  style: originalTextStyle,
-                                  cursorColor: const Color(0xFF2B2B2B),
-                                  decoration: InputDecoration(
-                                    labelText: 'First Name',
-                                    labelStyle: labelTextStyle,
-                                    enabledBorder: enabledBorderParams,
-                                    focusedBorder: focusedBorderParams,
-                                    errorBorder: errorBorderParams,
-                                    focusedErrorBorder:
-                                        focusedErrorBorderParams,
-                                  ),
-                                  onChanged: (value) => _enteredName = value,
-                                  validator: validateName,
-                                ),
-                              ),
-                              const SizedBox(width: 20),
-                              Expanded(
-                                child: TextFormField(
-                                  style: originalTextStyle,
-                                  cursorColor: const Color(0xFF2B2B2B),
-                                  decoration: InputDecoration(
-                                    labelText: 'Last name',
-                                    labelStyle: labelTextStyle,
-                                    enabledBorder: enabledBorderParams,
-                                    focusedBorder: focusedBorderParams,
-                                    errorBorder: errorBorderParams,
-                                    focusedErrorBorder:
-                                        focusedErrorBorderParams,
-                                  ),
-                                  onChanged: (value) => _enteredName = value,
-                                  validator: validateName,
-                                ),
-                              ),
-                            ],
+                          TextFormField(
+                            style: originalTextStyle,
+                            cursorColor: const Color(0xFF2B2B2B),
+                            decoration: InputDecoration(
+                              labelText: 'First Name',
+                              labelStyle: labelTextStyle,
+                              enabledBorder: enabledBorderParams,
+                              focusedBorder: focusedBorderParams,
+                              errorBorder: errorBorderParams,
+                              focusedErrorBorder: focusedErrorBorderParams,
+                            ),
+                            onChanged: (value) => _enteredName = value,
+                            validator: validateName,
                           ),
                           const SizedBox(height: 16),
                           TextFormField(

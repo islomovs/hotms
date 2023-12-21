@@ -29,7 +29,7 @@ class _HospitalOperationsScreenState
 
   @override
   void didChangeDependencies() async {
-    print("all operation1");
+    print("all operation did_change_dependency");
     await Provider.of<Hospitals>(context).fetchAllOperations();
 
     super.didChangeDependencies();
@@ -37,7 +37,6 @@ class _HospitalOperationsScreenState
 
   @override
   Widget build(BuildContext context) {
-    print("all operation");
     final rxAllOperations = Provider.of<Hospitals>(context).allOperations;
     return Scaffold(
       body: Row(
@@ -60,7 +59,7 @@ class _HospitalOperationsScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     HeadingWidget(
-                      title: 'Operations List',
+                      title: 'Patients/Donors List',
                       subtitle:
                           'This list provides an overview of the diverse operations within a hospital.',
                     ),
@@ -100,18 +99,19 @@ class _HospitalOperationsScreenState
                             city: 'Toshkent',
                             date: rxAllOperations[index].operationTime ?? '',
                             subDate: '',
-                            urgencyRate: rxAllOperations[index]
-                                    .patientId
-                                    ?.urgencyRate
-                                    .toString() ??
-                                "",
+                            status:
+                                rxAllOperations[index].operationIsSuccessful !=
+                                        null
+                                    ? "done"
+                                    : "waiting",
                             navigateFunc: () {
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => HospitalPatientScreen(
-                                        model: rxAllOperations[index]),
-                                  ));
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HospitalPatientScreen(
+                                      model: rxAllOperations[index]),
+                                ),
+                              );
                             },
                           );
                         },

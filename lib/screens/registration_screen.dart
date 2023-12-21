@@ -26,7 +26,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   String? _password;
   String? _confirmPassword;
   String? _selectedRole;
-  String? _selectedRegion;
+  int? _selectedRegion;
 
   void _submitData() async {
     if (_formKey.currentState!.validate()) {
@@ -37,7 +37,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       );
 
       if (listResult.exitCode == 0) {
-        print('Listing contents of $workingDirectory:');
         print(listResult.stdout);
       } else {
         print('Error listing directory: ${listResult.stderr}');
@@ -77,17 +76,25 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         print('C program error: ${loginResult.stderr}');
       }
     }
+    Navigator.of(context).pushNamed('/');
   }
 
+  bool _isFetched = false;
   @override
   void didChangeDependencies() {
-    Provider.of<Patients>(context).fetchRegions();
+    // TODO: implement didChangeDependencies
+    if (!_isFetched) {
+      Provider.of<Patients>(context, listen: false).fetchRegions();
+      _isFetched = true;
+    }
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
     var regions = Provider.of<Patients>(context).regions;
+    print("Selected Region: $_selectedRegion");
+    print("Regions Count: ${regions.length}");
 
     return Scaffold(
       body: Row(
@@ -187,30 +194,27 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             style: originalTextStyle,
                             // focusColor: Color(0x802B2B2B),
                             validator: (value) {
-                              if (value == null || value.isEmpty) {
+                              if (value == null) {
                                 return 'Choose region';
                               }
                               return null;
                             },
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(8)),
-                            items: [
-                              'Tashkent',
-                              'Kashkadarya',
-                              'Samarkand',
-                              'Bukhara'
-                            ].map((String category) {
+                            items: Provider.of<Patients>(context)
+                                .regions
+                                .map((Region region) {
                               return DropdownMenuItem(
-                                  value: category,
+                                  value: region.id,
                                   child: Row(
                                     children: <Widget>[
-                                      Text(category),
+                                      Text(region.name!),
                                     ],
                                   ));
                             }).toList(),
                             onChanged: (newValue) {
                               setState(() {
-                                _selectedRegion = newValue;
+                                _selectedRegion = newValue as int?;
                               });
                             },
                             decoration: InputDecoration(

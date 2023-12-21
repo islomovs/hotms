@@ -16,9 +16,11 @@ class Region {
     this.name,
   });
 
-  Region.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
+  factory Region.fromJson(Map<String, dynamic> json) {
+    return Region(
+      id: json['id'],
+      name: json['name'],
+    );
   }
 }
 
@@ -47,27 +49,30 @@ class Patients with ChangeNotifier {
 
   DonorOperations get patientO => _patientO;
 
-  late List<Region> _regions;
+  List<Region> _regions = []; // Assuming Region is your data model
+
+  // Getter to access the regions
   List<Region> get regions => _regions;
 
-  Future<List<Region>> fetchRegions() async {
-    final response = await http.get(
-      Uri.parse('$ip/api/admins/regions/allRegions'),
-    );
-    print(response.body);
-    if (response.statusCode == 200) {
-      // If the server returns a 200 OK response, parse the JSON
-      _patientDis.clear();
-      // If the server returns a 200 OK response, parse the JSON
-      for (int i = 0; i < json.decode(response.body).length; i++) {
-        _regions.add(Region.fromJson(json.decode(response.body)[i]));
+  // Function to fetch regions from the server
+  Future<void> fetchRegions() async {
+    var url = Uri.parse(
+        '$ip/api/admins/regions/allRegions'); // Replace with your API URL
+    try {
+      var response = await http.get(url);
+      print(response.body);
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = json.decode(response.body);
+        _regions =
+            jsonData.map((jsonItem) => Region.fromJson(jsonItem)).toList();
+        print(jsonData);
+        notifyListeners();
+      } else {
+        throw 'Failed to load regions';
       }
-      notifyListeners();
-      return _regions;
-    } else {
-      // If the server did not return a 200 OK response,
-      // throw an exception.
-      throw Exception('Failed to load data');
+    } catch (error) {
+      print('Error fetching regions: $error');
+      throw error;
     }
   }
 
@@ -93,8 +98,7 @@ class Patients with ChangeNotifier {
   Future<DonorOperations> fetchOperations() async {
     final response =
         await http.get(Uri.parse('$ip/api/patients/allMyOperations'), headers: {
-      'Authorization':
-          'Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6MiwiZW1haWwiOiJwYXRpZW50QG1haWwucnUiLCJyb2xlIjoiQVBQUk9WRURfUEFUSUVOVCIsInVzZXIiOnsiaWQiOjIsImVtYWlsIjoicGF0aWVudEBtYWlsLnJ1IiwicGFzc3dvcmQiOiJwYXRpZW50Iiwicm9sZSI6IkFQUFJPVkVEX1BBVElFTlQiLCJmdWxsTmFtZSI6IlBhdGllbnQgUGF0aWVudG92IiwiaW1hZ2VMaW5rIjpudWxsfSwiZXhwIjoxNzAzNTM2MjAzfQ.WhePbl22Z8g0LoCx_QO_vWrijwaG3ZbVwEJsgwC8t1riwryrEBvrgaeSvNsWP207xex_rVrshdrMSHmBZSVQsg',
+      'Authorization': 'Bearer $extractedToken',
       'Content-Type': 'application/json',
     });
     print(response.body);
@@ -114,8 +118,7 @@ class Patients with ChangeNotifier {
     final response = await http.get(
       Uri.parse('$ip/api/patients/allHospitalsMatchingMe'),
       headers: {
-        'Authorization':
-            'Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6MiwiZW1haWwiOiJwYXRpZW50QG1haWwucnUiLCJyb2xlIjoiQVBQUk9WRURfUEFUSUVOVCIsInVzZXIiOnsiaWQiOjIsImVtYWlsIjoicGF0aWVudEBtYWlsLnJ1IiwicGFzc3dvcmQiOiJwYXRpZW50Iiwicm9sZSI6IkFQUFJPVkVEX1BBVElFTlQiLCJmdWxsTmFtZSI6IlBhdGllbnQgUGF0aWVudG92IiwiaW1hZ2VMaW5rIjpudWxsfSwiZXhwIjoxNzAzNTM2MjAzfQ.WhePbl22Z8g0LoCx_QO_vWrijwaG3ZbVwEJsgwC8t1riwryrEBvrgaeSvNsWP207xex_rVrshdrMSHmBZSVQsg',
+        'Authorization': 'Bearer $extractedToken',
         'Content-Type': 'application/json',
       },
     );
@@ -140,8 +143,7 @@ class Patients with ChangeNotifier {
     final response = await http.get(
       Uri.parse('$ip/api/patients/allMyDispensaryVisits'),
       headers: {
-        'Authorization':
-            'Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6MiwiZW1haWwiOiJwYXRpZW50QG1haWwucnUiLCJyb2xlIjoiQVBQUk9WRURfUEFUSUVOVCIsInVzZXIiOnsiaWQiOjIsImVtYWlsIjoicGF0aWVudEBtYWlsLnJ1IiwicGFzc3dvcmQiOiJwYXRpZW50Iiwicm9sZSI6IkFQUFJPVkVEX1BBVElFTlQiLCJmdWxsTmFtZSI6IlBhdGllbnQgUGF0aWVudG92IiwiaW1hZ2VMaW5rIjpudWxsfSwiZXhwIjoxNzAzNTM2MjAzfQ.WhePbl22Z8g0LoCx_QO_vWrijwaG3ZbVwEJsgwC8t1riwryrEBvrgaeSvNsWP207xex_rVrshdrMSHmBZSVQsg',
+        'Authorization': 'Bearer $extractedToken',
         'Content-Type': 'application/json',
       },
     );
@@ -166,8 +168,7 @@ class Patients with ChangeNotifier {
     final response = await http.get(
       Uri.parse('$ip/api/patients/allHospitalsIApplied'),
       headers: {
-        'Authorization':
-            'Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6MiwiZW1haWwiOiJwYXRpZW50QG1haWwucnUiLCJyb2xlIjoiQVBQUk9WRURfUEFUSUVOVCIsInVzZXIiOnsiaWQiOjIsImVtYWlsIjoicGF0aWVudEBtYWlsLnJ1IiwicGFzc3dvcmQiOiJwYXRpZW50Iiwicm9sZSI6IkFQUFJPVkVEX1BBVElFTlQiLCJmdWxsTmFtZSI6IlBhdGllbnQgUGF0aWVudG92IiwiaW1hZ2VMaW5rIjpudWxsLCJyZWdpb25JZCI6bnVsbH0sImV4cCI6MTcwMzY5OTM5MX0.cgi3HVYqjbkPT7r7A6afIj3CJQ4LjkipI39-rHQtV8bmjUY4SLpBpIndM5n7u-ZBtNL8ABOdMwlYLJ-tH1APRg',
+        'Authorization': 'Bearer $extractedToken',
         'Content-Type': 'application/json',
       },
     );
@@ -199,8 +200,7 @@ class Patients with ChangeNotifier {
       Uri.parse(
           '$ip/api/patients/allQueueInThisHospitalIApplied?hospitalId=$id'),
       headers: {
-        'Authorization':
-            'Bearer eyJhbGciOiJIUzUxMiJ9.eyJpZCI6MiwiZW1haWwiOiJwYXRpZW50QG1haWwucnUiLCJyb2xlIjoiQVBQUk9WRURfUEFUSUVOVCIsInVzZXIiOnsiaWQiOjIsImVtYWlsIjoicGF0aWVudEBtYWlsLnJ1IiwicGFzc3dvcmQiOiJwYXRpZW50Iiwicm9sZSI6IkFQUFJPVkVEX1BBVElFTlQiLCJmdWxsTmFtZSI6IlBhdGllbnQgUGF0aWVudG92IiwiaW1hZ2VMaW5rIjpudWxsfSwiZXhwIjoxNzAzNTM2MjAzfQ.WhePbl22Z8g0LoCx_QO_vWrijwaG3ZbVwEJsgwC8t1riwryrEBvrgaeSvNsWP207xex_rVrshdrMSHmBZSVQsg',
+        'Authorization': 'Bearer $extractedToken',
         'Content-Type': 'application/json',
       },
     );

@@ -222,8 +222,8 @@ class _DispensaryHomeScreenState extends State<DispensaryHomeScreen> {
         children: [
           // Sidebar (Drawer)
           SidebarTemplate(
-            title: 'Nigina Roziya',
-            email: 'nigina@roziya.com',
+            title: 'Dispensary',
+            email: 'dispensary@mail.com',
             sideBarTitles: sideBarTitlesDispensary,
             sideBarListIcons: sideBarListIconsDispensary,
             sideBarTitlesBottom: sideBarTitlesBottom,
